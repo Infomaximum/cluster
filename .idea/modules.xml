@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cluster.iml" filepath="$PROJECT_DIR$/.idea/modules/cluster.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cluster_main.iml" filepath="$PROJECT_DIR$/.idea/modules/cluster_main.iml" group="cluster" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cluster_test.iml" filepath="$PROJECT_DIR$/.idea/modules/cluster_test.iml" group="cluster" />
+    </modules>
+  </component>
+</project>
