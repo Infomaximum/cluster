@@ -18,13 +18,13 @@ import java.util.concurrent.Future;
  */
 public class RemoteControllerInvocationHandler implements InvocationHandler {
 
-    private final Component role;
+    private final Component component;
 
     private final String targetRoleKey;
     private final String targetRemoteControllerName;
 
-    public RemoteControllerInvocationHandler(Component role, String targetRoleKey, String targetRemoteControllerName) {
-        this.role=role;
+    public RemoteControllerInvocationHandler(Component component, String targetRoleKey, String targetRemoteControllerName) {
+        this.component = component;
 
         this.targetRoleKey = targetRoleKey;
         this.targetRemoteControllerName = targetRemoteControllerName;
@@ -37,8 +37,8 @@ public class RemoteControllerInvocationHandler implements InvocationHandler {
             ExecutorUtil.executors.execute(() -> {
                 try {
                     JSONObject request = packRequest(targetRemoteControllerName, method, args);
-                    JSONObject response = role.getTransport().request(targetRoleKey, request);
-                    responseFuture.complete(unpackResponse(role, method, response));
+                    JSONObject response = component.getTransport().request(targetRoleKey, request);
+                    responseFuture.complete(unpackResponse(component, method, response));
                 } catch (Exception e) {
                     responseFuture.completeExceptionally(e);
                 }
@@ -46,8 +46,8 @@ public class RemoteControllerInvocationHandler implements InvocationHandler {
             return responseFuture;
         } else {
             JSONObject request = packRequest(targetRemoteControllerName, method, args);
-            JSONObject response = role.getTransport().request(targetRoleKey, request);
-            return unpackResponse(role, method, response);
+            JSONObject response = component.getTransport().request(targetRoleKey, request);
+            return unpackResponse(component, method, response);
         }
     }
 
@@ -74,7 +74,7 @@ public class RemoteControllerInvocationHandler implements InvocationHandler {
         return request;
     }
 
-    private static Object unpackResponse(Component role, Method method, JSONObject response) throws ReflectiveOperationException, IOException, RocksDBException {
+    private static Object unpackResponse(Component component, Method method, JSONObject response) throws ReflectiveOperationException, IOException, RocksDBException {
         Object result = response.get("result");
         if (result==null) {
             return null;
@@ -88,7 +88,7 @@ public class RemoteControllerInvocationHandler implements InvocationHandler {
                 classReturnType = method.getReturnType();
             }
 
-            return PackRemoteArgUtils.deserialize(role, classReturnType, result);
+            return PackRemoteArgUtils.deserialize(component, classReturnType, result);
         }
     }
 }

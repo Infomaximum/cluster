@@ -1,6 +1,6 @@
 package com.infomaximum.cluster.component.manager;
 
-import com.infomaximum.cluster.component.manager.core.RegisterRole;
+import com.infomaximum.cluster.component.manager.core.RegisterComponent;
 import com.infomaximum.cluster.core.component.active.ActiveComponents;
 import com.infomaximum.cluster.core.component.active.ActiveComponentsImpl;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
@@ -24,7 +24,7 @@ public class ManagerComponent extends Component {
 	public static final String KEY = INFO.getUuid() + ":" + "00000000-0000-0000-0000-000000000000";
 
 
-	private RegisterRole registerSubSystem;
+	private RegisterComponent registerComponent;
 
 	public ManagerComponent(TransportManager transportManager, ComponentConfig config) throws Exception {
 		super(transportManager, config);
@@ -37,7 +37,7 @@ public class ManagerComponent extends Component {
 
 	@Override
 	public void nativeInit() throws Exception {
-		registerSubSystem = new RegisterRole(this);
+		registerComponent = new RegisterComponent(this);
 	}
 
 	@Override
@@ -47,13 +47,13 @@ public class ManagerComponent extends Component {
 
 	//Логика регистрации у менеджера подсистем не стандартная
 	@Override
-	protected ActiveComponentsImpl registerSubSystem() throws Exception {
+	protected ActiveComponentsImpl registerComponent() throws Exception {
 		return null;
 	}
 
 	//Логика Снятия регистрации у менеджера подсистем не стандартная
 	@Override
-	protected void unRegisterRole() throws Exception {}
+	protected void unRegisterComponent() throws Exception {}
 
 	@Override
 	public Info getInfo() {
@@ -62,15 +62,15 @@ public class ManagerComponent extends Component {
 
 	@Override
 	public ActiveComponents getActiveRoles() {
-		return registerSubSystem;
+		return registerComponent;
 	}
 
 	@Override
 	public void nativeDestroy() throws Exception {}
 
 
-	public RegisterRole getRegisterSubSystem() {
-		return registerSubSystem;
+	public RegisterComponent getRegisterComponent() {
+		return registerComponent;
 	}
 
 }

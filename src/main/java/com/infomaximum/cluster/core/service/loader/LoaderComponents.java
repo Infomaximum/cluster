@@ -26,11 +26,11 @@ public class LoaderComponents {
 	private final TransportManager transportManager;
 
 	//TODO необходимо чтото придумать, нет отписку в случае кдиничной остановки подсистемы
-	private final Map<Class<? extends Component>, List<Component>> roles;
+	private final Map<Class<? extends Component>, List<Component>> components;
 
 	public LoaderComponents(TransportManager transportManager) throws Exception {
 		this.transportManager=transportManager;
-		this.roles = new ConcurrentHashMap<Class<? extends Component>, List<Component>>();
+		this.components = new ConcurrentHashMap<Class<? extends Component>, List<Component>>();
 
 		init();
 	}
@@ -38,55 +38,55 @@ public class LoaderComponents {
 	private void init() throws Exception {
 		//TODO необходима правильная инициализация менеджера, в настоящий момент считаем, что приложение у нас одно поэтому инициализируем его прямо тут
 		ManagerComponent managerRole = new ManagerComponent(transportManager, null);
-		addRole(managerRole);
+		addComponent(managerRole);
 		managerRole.init();
 	}
 
 	//TODO необходима проверка на уникальность
-	public Component initRole(Class<? extends Component> classRole, ComponentConfig config) throws Exception {
-		Constructor constructor = classRole.getConstructor(TransportManager.class, ComponentConfig.class);
-		if (constructor==null) throw new RuntimeException("Not found constructor in class subsystem: " + classRole);
+	public Component initComponent(Class<? extends Component> classComponent, ComponentConfig config) throws Exception {
+		Constructor constructor = classComponent.getConstructor(TransportManager.class, ComponentConfig.class);
+		if (constructor==null) throw new RuntimeException("Not found constructor in class subsystem: " + classComponent);
 
-		Component role = null;
+		Component component = null;
 		try {
-			role = (Component)constructor.newInstance(transportManager, config);
-			addRole(role);
-			role.init();
-			return role;
+			component = (Component)constructor.newInstance(transportManager, config);
+			addComponent(component);
+			component.init();
+			return component;
 		} catch (Exception e) {
-			if (role!=null) role.destroy();
+			if (component!=null) component.destroy();
 			throw e;
 		}
 	}
 
 	//TODO необходимо чтото придумать, нет отписку в случае кдиничной остановки подсистемы
-	private synchronized void addRole(Component role) {
-		List<Component> uuidRoles = roles.get(role.getClass());
+	private synchronized void addComponent(Component component) {
+		List<Component> uuidRoles = components.get(component.getClass());
 		if (uuidRoles==null) {
 			uuidRoles = new CopyOnWriteArrayList<Component>();
-			roles.put(role.getClass(), uuidRoles);
+			components.put(component.getClass(), uuidRoles);
 		}
-		uuidRoles.add(role);
+		uuidRoles.add(component);
 	}
 
 	//TODO необходимо чтото придумать, нет отписку в случае кдиничной остановки подсистемы
-	private synchronized void removeRole(Component role) {
-		List<Component> uuidRoles = roles.get(role.getClass());
-		if (uuidRoles==null) return;
-		uuidRoles.remove(role);
-		if (uuidRoles.isEmpty()) roles.remove(role.getClass());
+	private synchronized void removeComponent(Component component) {
+		List<Component> components = this.components.get(component.getClass());
+		if (components==null) return;
+		components.remove(component);
+		if (components.isEmpty()) this.components.remove(component.getClass());
 	}
 
 	//TODO необходимо чтото придумать, нет отписку в случае кдиничной остановки подсистемы
-	public <T extends Component> T getAnyRole(Class<? extends Component> classRole){
-		List<Component> uuidRoles = roles.get(classRole);
-		if (uuidRoles==null) return null;
-		return (T) uuidRoles.get(RandomUtil.random.nextInt(uuidRoles.size()));
+	public <T extends Component> T getAnyComponent(Class<? extends Component> classComponent){
+		List<Component> components = this.components.get(classComponent);
+		if (components==null) return null;
+		return (T) components.get(RandomUtil.random.nextInt(components.size()));
 	}
 
-	public List<Component> getRoles() {
+	public List<Component> getComponents() {
 		List<Component> list = new ArrayList<Component>();
-		for (Collection<Component> items: roles.values()) {
+		for (Collection<Component> items: components.values()) {
 			list.addAll(items);
 		}
 		return list;
@@ -94,26 +94,26 @@ public class LoaderComponents {
 
 	public void destroy() {
 		//Тут есть одна особенность, менеджер подсистем должен дестроится последним
-		for (Map.Entry<Class<? extends Component>, List<Component>> entry: roles.entrySet()) {
+		for (Map.Entry<Class<? extends Component>, List<Component>> entry: components.entrySet()) {
 			Class<? extends Component> classRole = entry.getKey();
 			if (classRole == ManagerComponent.class) continue;
 
 			List<Component> uuidRoles = entry.getValue();
-			while (uuidRoles.size()>0) destroyRole(uuidRoles.get(0));
+			while (uuidRoles.size()>0) destroyComponent(uuidRoles.get(0));
 		}
-		for (Map.Entry<Class<? extends Component>, List<Component>> entry: roles.entrySet()) {
+		for (Map.Entry<Class<? extends Component>, List<Component>> entry: components.entrySet()) {
 			List<Component> uuidRoles = entry.getValue();
-			while (uuidRoles.size()>0) destroyRole(uuidRoles.get(0));
+			while (uuidRoles.size()>0) destroyComponent(uuidRoles.get(0));
 		}
 	}
 
-	private void destroyRole(Component role) {
-		role.destroy();
-		transportManager.destroyTransport(role.getTransport());
-		removeRole(role);
+	private void destroyComponent(Component component) {
+		component.destroy();
+		transportManager.destroyTransport(component.getTransport());
+		removeComponent(component);
 	}
 
-	public static void validationRoleKey(String roleKey){
-		if (roleKey.indexOf(':')==-1) throw new RuntimeException("Not valide roleKey: " + roleKey);
+	public static void validationRoleKey(String componentKey){
+		if (componentKey.indexOf(':')==-1) throw new RuntimeException("Not valide componentKey: " + componentKey);
 	}
 }

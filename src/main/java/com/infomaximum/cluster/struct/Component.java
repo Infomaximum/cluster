@@ -2,8 +2,8 @@ package com.infomaximum.cluster.struct;
 
 import com.infomaximum.cluster.component.database.datasource.DataSourceComponent;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
-import com.infomaximum.cluster.component.manager.remote.managersubsystem.RControllerManagerRole;
-import com.infomaximum.cluster.core.component.RuntimeRoleInfo;
+import com.infomaximum.cluster.component.manager.remote.managersubsystem.RControllerManagerComponent;
+import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.component.active.ActiveComponents;
 import com.infomaximum.cluster.core.component.active.ActiveComponentsImpl;
 import com.infomaximum.cluster.core.remote.Remotes;
@@ -52,7 +52,7 @@ public abstract class Component {
 
         //Регистрируемся у менеджера подсистем
         log.info("register subsystem {} v.{}...", getInfo().getUuid(), getInfo().getVersion());
-        this.subSystemHashActives = registerSubSystem();
+        this.subSystemHashActives = registerComponent();
     }
 
     public void init() throws Exception {
@@ -63,9 +63,9 @@ public abstract class Component {
         } catch (Throwable e) {
             log.error("{} Error init subsystem", this, e);
             try {
-                unRegisterRole();
+                unRegisterComponent();
             } catch (Exception ex) {
-                log.error("{} Exception unRegisterRole", this, e);
+                log.error("{} Exception unRegisterComponent", this, e);
             }
             throw e;
         }
@@ -92,12 +92,12 @@ public abstract class Component {
     /**
      * Регистрируемся у менджера подсистем
      */
-    protected ActiveComponentsImpl registerSubSystem() throws Exception {
-        RControllerManagerRole rControllerManagerRole = remote.getFromSSKey(ManagerComponent.KEY, RControllerManagerRole.class);
-        ComponentInfos activeSubSystems = rControllerManagerRole.register(
-                new RuntimeRoleInfo(key, getInfo().getUuid(), isSingleton(), getTransport().getExecutor().getClassRControllers())
+    protected ActiveComponentsImpl registerComponent() throws Exception {
+        RControllerManagerComponent rControllerManagerComponent = remote.getFromSSKey(ManagerComponent.KEY, RControllerManagerComponent.class);
+        ComponentInfos activeComponents = rControllerManagerComponent.register(
+                new RuntimeComponentInfo(key, getInfo().getUuid(), isSingleton(), getTransport().getExecutor().getClassRControllers())
         );
-        return new ActiveComponentsImpl(this, activeSubSystems.getItems());
+        return new ActiveComponentsImpl(this, activeComponents.getItems());
     }
 
     public Transport getTransport(){
@@ -111,8 +111,8 @@ public abstract class Component {
     /**
      * Снимаем регистрацию у менджера подсистем
      */
-    protected void unRegisterRole() throws Exception {
-        remote.getFromSSKey(ManagerComponent.KEY, RControllerManagerRole.class).unregister(key);
+    protected void unRegisterComponent() throws Exception {
+        remote.getFromSSKey(ManagerComponent.KEY, RControllerManagerComponent.class).unregister(key);
     }
 
     public abstract Info getInfo();
@@ -140,7 +140,7 @@ public abstract class Component {
         log.info("Destroy {}...", getInfo().getUuid());
         try {
             nativeDestroy();
-            unRegisterRole();
+            unRegisterComponent();
             log.info("Destroy {}... completed", getInfo().getUuid());
         } catch (Exception e) {
             log.error("{} Error destroy subsystem", getInfo().getUuid(), e);

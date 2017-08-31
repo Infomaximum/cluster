@@ -12,14 +12,14 @@ import java.util.HashSet;
 /**
  * Created by kris on 29.12.16.
  */
-public class RuntimeRoleInfo implements RemoteObject {
+public class RuntimeComponentInfo implements RemoteObject {
 
     public final String key;
     public final String uuid;
     public final boolean isSingleton;
     private Collection<String> classNameRControllers;
 
-    public RuntimeRoleInfo(String key, String uuid, boolean isSingleton, Collection<Class<? extends RController>> classRControllers) {
+    public RuntimeComponentInfo(String key, String uuid, boolean isSingleton, Collection<Class<? extends RController>> classRControllers) {
         this(key, uuid, isSingleton);
 
         this.classNameRControllers=new HashSet<>();
@@ -28,7 +28,7 @@ public class RuntimeRoleInfo implements RemoteObject {
         }
     }
 
-    private RuntimeRoleInfo(String key, String uuid, boolean isSingleton) {
+    private RuntimeComponentInfo(String key, String uuid, boolean isSingleton) {
         this.key = key;
         this.uuid = uuid;
         this.isSingleton = isSingleton;
@@ -52,12 +52,12 @@ public class RuntimeRoleInfo implements RemoteObject {
         return out;
     }
 
-    public static RuntimeRoleInfo deserialize(JSONObject json) throws ClassNotFoundException {
+    public static RuntimeComponentInfo deserialize(JSONObject json) throws ClassNotFoundException {
         String key = json.getAsString("key");
         String uuid = json.getAsString("uuid");
         boolean isSingleton = (boolean)json.get("is_singleton");
 
-        RuntimeRoleInfo subSystemInfo = new RuntimeRoleInfo(key, uuid, isSingleton);
+        RuntimeComponentInfo subSystemInfo = new RuntimeComponentInfo(key, uuid, isSingleton);
 
         Collection<String> classNameRControllers = new HashSet<String>();
         for (Object oRController: (JSONArray)json.get("remote_controllers")) {

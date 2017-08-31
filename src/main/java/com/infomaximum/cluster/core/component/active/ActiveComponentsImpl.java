@@ -1,6 +1,6 @@
 package com.infomaximum.cluster.core.component.active;
 
-import com.infomaximum.cluster.core.component.RuntimeRoleInfo;
+import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.struct.Component;
 
 import java.util.Collection;
@@ -13,45 +13,45 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ActiveComponentsImpl implements ActiveComponents {
 
-	private final Component role;
+	private final Component component;
 
-	private final Map<String, RuntimeRoleInfo> roleInfos;
+	private final Map<String, RuntimeComponentInfo> componentInfos;
 
-	public ActiveComponentsImpl(Component role, Collection<RuntimeRoleInfo> activeSubSystems) {
-		this.role = role;
+	public ActiveComponentsImpl(Component component, Collection<RuntimeComponentInfo> activeSubSystems) {
+		this.component = component;
 
-		this.roleInfos = new ConcurrentHashMap<String, RuntimeRoleInfo>();
-		for (RuntimeRoleInfo subSystemInfo: activeSubSystems){
-			this.roleInfos.put(subSystemInfo.key, subSystemInfo);
+		this.componentInfos = new ConcurrentHashMap<String, RuntimeComponentInfo>();
+		for (RuntimeComponentInfo subSystemInfo: activeSubSystems){
+			this.componentInfos.put(subSystemInfo.key, subSystemInfo);
 		}
 	}
 
 	@Override
-	public Collection<RuntimeRoleInfo> registerActiveRole(RuntimeRoleInfo subSystemInfo) {
-		this.roleInfos.put(subSystemInfo.key, subSystemInfo);
-		return roleInfos.values();
+	public Collection<RuntimeComponentInfo> registerActiveRole(RuntimeComponentInfo subSystemInfo) {
+		this.componentInfos.put(subSystemInfo.key, subSystemInfo);
+		return componentInfos.values();
 	}
 
 	@Override
-	public Collection<RuntimeRoleInfo> unRegisterActiveRole(String key) {
-		this.roleInfos.remove(key);
-		return roleInfos.values();
+	public Collection<RuntimeComponentInfo> unRegisterActiveRole(String key) {
+		this.componentInfos.remove(key);
+		return componentInfos.values();
 	}
 
 	@Override
-	public Collection<RuntimeRoleInfo> getActiveSubSystems() {
-		return roleInfos.values();
+	public Collection<RuntimeComponentInfo> getActiveSubSystems() {
+		return componentInfos.values();
 	}
 
 	@Override
 	public Collection<String> getActiveSubSystemKeys(){
-		return roleInfos.keySet();
+		return componentInfos.keySet();
 	}
 
 	@Override
 	public Collection<String> getActiveSubSystemUuids() {
 		HashSet<String> subSystemUuids = new HashSet<String>();
-		for(RuntimeRoleInfo subSystemInfo: roleInfos.values()){
+		for(RuntimeComponentInfo subSystemInfo: componentInfos.values()){
 			subSystemUuids.add(subSystemInfo.uuid);
 		}
 		return subSystemUuids;

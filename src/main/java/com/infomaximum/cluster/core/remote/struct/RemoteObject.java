@@ -18,7 +18,7 @@ public interface RemoteObject {
 		return RemoteObject.class.isAssignableFrom(classType);
 	}
 
-	public static <T extends RemoteObject> T deserialize(Component role, Class<T> classType, JSONObject json) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+	public static <T extends RemoteObject> T deserialize(Component component, Class<T> classType, JSONObject json) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		Method method=null;
 		for (Method iMethod: classType.getMethods()) {
 			if (!iMethod.getName().equals("deserialize")) continue;
@@ -34,7 +34,7 @@ public interface RemoteObject {
 			case 2:
 				return (T) method.invoke(null, classType, json);
 			case 3:
-				return (T) method.invoke(null, role, classType, json);
+				return (T) method.invoke(null, component, classType, json);
 			default:
 				throw new NoSuchMethodException("Not found method: deserialize in class: " + classType);
 		}
