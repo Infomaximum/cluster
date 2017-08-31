@@ -31,13 +31,13 @@ public class ManagerComponent extends Component {
 	}
 
 	@Override
-	protected String generateKey(ComponentConfig config) {
-		return KEY;
+	public void load() throws Exception {
+		registerComponent = new RegisterComponent(this);
 	}
 
 	@Override
-	public void nativeInit() throws Exception {
-		registerComponent = new RegisterComponent(this);
+	protected String generateKey(ComponentConfig config) {
+		return KEY;
 	}
 
 	@Override
@@ -66,8 +66,9 @@ public class ManagerComponent extends Component {
 	}
 
 	@Override
-	public void nativeDestroy() throws Exception {}
+	public void destroyed() throws Exception {
 
+	}
 
 	public RegisterComponent getRegisterComponent() {
 		return registerComponent;
