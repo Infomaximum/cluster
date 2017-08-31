@@ -59,7 +59,7 @@ public abstract class Component {
         //Загружаемся, в случае ошибки снимаем регистрацию
         try {
             domainObjectSource = initDomainObjectSource();
-            nativeInit();
+            load();
         } catch (Throwable e) {
             log.error("{} Error init subsystem", this, e);
             try {
@@ -71,7 +71,7 @@ public abstract class Component {
         }
     }
 
-    public abstract void nativeInit() throws Exception ;
+    public abstract void load() throws Exception ;
 
     protected DomainObjectSource initDomainObjectSource() throws RocksDBException, IOException {
         return new DomainObjectSource(new DataSourceComponent(this));
@@ -136,10 +136,10 @@ public abstract class Component {
     }
 
 
-    public void destroy(){
+    public final void destroy(){
         log.info("Destroy {}...", getInfo().getUuid());
         try {
-            nativeDestroy();
+            destroyed();
             unRegisterComponent();
             log.info("Destroy {}... completed", getInfo().getUuid());
         } catch (Exception e) {
@@ -153,5 +153,5 @@ public abstract class Component {
         }
     }
 
-    public abstract void nativeDestroy() throws Exception;
+    public abstract void destroyed() throws Exception;
 }
