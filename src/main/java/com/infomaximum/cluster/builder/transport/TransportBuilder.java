@@ -20,6 +20,7 @@ public abstract class TransportBuilder {
         this.remotePackers.add(new RemotePackerLong());
         this.remotePackers.add(new RemotePackerInteger());
         this.remotePackers.add(new RemotePackerByte());
+        this.remotePackers.add(new RemotePackerJSONObject());
         this.remotePackers.add(new RemotePackerJSONArray());
         this.remotePackers.add(new RemotePackerRemoteObject());
         this.remotePackers.add(new RemotePackerSet());
