@@ -27,7 +27,7 @@ public class Remotes {
 
 	public Remotes(Component component) {
 		this.component = component;
-		this.remotePackerObjects = new RemotePackerObjects(component);
+		this.remotePackerObjects = new RemotePackerObjects(this);
 	}
 
 	public RemotePackerObjects getRemotePackerObjects() {
