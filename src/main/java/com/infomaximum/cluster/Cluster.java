@@ -14,13 +14,13 @@ public class Cluster {
 
     private TransportManager transportManager;
 
-    private LoaderComponents loaderRoles = null;
+    private LoaderComponents loaderComponents = null;
 
     public Cluster(TransportManager transportManager) throws Exception {
         this.transportManager = transportManager;
 
         log.info("init loader subsystem...");
-        loaderRoles = new LoaderComponents(transportManager);
+        loaderComponents = new LoaderComponents(transportManager);
 
         _instance = this;
     }
@@ -29,12 +29,12 @@ public class Cluster {
         return transportManager;
     }
 
-    public LoaderComponents getLoaderRoles() {
-        return loaderRoles;
+    public LoaderComponents getLoaderComponents() {
+        return loaderComponents;
     }
 
     public void destroy() {
-        loaderRoles.destroy();
+        loaderComponents.destroy();
         transportManager.destroy();
 
         _instance = null;

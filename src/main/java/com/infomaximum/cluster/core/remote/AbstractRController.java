@@ -12,16 +12,16 @@ import java.util.Map;
 /**
  * Created by kris on 28.10.16.
  */
-public abstract class AbstractRController<TRole extends Component> implements RController {
+public abstract class AbstractRController<TComponent extends Component> implements RController {
 
 	private final static Logger log = LoggerFactory.getLogger(AbstractRController.class);
 
-	protected final TRole role;
+	protected final TComponent component;
 
 	private final Map<Class<? extends RController>, Map<String, Method>> hashControllersRemoteMethods;//Хеш методов
 
-	protected AbstractRController(TRole role) {
-		this.role = role;
+	protected AbstractRController(TComponent component) {
+		this.component = component;
 
 		hashControllersRemoteMethods = new HashMap<Class<? extends RController>, Map<String, Method>>();
 		for (Class interfaceClazz: this.getClass().getInterfaces()){
@@ -41,7 +41,7 @@ public abstract class AbstractRController<TRole extends Component> implements RC
 	}
 
 	public Remotes getRemotes() {
-		return role.getRemotes();
+		return component.getRemotes();
 	}
 
 }

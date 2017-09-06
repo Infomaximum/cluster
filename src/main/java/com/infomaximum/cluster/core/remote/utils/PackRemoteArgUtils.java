@@ -55,7 +55,7 @@ public class PackRemoteArgUtils {
         throw new RuntimeException("Not support type arg: " + value.getClass());
     }
 
-    public static Object deserialize(Component role, Class classType, Object value) throws IOException, ReflectiveOperationException, RocksDBException {
+    public static Object deserialize(Component component, Class classType, Object value) throws IOException, ReflectiveOperationException, RocksDBException {
         if (classType == String.class) {
             return value;
         } else if (classType == Boolean.class || classType == boolean.class) {
@@ -67,9 +67,9 @@ public class PackRemoteArgUtils {
         } else if (classType == Byte.class || classType == byte.class) {
             return value;
         } else if (RemoteObject.instanceOf(classType)) {
-            return RemoteObject.deserialize(role, classType, (JSONObject) value);
+            return RemoteObject.deserialize(component, classType, (JSONObject) value);
         } else if (DomainObject.class.isAssignableFrom(classType)) {
-            return role.getDomainObjectSource().get(ProxyDomainObjectUtils.getProxySuperClass(classType), (Long) value);
+            return component.getDomainObjectSource().get(ProxyDomainObjectUtils.getProxySuperClass(classType), (Long) value);
         } else if (JSONObject.class.isAssignableFrom(classType)) {
             return value;
         } else if (JSONArray.class.isAssignableFrom(classType)) {
@@ -79,7 +79,7 @@ public class PackRemoteArgUtils {
             for (Object oItem : (JSONArray) value) {
                 JSONObject item = (JSONObject) oItem;
                 String type = item.getAsString("type");
-                result.add(deserialize(role, CacheClassForName.get(type), item.get("value")));
+                result.add(deserialize(component, CacheClassForName.get(type), item.get("value")));
             }
             return Collections.unmodifiableSet(result);
         } else if (List.class.isAssignableFrom(classType)) {
@@ -87,7 +87,7 @@ public class PackRemoteArgUtils {
             for (Object oItem : (JSONArray) value) {
                 JSONObject item = (JSONObject) oItem;
                 String type = item.getAsString("type");
-                result.add(deserialize(role, CacheClassForName.get(type), item.get("value")));
+                result.add(deserialize(component, CacheClassForName.get(type), item.get("value")));
             }
             return Collections.unmodifiableList(result);
         } else {

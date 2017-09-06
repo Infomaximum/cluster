@@ -1,6 +1,6 @@
 package com.infomaximum.cluster.core.component.active;
 
-import com.infomaximum.cluster.core.component.RuntimeRoleInfo;
+import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 
 import java.util.Collection;
 
@@ -9,11 +9,11 @@ import java.util.Collection;
  */
 public interface ActiveComponents {
 
-    public Collection<RuntimeRoleInfo> registerActiveRole(RuntimeRoleInfo subSystemInfo);
+    public Collection<RuntimeComponentInfo> registerActiveRole(RuntimeComponentInfo subSystemInfo);
 
-    public Collection<RuntimeRoleInfo> unRegisterActiveRole(String key);
+    public Collection<RuntimeComponentInfo> unRegisterActiveRole(String key);
 
-    public Collection<RuntimeRoleInfo> getActiveSubSystems();
+    public Collection<RuntimeComponentInfo> getActiveSubSystems();
 
     public Collection<String> getActiveSubSystemKeys();
 
