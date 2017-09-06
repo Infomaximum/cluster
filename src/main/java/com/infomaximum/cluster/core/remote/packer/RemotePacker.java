@@ -10,6 +10,10 @@ public interface RemotePacker<T> {
 
     public boolean isSupport(Class classType);
 
+    default String getClassName(Class classType){
+        return classType.getName();
+    }
+
     public Object serialize(Component component, T value);
 
     public T deserialize(Component component, Class<T> classType, Object value);

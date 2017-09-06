@@ -24,13 +24,18 @@ public class RemotePackerSet implements RemotePacker<Set> {
     }
 
     @Override
+    public String getClassName(Class classType) {
+        return Set.class.getName();
+    }
+
+    @Override
     public Object serialize(Component component, Set value) {
         RemotePackerObjects remotePackerObjects = component.getRemotes().getRemotePackerObjects();
 
         JSONArray out = new JSONArray();
         for (Object oItem : value) {
             JSONObject outObject = new JSONObject();
-            outObject.put("type", oItem.getClass());
+            outObject.put("type", remotePackerObjects.getClassName(oItem.getClass()));
             outObject.put("value", remotePackerObjects.serialize(oItem));
             out.add(outObject);
         }
