@@ -33,4 +33,10 @@ public class RemotePackerObjects {
         throw new ClusterRemotePackerException();
     }
 
+    public String getClassName(Class classType){
+        for (RemotePacker remotePackerObject: remotePackers) {
+            if (remotePackerObject.isSupport(classType)) return remotePackerObject.getClassName(classType);
+        }
+        throw new ClusterRemotePackerException();
+    }
 }
