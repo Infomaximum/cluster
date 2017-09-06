@@ -3,6 +3,7 @@ package com.infomaximum.cluster.core.remote;
 import com.infomaximum.cluster.core.component.RuntimeRoleInfo;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.core.service.loader.LoaderComponents;
+import com.infomaximum.cluster.core.service.transport.Transport;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
 import com.infomaximum.cluster.utils.RandomUtil;
@@ -21,10 +22,17 @@ public class Remotes {
 
 	private final static Logger log = LoggerFactory.getLogger(Remotes.class);
 
-	private final Component role;
+	public final Component component;
 
-	public Remotes(Component role) {
-		this.role = role;
+	private final RemotePackerObjects remotePackerObjects;
+
+	public Remotes(Component component) {
+		this.component = component;
+		this.remotePackerObjects = new RemotePackerObjects(component);
+	}
+
+	public RemotePackerObjects getRemotePackerObjects() {
+		return remotePackerObjects;
 	}
 
 	public <T extends RController> T getFromSSKey(String subSystemKey, Class<T> remoteControllerClazz){
@@ -34,7 +42,7 @@ public class Remotes {
 		//Кешировать proxy remoteController не получается т.к. Proxy.newProxyInstance может вернуться переиспользуемый объект в котором _properties уже есть значения и мы их затираем
 		RController remoteController = (RController) Proxy.newProxyInstance(
 				remoteControllerClazz.getClassLoader(), new Class[]{remoteControllerClazz},
-				new RemoteControllerInvocationHandler(role, subSystemKey, remoteControllerClazz.getName())
+				new RemoteControllerInvocationHandler(component, subSystemKey, remoteControllerClazz.getName())
 		);
 
 		return (T)remoteController;
@@ -42,7 +50,7 @@ public class Remotes {
 
 	public <T extends RController> T getFromSSUuid(String uuid, Class<T> remoteControllerClazz){
 		List<String> pretendents = new ArrayList<String>();
-		for (RuntimeRoleInfo subSystemInfo: role.getActiveRoles().getActiveSubSystems()) {
+		for (RuntimeRoleInfo subSystemInfo: component.getActiveRoles().getActiveSubSystems()) {
 			String subSystemKey = subSystemInfo.key;
 			String subSystemUuid = subSystemInfo.uuid;
 
@@ -67,7 +75,7 @@ public class Remotes {
 
 	public <T extends RController> Collection<T> getControllers(Class<T> remoteClassController){
 		List<RController> controllers = new ArrayList<RController>();
-		for (RuntimeRoleInfo subSystemInfo: role.getActiveRoles().getActiveSubSystems()) {
+		for (RuntimeRoleInfo subSystemInfo: component.getActiveRoles().getActiveSubSystems()) {
 			if (subSystemInfo.getClassNameRControllers().contains(remoteClassController.getName())) {
 				//Нашли подсиситему в которой зарегистрирован этот контроллер
 				controllers.add(getFromSSKey(subSystemInfo.key, remoteClassController));

@@ -10,6 +10,6 @@ public class RabbitMQTransportBuilder extends TransportBuilder {
 
     @Override
     public TransportManager build() {
-        return new MockTransportManager();
+        throw new RuntimeException();
     }
 }
