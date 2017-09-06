@@ -1,6 +1,6 @@
 package com.infomaximum.cluster.struct;
 
-import com.infomaximum.cluster.core.component.RuntimeRoleInfo;
+import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.struct.RemoteObject;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -14,13 +14,13 @@ import java.util.List;
  */
 public class ComponentInfos implements RemoteObject {
 
-    private Collection<RuntimeRoleInfo> items;
+    private Collection<RuntimeComponentInfo> items;
 
-    public ComponentInfos(Collection<RuntimeRoleInfo> items) {
+    public ComponentInfos(Collection<RuntimeComponentInfo> items) {
         this.items = items;
     }
 
-    public Collection<RuntimeRoleInfo> getItems() {
+    public Collection<RuntimeComponentInfo> getItems() {
         return items;
     }
 
@@ -29,7 +29,7 @@ public class ComponentInfos implements RemoteObject {
         JSONObject out = new JSONObject();
 
         JSONArray jItems = new JSONArray();
-        for (RuntimeRoleInfo subSystemInfo: items) {
+        for (RuntimeComponentInfo subSystemInfo: items) {
             jItems.add(subSystemInfo.serialize());
         }
         out.put("items", jItems);
@@ -38,9 +38,9 @@ public class ComponentInfos implements RemoteObject {
     }
 
     public static ComponentInfos deserialize(JSONObject json) throws ClassNotFoundException {
-        List<RuntimeRoleInfo> items = new ArrayList<RuntimeRoleInfo>();
+        List<RuntimeComponentInfo> items = new ArrayList<RuntimeComponentInfo>();
         for (Object oItem: (JSONArray)json.get("items")) {
-            items.add(RuntimeRoleInfo.deserialize((JSONObject) oItem));
+            items.add(RuntimeComponentInfo.deserialize((JSONObject) oItem));
         }
         return new ComponentInfos(items);
     }

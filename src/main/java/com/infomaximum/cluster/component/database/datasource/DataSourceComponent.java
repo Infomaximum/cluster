@@ -17,10 +17,10 @@ import java.util.Set;
  */
 public class DataSourceComponent implements DataSource {
 
-    private Component role;
+    private Component component;
 
-    public DataSourceComponent(Component role) {
-        this.role = role;
+    public DataSourceComponent(Component component) {
+        this.component = component;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class DataSourceComponent implements DataSource {
         int shard = 0;
         String key = DatabaseComponentUtil.getKey(shard);
 
-        RControllerDatabaseDataSource rControllerDatabaseDataSource = role.getRemotes().getFromSSKey(key, RControllerDatabaseDataSource.class);
+        RControllerDatabaseDataSource rControllerDatabaseDataSource = component.getRemotes().getFromSSKey(key, RControllerDatabaseDataSource.class);
         return rControllerDatabaseDataSource.nextId(columnFamily);
     }
 
@@ -37,7 +37,7 @@ public class DataSourceComponent implements DataSource {
         int shard = 0;
         String key = DatabaseComponentUtil.getKey(shard);
 
-        RControllerDatabaseDataSource rControllerDatabaseDataSource = role.getRemotes().getFromSSKey(key, RControllerDatabaseDataSource.class);
+        RControllerDatabaseDataSource rControllerDatabaseDataSource = component.getRemotes().getFromSSKey(key, RControllerDatabaseDataSource.class);
         return rControllerDatabaseDataSource.getField(columnFamily, id, field);
     }
 
@@ -46,7 +46,7 @@ public class DataSourceComponent implements DataSource {
         int shard = GlobalShardIdUtils.getShard(id);
         String key = DatabaseComponentUtil.getKey(shard);
 
-        RControllerDatabaseDataSource rControllerDatabaseDataSource = role.getRemotes().getFromSSKey(key, RControllerDatabaseDataSource.class);
+        RControllerDatabaseDataSource rControllerDatabaseDataSource = component.getRemotes().getFromSSKey(key, RControllerDatabaseDataSource.class);
         return rControllerDatabaseDataSource.getEntitySource(columnFamily, isTransaction, id, fields);
     }
 
@@ -54,7 +54,7 @@ public class DataSourceComponent implements DataSource {
     public EntitySource findNextEntitySource(String columnFamily, Long prevId, String index, int hash, Set<String> fields) throws RocksDBException {
         String key = DatabaseComponentUtil.getKey(0);
 
-        RControllerDatabaseDataSource rControllerDatabaseDataSource = role.getRemotes().getFromSSKey(key, RControllerDatabaseDataSource.class);
+        RControllerDatabaseDataSource rControllerDatabaseDataSource = component.getRemotes().getFromSSKey(key, RControllerDatabaseDataSource.class);
         return rControllerDatabaseDataSource.findNextEntitySource(columnFamily, prevId, index, hash, fields);
     }
 
@@ -62,7 +62,7 @@ public class DataSourceComponent implements DataSource {
     public EntitySource nextEntitySource(String columnFamily, Long prevId, Set<String> fields) throws RocksDBException {
         String key = DatabaseComponentUtil.getKey(0);
 
-        RControllerDatabaseDataSource rControllerDatabaseDataSource = role.getRemotes().getFromSSKey(key, RControllerDatabaseDataSource.class);
+        RControllerDatabaseDataSource rControllerDatabaseDataSource = component.getRemotes().getFromSSKey(key, RControllerDatabaseDataSource.class);
         return rControllerDatabaseDataSource.nextEntitySource(columnFamily, prevId, fields);
     }
 
@@ -70,7 +70,7 @@ public class DataSourceComponent implements DataSource {
     public void commit(List<Modifier> modifiers) throws RocksDBException {
         String key = DatabaseComponentUtil.getKey(0);
 
-        RControllerDatabaseDataSource rControllerDatabaseDataSource = role.getRemotes().getFromSSKey(key, RControllerDatabaseDataSource.class);
+        RControllerDatabaseDataSource rControllerDatabaseDataSource = component.getRemotes().getFromSSKey(key, RControllerDatabaseDataSource.class);
         rControllerDatabaseDataSource.commit(modifiers);
     }
 

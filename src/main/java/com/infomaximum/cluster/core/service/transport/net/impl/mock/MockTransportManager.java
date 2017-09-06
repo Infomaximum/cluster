@@ -1,11 +1,14 @@
 package com.infomaximum.cluster.core.service.transport.net.impl.mock;
 
+import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.core.service.transport.Transport;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
 import com.infomaximum.cluster.core.service.transport.struct.packet.TPacketResponse;
 import net.minidev.json.JSONObject;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.*;
@@ -15,13 +18,21 @@ import java.util.concurrent.*;
  */
 public class MockTransportManager implements TransportManager {
 
-	private Map<String, Set<MockTransport>> transports;
+	private final Map<String, Set<MockTransport>> transports;
 
-	private Map<String, MockTransport> hashSubsystemKeyTransports;
+	private final Map<String, MockTransport> hashSubsystemKeyTransports;
 
-	public MockTransportManager() {
-		transports = new ConcurrentHashMap<String, Set<MockTransport>>();
-		hashSubsystemKeyTransports = new ConcurrentHashMap<String, MockTransport>();
+	private final List<RemotePacker> remotePackers;
+
+	public MockTransportManager(List<RemotePacker> remotePackers) {
+		this.transports = new ConcurrentHashMap<String, Set<MockTransport>>();
+		this.hashSubsystemKeyTransports = new ConcurrentHashMap<String, MockTransport>();
+		this.remotePackers = Collections.unmodifiableList(remotePackers);
+	}
+
+	@Override
+	public List<RemotePacker> getRemotePackers() {
+		return remotePackers;
 	}
 
 	@Override

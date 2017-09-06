@@ -1,6 +1,6 @@
 package com.infomaximum.cluster.core.component.remote.notification;
 
-import com.infomaximum.cluster.core.component.RuntimeRoleInfo;
+import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.AbstractRController;
 import com.infomaximum.cluster.struct.Component;
 
@@ -9,18 +9,18 @@ import com.infomaximum.cluster.struct.Component;
  */
 public class RControllerNotificationImpl extends AbstractRController<Component> implements RControllerNotification {
 
-	public RControllerNotificationImpl(Component role) {
-		super(role);
+	public RControllerNotificationImpl(Component component) {
+		super(component);
 	}
 
 	@Override
-	public void notificationRegisterRole(RuntimeRoleInfo subSystemInfo) {
-		role.getActiveRoles().registerActiveRole(subSystemInfo);
+	public void notificationRegisterComponent(RuntimeComponentInfo componentInfo) {
+		component.getActiveRoles().registerActiveRole(componentInfo);
 	}
 
 	@Override
-	public void notificationUnRegisterRole(RuntimeRoleInfo subSystemInfo) {
-		role.getActiveRoles().unRegisterActiveRole(subSystemInfo.key);
+	public void notificationUnRegisterComponent(RuntimeComponentInfo componentInfo) {
+		component.getActiveRoles().unRegisterActiveRole(componentInfo.key);
 	}
 }
 

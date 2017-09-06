@@ -8,9 +8,9 @@ import com.infomaximum.rocksdb.builder.RocksdbBuilder;
  */
 public class RocksDBComponentBuilder extends RocksdbBuilder {
 
-    public final Component role;
+    public final Component component;
 
-    public RocksDBComponentBuilder(Component role) {
-        this.role = role;
+    public RocksDBComponentBuilder(Component component) {
+        this.component = component;
     }
 }

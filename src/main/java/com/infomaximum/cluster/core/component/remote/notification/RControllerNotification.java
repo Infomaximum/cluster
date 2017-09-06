@@ -1,6 +1,6 @@
 package com.infomaximum.cluster.core.component.remote.notification;
 
-import com.infomaximum.cluster.core.component.RuntimeRoleInfo;
+import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.struct.RController;
 
 /**
@@ -8,9 +8,9 @@ import com.infomaximum.cluster.core.remote.struct.RController;
  */
 public interface RControllerNotification extends RController {
 
-	public void notificationRegisterRole(RuntimeRoleInfo roleInfo);
+	public void notificationRegisterComponent(RuntimeComponentInfo componentInfo);
 
-	public void notificationUnRegisterRole(RuntimeRoleInfo roleInfo);
+	public void notificationUnRegisterComponent(RuntimeComponentInfo componentInfo);
 }
 
 

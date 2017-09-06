@@ -1,10 +1,12 @@
 package com.infomaximum.cluster.core.service.transport.net.impl.mock;
 
+import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.core.service.transport.Transport;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
 import com.infomaximum.cluster.core.service.transport.struct.packet.TPacketResponse;
 import net.minidev.json.JSONObject;
 
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -42,6 +44,11 @@ public class MockTransport implements Transport {
 	@Override
 	public ExecutorTransport getExecutor() {
 		return executorTransport;
+	}
+
+	@Override
+	public List<RemotePacker> getRemotePackers() {
+		return mockTransportManager.getRemotePackers();
 	}
 
 	@Override

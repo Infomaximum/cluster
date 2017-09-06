@@ -18,7 +18,7 @@ public class ClusterBuilder {
 
     private TransportBuilder transportBuilder;
 
-    private Set<ComponentBuilder> roleBuilders;
+    private Set<ComponentBuilder> componentBuilders;
     private String coreBuildVersion;
 
     public ClusterBuilder() {}
@@ -33,24 +33,24 @@ public class ClusterBuilder {
         return this;
     }
 
-    public ClusterBuilder withRole(ComponentBuilder roleBuilder) {
-        if (roleBuilders==null) roleBuilders = new HashSet<ComponentBuilder>();
-        roleBuilders.add(roleBuilder);
+    public ClusterBuilder withRole(ComponentBuilder componentBuilder) {
+        if (componentBuilders ==null) componentBuilders = new HashSet<ComponentBuilder>();
+        componentBuilders.add(componentBuilder);
         return this;
     }
 
-    public ClusterBuilder withRoleIfNotExist(ComponentBuilder roleBuilder) {
-        if (!containRole(roleBuilder.classRole)) {
-            if (roleBuilders==null) roleBuilders = new HashSet<ComponentBuilder>();
-            roleBuilders.add(roleBuilder);
+    public ClusterBuilder withRoleIfNotExist(ComponentBuilder componentBuilder) {
+        if (!containComponent(componentBuilder.classRole)) {
+            if (componentBuilders ==null) componentBuilders = new HashSet<ComponentBuilder>();
+            componentBuilders.add(componentBuilder);
         }
         return this;
     }
 
-    public boolean containRole(Class<? extends Component> classRole) {
-        if (roleBuilders==null) return false;
-        for (ComponentBuilder roleBuilder: roleBuilders) {
-            if (roleBuilder.classRole == classRole) return true;
+    public boolean containComponent(Class<? extends Component> classComponent) {
+        if (componentBuilders ==null) return false;
+        for (ComponentBuilder componentBuilder: componentBuilders) {
+            if (componentBuilder.classRole == classComponent) return true;
         }
         return false;
     }
@@ -59,11 +59,11 @@ public class ClusterBuilder {
         TransportManager transportManager = transportBuilder.build();
 
         Cluster cluster = new Cluster(transportManager);
-        LoaderComponents loaderRoles = cluster.getLoaderRoles();
+        LoaderComponents loaderRoles = cluster.getLoaderComponents();
 
         //Инициализируем все роли
-        if (roleBuilders!=null) {
-            Set<ComponentBuilder> waitInitRoles = new HashSet<>(roleBuilders);
+        if (componentBuilders !=null) {
+            Set<ComponentBuilder> waitInitRoles = new HashSet<>(componentBuilders);
             while(!waitInitRoles.isEmpty()) {
 
                 //Ищем какую роль можно загрузить
@@ -72,7 +72,7 @@ public class ClusterBuilder {
                     //Проверяем все ли зависимости загружены
                     boolean isSuccessDependencies=true;
                     for (Class<? extends Component> iDependency: iRoleBuilder.info.getDependencies()) {
-                        if (loaderRoles.getAnyRole(iDependency)==null) {
+                        if (loaderRoles.getAnyComponent(iDependency)==null) {
                             isSuccessDependencies=false;
                             break;
                         }
@@ -90,7 +90,7 @@ public class ClusterBuilder {
                 }
 
                 //Загружаем
-                cluster.getLoaderRoles().initRole(nextLoadingRole.classRole, nextLoadingRole.getConfig());
+                cluster.getLoaderComponents().initComponent(nextLoadingRole.classRole, nextLoadingRole.getConfig());
 
                 waitInitRoles.remove(nextLoadingRole);
             }
