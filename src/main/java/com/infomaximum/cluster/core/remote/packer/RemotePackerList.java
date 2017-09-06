@@ -24,10 +24,10 @@ public class RemotePackerList implements RemotePacker<List> {
         RemotePackerObjects remotePackerObjects = component.getRemotes().getRemotePackerObjects();
 
         JSONArray out = new JSONArray();
-        for (Object object : value) {
+        for (Object oItem : value) {
             JSONObject outObject = new JSONObject();
-            outObject.put("type", value.getClass());
-            outObject.put("value", remotePackerObjects.serialize(object));
+            outObject.put("type", oItem.getClass());
+            outObject.put("value", remotePackerObjects.serialize(oItem));
             out.add(outObject);
         }
         return out;
