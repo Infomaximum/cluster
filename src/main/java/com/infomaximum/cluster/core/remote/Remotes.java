@@ -1,9 +1,8 @@
 package com.infomaximum.cluster.core.remote;
 
-import com.infomaximum.cluster.core.component.RuntimeRoleInfo;
+import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.core.service.loader.LoaderComponents;
-import com.infomaximum.cluster.core.service.transport.Transport;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
 import com.infomaximum.cluster.utils.RandomUtil;
@@ -28,7 +27,7 @@ public class Remotes {
 
 	public Remotes(Component component) {
 		this.component = component;
-		this.remotePackerObjects = new RemotePackerObjects(component);
+		this.remotePackerObjects = new RemotePackerObjects(this);
 	}
 
 	public RemotePackerObjects getRemotePackerObjects() {
@@ -50,9 +49,9 @@ public class Remotes {
 
 	public <T extends RController> T getFromSSUuid(String uuid, Class<T> remoteControllerClazz){
 		List<String> pretendents = new ArrayList<String>();
-		for (RuntimeRoleInfo subSystemInfo: component.getActiveRoles().getActiveSubSystems()) {
-			String subSystemKey = subSystemInfo.key;
-			String subSystemUuid = subSystemInfo.uuid;
+		for (RuntimeComponentInfo componentInfo: component.getActiveRoles().getActiveSubSystems()) {
+			String subSystemKey = componentInfo.key;
+			String subSystemUuid = componentInfo.uuid;
 
 			if (subSystemUuid.equals(uuid)) pretendents.add(subSystemKey);
 		}
@@ -75,10 +74,10 @@ public class Remotes {
 
 	public <T extends RController> Collection<T> getControllers(Class<T> remoteClassController){
 		List<RController> controllers = new ArrayList<RController>();
-		for (RuntimeRoleInfo subSystemInfo: component.getActiveRoles().getActiveSubSystems()) {
-			if (subSystemInfo.getClassNameRControllers().contains(remoteClassController.getName())) {
+		for (RuntimeComponentInfo componentInfo: component.getActiveRoles().getActiveSubSystems()) {
+			if (componentInfo.getClassNameRControllers().contains(remoteClassController.getName())) {
 				//Нашли подсиситему в которой зарегистрирован этот контроллер
-				controllers.add(getFromSSKey(subSystemInfo.key, remoteClassController));
+				controllers.add(getFromSSKey(componentInfo.key, remoteClassController));
 			}
 		}
 		return (Collection<T>) controllers;

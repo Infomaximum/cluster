@@ -12,13 +12,11 @@ import java.util.List;
 public class RemotePackerObjects {
 
     private final Component component;
-    private final Remotes remotes;
     private final List<RemotePacker> remotePackers;
 
-    public RemotePackerObjects(Component component) {
-        this.component = component;
-        this.remotes = component.getRemotes();
-        this.remotePackers = remotes.component.getTransport().getRemotePackers();
+    public RemotePackerObjects(Remotes remotes) {
+        this.component = remotes.component;
+        this.remotePackers = component.getTransport().getRemotePackers();
     }
 
     public Object serialize(Object value) {
