@@ -1,5 +1,6 @@
 package com.infomaximum.cluster.core.service.transport.net.impl.rabbitmq;
 
+import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.core.service.transport.Transport;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.net.event.IAMQPConnect;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -108,6 +110,11 @@ public class RabbitMQ implements TransportManager {
 //			throw e;
 //		}
 //	}
+
+	@Override
+	public List<RemotePacker> getRemotePackers() {
+		throw new RuntimeException();
+	}
 
 	@Override
 	public Transport createTransport(String subSystemUuid, String subSystemKey) {

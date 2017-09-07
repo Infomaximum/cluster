@@ -1,9 +1,12 @@
 package com.infomaximum.cluster.core.service.transport;
 
+import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
 import com.infomaximum.cluster.core.service.transport.struct.packet.TPacketResponse;
 import net.minidev.json.JSONObject;
 
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 /**
@@ -20,6 +23,8 @@ public interface Transport {
 	public void setExecutor(ExecutorTransport executorTransport);
 
 	public ExecutorTransport getExecutor();
+
+	public List<RemotePacker> getRemotePackers();
 
 	public boolean isConnected();
 

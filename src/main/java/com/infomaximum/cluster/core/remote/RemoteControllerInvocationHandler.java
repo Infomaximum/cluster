@@ -1,6 +1,5 @@
 package com.infomaximum.cluster.core.remote;
 
-import com.infomaximum.cluster.core.remote.utils.PackRemoteArgUtils;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.CacheClassForName;
 import com.infomaximum.cluster.utils.ExecutorUtil;
@@ -36,7 +35,7 @@ public class RemoteControllerInvocationHandler implements InvocationHandler {
             CompletableFuture<Object> responseFuture = new CompletableFuture<Object>();
             ExecutorUtil.executors.execute(() -> {
                 try {
-                    JSONObject request = packRequest(targetRemoteControllerName, method, args);
+                    JSONObject request = packRequest(component, targetRemoteControllerName, method, args);
                     JSONObject response = component.getTransport().request(targetRoleKey, request);
                     responseFuture.complete(unpackResponse(component, method, response));
                 } catch (Exception e) {
@@ -45,13 +44,13 @@ public class RemoteControllerInvocationHandler implements InvocationHandler {
             });
             return responseFuture;
         } else {
-            JSONObject request = packRequest(targetRemoteControllerName, method, args);
+            JSONObject request = packRequest(component, targetRemoteControllerName, method, args);
             JSONObject response = component.getTransport().request(targetRoleKey, request);
             return unpackResponse(component, method, response);
         }
     }
 
-    private static JSONObject packRequest(String remoteControllerName, Method method, Object[] args) throws IOException {
+    private static JSONObject packRequest(Component component, String remoteControllerName, Method method, Object[] args) throws IOException {
         JSONObject request = new JSONObject();
 
         request.put("controller", remoteControllerName);
@@ -66,7 +65,7 @@ public class RemoteControllerInvocationHandler implements InvocationHandler {
 
                 JSONObject requestArg = new JSONObject();
                 requestArg.put("class", arg.getClass().getName());
-                requestArg.put("value", PackRemoteArgUtils.serialize(arg));
+                requestArg.put("value", component.getRemotes().getRemotePackerObjects().serialize(arg));
                 requestDataArgs.put(String.valueOf(i), requestArg);
             }
         }
@@ -88,7 +87,7 @@ public class RemoteControllerInvocationHandler implements InvocationHandler {
                 classReturnType = method.getReturnType();
             }
 
-            return PackRemoteArgUtils.deserialize(component, classReturnType, result);
+            return component.getRemotes().getRemotePackerObjects().deserialize(classReturnType, result);
         }
     }
 }

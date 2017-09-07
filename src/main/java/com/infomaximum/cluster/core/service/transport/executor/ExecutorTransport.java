@@ -4,7 +4,6 @@ import com.infomaximum.cluster.core.component.remote.notification.RControllerNot
 import com.infomaximum.cluster.core.component.remote.notification.RControllerNotificationImpl;
 import com.infomaximum.cluster.core.remote.AbstractRController;
 import com.infomaximum.cluster.core.remote.struct.RController;
-import com.infomaximum.cluster.core.remote.utils.PackRemoteArgUtils;
 import com.infomaximum.cluster.core.service.transport.struct.packet.TPacketResponse;
 import com.infomaximum.cluster.struct.Component;
 import net.minidev.json.JSONObject;
@@ -24,31 +23,31 @@ public class ExecutorTransport {
 
 	private final static Logger log = LoggerFactory.getLogger(ExecutorTransport.class);
 
-	protected final Component subSystem;
+	protected final Component component;
 	private final Map<String, RController> hashRemoteController;
 
-	public ExecutorTransport(Component subSystem) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException {
-		this.subSystem=subSystem;
+	public ExecutorTransport(Component component) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException {
+		this.component = component;
 
-		Reflections reflections = new Reflections(subSystem.getInfo().getUuid());
+		Reflections reflections = new Reflections(component.getInfo().getUuid());
 
 		this.hashRemoteController = new HashMap<String, RController>();
 
 		//Добавляем обработчик нотификаций
-		RControllerNotificationImpl remoteControllerNotification = new RControllerNotificationImpl(subSystem);
+		RControllerNotificationImpl remoteControllerNotification = new RControllerNotificationImpl(component);
 		hashRemoteController.put(RControllerNotification.class.getName(), remoteControllerNotification);
 
 		for (Class<? extends AbstractRController> classRemoteController: reflections.getSubTypesOf(AbstractRController.class)){
 			if (classRemoteController.isInterface()) continue;
 			Constructor constructor;
 			try {
-				constructor = classRemoteController.getConstructor(subSystem.getClass());
+				constructor = classRemoteController.getConstructor(component.getClass());
 			} catch (NoSuchMethodException e) {
 				log.error("Not found constructor from: {}", classRemoteController, e);
 				throw e;
 			}
 			if (constructor==null) throw new RuntimeException("Not found constructor in class controller: " + classRemoteController);
-			AbstractRController rController = (AbstractRController)constructor.newInstance(subSystem);
+			AbstractRController rController = (AbstractRController)constructor.newInstance(component);
 
 			for (Class<? extends RController> classRController: getRControllerClasses(rController)) {
 				hashRemoteController.put(classRController.getName(), rController);
@@ -82,11 +81,11 @@ public class ExecutorTransport {
 
 			RController remoteController = hashRemoteController.get(controllerName);
 			if (remoteController==null) {
-				throw new RuntimeException("Not found remote controller, subsystem: " + subSystem + ", controller: " + controllerName + ", method: " + methodName);
+				throw new RuntimeException("Not found remote controller, subsystem: " + component + ", controller: " + controllerName + ", method: " + methodName);
 			}
 			Method method = ((AbstractRController)remoteController).getRemoteMethod(remoteController.getClass().getInterfaces()[0], methodName);
 			if (method==null) {
-				throw new RuntimeException("Not found remote method, subsystem: " + subSystem + ", controller: " + controllerName + ", method: " + methodName);
+				throw new RuntimeException("Not found remote method, subsystem: " + component + ", controller: " + controllerName + ", method: " + methodName);
 			}
 
 			Class[] methodParameterTypes = method.getParameterTypes();
@@ -98,7 +97,7 @@ public class ExecutorTransport {
 				} else {
 					String classType = parseValue.getAsString("class");
 					Object value = parseValue.get("value");
-					methodParameters[i] = PackRemoteArgUtils.deserialize(subSystem, Class.forName(classType), value);
+					methodParameters[i] = component.getRemotes().getRemotePackerObjects().deserialize(Class.forName(classType), value);
 				}
 			}
 
@@ -118,8 +117,8 @@ public class ExecutorTransport {
 
 			JSONObject response = new JSONObject();
 			if (oResponse!=null) {
-				response.put("result", PackRemoteArgUtils.serialize(oResponse));
-				response.put("result_class", PackRemoteArgUtils.getClassName(oResponse.getClass()));
+				response.put("result", component.getRemotes().getRemotePackerObjects().serialize(oResponse));
+				response.put("result_class", component.getRemotes().getRemotePackerObjects().getClassName(oResponse.getClass()));
 			}
 
 			return new TPacketResponse(response);

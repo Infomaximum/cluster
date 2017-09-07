@@ -10,6 +10,6 @@ public class MockTransportBuilder extends TransportBuilder {
 
     @Override
     public TransportManager build() {
-        return new MockTransportManager();
+        return new MockTransportManager(getRemotePackers());
     }
 }

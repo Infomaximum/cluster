@@ -21,10 +21,17 @@ public class Remotes {
 
 	private final static Logger log = LoggerFactory.getLogger(Remotes.class);
 
-	private final Component component;
+	public final Component component;
+
+	private final RemotePackerObjects remotePackerObjects;
 
 	public Remotes(Component component) {
 		this.component = component;
+		this.remotePackerObjects = new RemotePackerObjects(this);
+	}
+
+	public RemotePackerObjects getRemotePackerObjects() {
+		return remotePackerObjects;
 	}
 
 	public <T extends RController> T getFromSSKey(String subSystemKey, Class<T> remoteControllerClazz){
@@ -42,9 +49,9 @@ public class Remotes {
 
 	public <T extends RController> T getFromSSUuid(String uuid, Class<T> remoteControllerClazz){
 		List<String> pretendents = new ArrayList<String>();
-		for (RuntimeComponentInfo subSystemInfo: component.getActiveRoles().getActiveSubSystems()) {
-			String subSystemKey = subSystemInfo.key;
-			String subSystemUuid = subSystemInfo.uuid;
+		for (RuntimeComponentInfo componentInfo: component.getActiveRoles().getActiveSubSystems()) {
+			String subSystemKey = componentInfo.key;
+			String subSystemUuid = componentInfo.uuid;
 
 			if (subSystemUuid.equals(uuid)) pretendents.add(subSystemKey);
 		}
@@ -61,16 +68,16 @@ public class Remotes {
 		return null;
 	}
 
-	public <T extends RController> Collection<T> getControllers(Class<? extends Component> componentClass, Class<T> classController){
+	public <T extends RController> Collection<T> getControllers(Class<? extends Component> roleClass, Class<T> classController){
 		throw new RuntimeException("Не реализованно");
 	}
 
 	public <T extends RController> Collection<T> getControllers(Class<T> remoteClassController){
 		List<RController> controllers = new ArrayList<RController>();
-		for (RuntimeComponentInfo subSystemInfo: component.getActiveRoles().getActiveSubSystems()) {
-			if (subSystemInfo.getClassNameRControllers().contains(remoteClassController.getName())) {
+		for (RuntimeComponentInfo componentInfo: component.getActiveRoles().getActiveSubSystems()) {
+			if (componentInfo.getClassNameRControllers().contains(remoteClassController.getName())) {
 				//Нашли подсиситему в которой зарегистрирован этот контроллер
-				controllers.add(getFromSSKey(subSystemInfo.key, remoteClassController));
+				controllers.add(getFromSSKey(componentInfo.key, remoteClassController));
 			}
 		}
 		return (Collection<T>) controllers;
