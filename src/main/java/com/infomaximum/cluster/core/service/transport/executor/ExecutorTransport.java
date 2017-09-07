@@ -4,7 +4,6 @@ import com.infomaximum.cluster.core.component.remote.notification.RControllerNot
 import com.infomaximum.cluster.core.component.remote.notification.RControllerNotificationImpl;
 import com.infomaximum.cluster.core.remote.AbstractRController;
 import com.infomaximum.cluster.core.remote.struct.RController;
-import com.infomaximum.cluster.core.remote.utils.PackRemoteArgUtils;
 import com.infomaximum.cluster.core.service.transport.struct.packet.TPacketResponse;
 import com.infomaximum.cluster.struct.Component;
 import net.minidev.json.JSONObject;
@@ -119,7 +118,7 @@ public class ExecutorTransport {
 			JSONObject response = new JSONObject();
 			if (oResponse!=null) {
 				response.put("result", component.getRemotes().getRemotePackerObjects().serialize(oResponse));
-				response.put("result_class", PackRemoteArgUtils.getClassName(oResponse.getClass()));
+				response.put("result_class", component.getRemotes().getRemotePackerObjects().getClassName(oResponse.getClass()));
 			}
 
 			return new TPacketResponse(response);
