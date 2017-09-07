@@ -1,6 +1,5 @@
 package com.infomaximum.cluster.struct;
 
-import com.infomaximum.cluster.component.database.datasource.DataSourceComponent;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.component.manager.remote.managersubsystem.RControllerManagerComponent;
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
@@ -11,12 +10,9 @@ import com.infomaximum.cluster.core.service.transport.Transport;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
 import com.infomaximum.cluster.struct.config.ComponentConfig;
-import com.infomaximum.rocksdb.core.objectsource.DomainObjectSource;
-import org.rocksdb.RocksDBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -37,8 +33,6 @@ public abstract class Component {
 
     private final ActiveComponents subSystemHashActives;
 
-    private DomainObjectSource domainObjectSource;
-
     public Component(TransportManager transportManager, ComponentConfig config) throws Exception {
         this.transportManager=transportManager;
 
@@ -58,7 +52,6 @@ public abstract class Component {
     public void init() throws Exception {
         //Загружаемся, в случае ошибки снимаем регистрацию
         try {
-            domainObjectSource = initDomainObjectSource();
             load();
         } catch (Throwable e) {
             log.error("{} Error init subsystem", this, e);
@@ -73,9 +66,6 @@ public abstract class Component {
 
     public abstract void load() throws Exception ;
 
-    protected DomainObjectSource initDomainObjectSource() throws RocksDBException, IOException {
-        return new DomainObjectSource(new DataSourceComponent(this));
-    }
 
     public abstract ExecutorTransport initExecutorTransport() throws ReflectiveOperationException;
 
@@ -83,10 +73,6 @@ public abstract class Component {
         return new StringBuilder()
                 .append(getInfo().getUuid()).append(':').append(UUID.randomUUID().toString())
                 .toString();
-    }
-
-    public final DomainObjectSource getDomainObjectSource(){
-        return domainObjectSource;
     }
 
     /**
