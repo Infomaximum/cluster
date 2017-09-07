@@ -25,12 +25,12 @@ public class ComponentInfos implements RemoteObject {
     }
 
     @Override
-    public JSONObject serialize() {
+    public JSONObject serialize(Component component) {
         JSONObject out = new JSONObject();
 
         JSONArray jItems = new JSONArray();
         for (RuntimeComponentInfo subSystemInfo: items) {
-            jItems.add(subSystemInfo.serialize());
+            jItems.add(subSystemInfo.serialize(component));
         }
         out.put("items", jItems);
 
