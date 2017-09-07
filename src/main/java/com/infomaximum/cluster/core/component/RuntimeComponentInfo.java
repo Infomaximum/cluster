@@ -2,6 +2,7 @@ package com.infomaximum.cluster.core.component;
 
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.core.remote.struct.RemoteObject;
+import com.infomaximum.cluster.struct.Component;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
@@ -39,7 +40,7 @@ public class RuntimeComponentInfo implements RemoteObject {
     }
 
     @Override
-    public JSONObject serialize() {
+    public JSONObject serialize(Component component) {
         JSONObject out = new JSONObject();
         out.put("key", key);
         out.put("uuid", uuid);

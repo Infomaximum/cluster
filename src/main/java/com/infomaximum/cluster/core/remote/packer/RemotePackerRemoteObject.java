@@ -19,7 +19,7 @@ public class RemotePackerRemoteObject implements RemotePacker<RemoteObject> {
 
     @Override
     public Object serialize(Component component, RemoteObject value) {
-        return value.serialize();
+        return value.serialize(component);
     }
 
     @Override

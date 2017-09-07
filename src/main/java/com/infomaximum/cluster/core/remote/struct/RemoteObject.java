@@ -12,7 +12,7 @@ import java.lang.reflect.Modifier;
  */
 public interface RemoteObject {
 
-	public JSONObject serialize();
+	public JSONObject serialize(Component component);
 
 	public static boolean instanceOf(Class classType) {
 		return RemoteObject.class.isAssignableFrom(classType);
