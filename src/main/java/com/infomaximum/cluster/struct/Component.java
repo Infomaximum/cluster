@@ -40,9 +40,9 @@ public abstract class Component {
         this.config = config;
         this.transport = transportManager.createTransport(getInfo().getUuid(), key);;
 
-        setExecutorTransport(transport);
-
         this.remote = new Remotes(this);
+
+        setExecutorTransport(transport);
 
         //Регистрируемся у менеджера подсистем
         log.info("register subsystem {} v.{}...", getInfo().getUuid(), getInfo().getVersion());

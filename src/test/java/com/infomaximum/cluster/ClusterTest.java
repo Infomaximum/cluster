@@ -32,7 +32,7 @@ public class ClusterTest {
                         new MockTransportBuilder()
                 )
                 .withComponentIfNotExist(new ComponentBuilder(MemoryComponent.class))
-                .withComponentIfNotExist(new ComponentBuilder(FutureComponent.class))
+//                .withComponentIfNotExist(new ComponentBuilder(FutureComponent.class))
                 .build();
     }
 

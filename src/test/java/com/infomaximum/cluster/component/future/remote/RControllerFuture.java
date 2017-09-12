@@ -13,6 +13,6 @@ import java.util.concurrent.Future;
  */
 public interface RControllerFuture extends RController {
 
-	public Future<String> get(String key);
+	public Future<String> get(String value, long time);
 
 }

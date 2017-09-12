@@ -39,4 +39,11 @@ public class RemotePackerObjects {
         }
         throw new ClusterRemotePackerException();
     }
+
+    public boolean isSupportType(Class classType){
+        for (RemotePacker remotePackerObject: remotePackers) {
+            if (remotePackerObject.isSupport(classType)) return true;
+        }
+        return false;
+    }
 }

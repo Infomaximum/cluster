@@ -23,6 +23,7 @@ public abstract class TransportBuilder {
         this.remotePackers.add(new RemotePackerJSONObject());
         this.remotePackers.add(new RemotePackerJSONArray());
         this.remotePackers.add(new RemotePackerRemoteObject());
+        this.remotePackers.add(new RemotePackerMap());
         this.remotePackers.add(new RemotePackerSet());
         this.remotePackers.add(new RemotePackerList());
         this.remotePackers.add(new RemotePackerSerializable());

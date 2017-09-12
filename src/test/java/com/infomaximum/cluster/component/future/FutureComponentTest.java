@@ -24,7 +24,9 @@ public class FutureComponentTest extends ClusterTest {
         ManagerComponent managerComponent = getCluster().getLoaderComponents().getAnyComponent(ManagerComponent.class);
         RControllerFuture rControllerFuture = managerComponent.getRemotes().get(FutureComponent.class, RControllerFuture.class);
 
-        Future<String> future = rControllerFuture.get("123");
+        Future<String> future = rControllerFuture.get("123", 0);
+
+        Assert.assertEquals("123", future.get());
 
     }
 
