@@ -14,7 +14,7 @@ public class ComponentBuilder {
 
     private ComponentConfig config;
 
-    public ComponentBuilder(Class<? extends Component> classRole) throws NoSuchFieldException, IllegalAccessException {
+    public ComponentBuilder(Class<? extends Component> classRole) throws ReflectiveOperationException {
         this.classRole = classRole;
         info = (Info) classRole.getField("INFO").get(null);
     }

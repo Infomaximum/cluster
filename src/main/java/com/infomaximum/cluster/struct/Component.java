@@ -33,7 +33,7 @@ public abstract class Component {
 
     private final ActiveComponents subSystemHashActives;
 
-    public Component(TransportManager transportManager, ComponentConfig config) throws Exception {
+    public Component(TransportManager transportManager, ComponentConfig config) throws ReflectiveOperationException {
         this.transportManager=transportManager;
 
         this.key = generateKey(config);
@@ -49,7 +49,7 @@ public abstract class Component {
         this.subSystemHashActives = registerComponent();
     }
 
-    public void init() throws Exception {
+    public void init() {
         //Загружаемся, в случае ошибки снимаем регистрацию
         try {
             load();
@@ -60,7 +60,7 @@ public abstract class Component {
             } catch (Exception ex) {
                 log.error("{} Exception unRegisterComponent", this, e);
             }
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 
@@ -78,7 +78,7 @@ public abstract class Component {
     /**
      * Регистрируемся у менджера подсистем
      */
-    protected ActiveComponentsImpl registerComponent() throws Exception {
+    protected ActiveComponentsImpl registerComponent() {
         RControllerManagerComponent rControllerManagerComponent = remote.getFromSSKey(ManagerComponent.KEY, RControllerManagerComponent.class);
         ComponentInfos activeComponents = rControllerManagerComponent.register(
                 new RuntimeComponentInfo(key, getInfo().getUuid(), isSingleton(), getTransport().getExecutor().getClassRControllers())

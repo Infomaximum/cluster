@@ -16,7 +16,7 @@ public class Cluster {
 
     private LoaderComponents loaderComponents = null;
 
-    public Cluster(TransportManager transportManager) throws Exception {
+    public Cluster(TransportManager transportManager) throws ReflectiveOperationException {
         this.transportManager = transportManager;
 
         log.info("init loader subsystem...");

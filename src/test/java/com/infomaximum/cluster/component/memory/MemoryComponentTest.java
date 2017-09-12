@@ -1,0 +1,31 @@
+package com.infomaximum.cluster.component.memory;
+
+import com.infomaximum.cluster.ClusterTest;
+import com.infomaximum.cluster.component.manager.ManagerComponent;
+import com.infomaximum.cluster.component.memory.remote.RControllerMemory;
+import org.junit.Assert;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Created by kris on 26.08.16.
+ */
+public class MemoryComponentTest extends ClusterTest {
+
+    private final static Logger log = LoggerFactory.getLogger(MemoryComponentTest.class);
+
+    @Test
+    public void test() throws Exception {
+        ManagerComponent managerComponent = getCluster().getLoaderComponents().getAnyComponent(ManagerComponent.class);
+        RControllerMemory rControllerMemory = managerComponent.getRemotes().get(MemoryComponent.class, RControllerMemory.class);
+
+        String key = "ping";
+        String value = "pong";
+
+        rControllerMemory.set(key, value);
+
+        Assert.assertEquals(value, rControllerMemory.get(key));
+    }
+
+}
