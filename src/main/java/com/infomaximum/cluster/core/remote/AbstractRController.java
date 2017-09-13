@@ -28,6 +28,18 @@ public abstract class AbstractRController<TComponent extends Component> implemen
 			if (!RController.class.isAssignableFrom(interfaceClazz)) continue;
 			Map<String, Method> hashMethods = new HashMap<String, Method>();
 			for (Method method: interfaceClazz.getDeclaredMethods()) {
+
+				//Проверяем, что результат и аргументы сериализуемы
+				RemotePackerObjects remotePackerObjects = component.getRemotes().getRemotePackerObjects();
+				if (method.getReturnType()!=void.class && !remotePackerObjects.isSupportType(method.getReturnType())) {
+					throw new RuntimeException("Not valid remote method: " + method.getName() + ", in controller: " + interfaceClazz);
+				}
+				for (Class arg: method.getParameterTypes()) {
+					if (!remotePackerObjects.isSupportType(arg)) {
+						throw new RuntimeException("Not valid remote method: " + method.getName() + ", in controller: " + interfaceClazz);
+					}
+				}
+
 				hashMethods.put(method.getName(), method);
 			}
 			hashControllersRemoteMethods.put(interfaceClazz, hashMethods);

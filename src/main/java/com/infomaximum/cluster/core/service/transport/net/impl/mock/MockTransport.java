@@ -1,14 +1,17 @@
 package com.infomaximum.cluster.core.service.transport.net.impl.mock;
 
 import com.infomaximum.cluster.core.remote.packer.RemotePacker;
+import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.core.service.transport.Transport;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
 import com.infomaximum.cluster.core.service.transport.struct.packet.TPacketResponse;
 import net.minidev.json.JSONObject;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by kris on 14.09.16.
@@ -56,26 +59,34 @@ public class MockTransport implements Transport {
 		return true;
 	}
 
-
-
 	@Override
-	public JSONObject request(String subSystemKey, JSONObject request) throws Exception {
-		return request(subSystemKey, request, 5L * 60L * 1000L);
+	public Object request(String targetComponentKey, Class<? extends RController> rControllerClass, Method method, Object[] args) throws Exception {
+		return request(targetComponentKey, rControllerClass, method, args, 5L * 60L * 1000L);
 	}
 
 	@Override
-	public JSONObject request(String subSystemKey, JSONObject request, long timeout) throws Exception {
-		Future<TPacketResponse> responseFuture = futureRequest(subSystemKey, request);
-		TPacketResponse packetResponse = responseFuture.get(timeout, TimeUnit.MILLISECONDS);
-		if (packetResponse.getException()!=null){
-			throw packetResponse.getException();
-		} else {
-			return packetResponse.getData();
-		}
+	public Object request(String targetComponentKey, Class<? extends RController> rControllerClass, Method method, Object[] args, long timeout) throws Exception {
+		return mockTransportManager.transitRequest(targetComponentKey, rControllerClass.getName(), method.getName(), args);
 	}
 
-	@Override
-	public Future<TPacketResponse> futureRequest(String subSystemKey, JSONObject request) {
-		return mockTransportManager.transitRequest(subSystemKey, request);
-	}
+
+//	@Override
+//	public JSONObject request(String subSystemKey, JSONObject request) throws Exception {
+//		return request(subSystemKey, request, 5L * 60L * 1000L);
+//	}
+//
+//	@Override
+//	public JSONObject request(String subSystemKey, JSONObject request, long timeout) throws Exception {
+//		Future<TPacketResponse> responseFuture = futureRequest(subSystemKey, request);
+//		TPacketResponse packetResponse = responseFuture.get(timeout, TimeUnit.MILLISECONDS);
+//		if (packetResponse.getException()!=null){
+//			throw packetResponse.getException();
+//		} else {
+//			return packetResponse.getData();
+//		}
+//	}
+
+//	private Future<TPacketResponse> futureRequest(String subSystemKey, JSONObject request) {
+//		return mockTransportManager.transitRequest(subSystemKey, request);
+//	}
 }

@@ -33,13 +33,13 @@ public class ClusterBuilder {
         return this;
     }
 
-    public ClusterBuilder withRole(ComponentBuilder componentBuilder) {
+    public ClusterBuilder withComponent(ComponentBuilder componentBuilder) {
         if (componentBuilders ==null) componentBuilders = new HashSet<ComponentBuilder>();
         componentBuilders.add(componentBuilder);
         return this;
     }
 
-    public ClusterBuilder withRoleIfNotExist(ComponentBuilder componentBuilder) {
+    public ClusterBuilder withComponentIfNotExist(ComponentBuilder componentBuilder) {
         if (!containComponent(componentBuilder.classRole)) {
             if (componentBuilders ==null) componentBuilders = new HashSet<ComponentBuilder>();
             componentBuilders.add(componentBuilder);
@@ -55,7 +55,7 @@ public class ClusterBuilder {
         return false;
     }
 
-    public Cluster build() throws Exception {
+    public Cluster build() throws ReflectiveOperationException {
         TransportManager transportManager = transportBuilder.build();
 
         Cluster cluster = new Cluster(transportManager);

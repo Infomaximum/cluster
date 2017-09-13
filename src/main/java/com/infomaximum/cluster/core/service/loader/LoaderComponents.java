@@ -28,14 +28,14 @@ public class LoaderComponents {
 	//TODO необходимо чтото придумать, нет отписку в случае кдиничной остановки подсистемы
 	private final Map<Class<? extends Component>, List<Component>> components;
 
-	public LoaderComponents(TransportManager transportManager) throws Exception {
+	public LoaderComponents(TransportManager transportManager) throws ReflectiveOperationException {
 		this.transportManager=transportManager;
 		this.components = new ConcurrentHashMap<Class<? extends Component>, List<Component>>();
 
 		init();
 	}
 
-	private void init() throws Exception {
+	private void init() throws ReflectiveOperationException {
 		//TODO необходима правильная инициализация менеджера, в настоящий момент считаем, что приложение у нас одно поэтому инициализируем его прямо тут
 		ManagerComponent managerRole = new ManagerComponent(transportManager, null);
 		addComponent(managerRole);
@@ -43,7 +43,7 @@ public class LoaderComponents {
 	}
 
 	//TODO необходима проверка на уникальность
-	public Component initComponent(Class<? extends Component> classComponent, ComponentConfig config) throws Exception {
+	public Component initComponent(Class<? extends Component> classComponent, ComponentConfig config) throws ReflectiveOperationException {
 		Constructor constructor = classComponent.getConstructor(TransportManager.class, ComponentConfig.class);
 		if (constructor==null) throw new RuntimeException("Not found constructor in class subsystem: " + classComponent);
 
@@ -78,7 +78,7 @@ public class LoaderComponents {
 	}
 
 	//TODO необходимо чтото придумать, нет отписку в случае кдиничной остановки подсистемы
-	public <T extends Component> T getAnyComponent(Class<? extends Component> classComponent){
+	public <T extends Component> T getAnyComponent(Class<T> classComponent){
 		List<Component> components = this.components.get(classComponent);
 		if (components==null) return null;
 		return (T) components.get(RandomUtil.random.nextInt(components.size()));

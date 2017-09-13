@@ -26,7 +26,7 @@ public class ManagerComponent extends Component {
 
 	private RegisterComponent registerComponent;
 
-	public ManagerComponent(TransportManager transportManager, ComponentConfig config) throws Exception {
+	public ManagerComponent(TransportManager transportManager, ComponentConfig config) throws ReflectiveOperationException {
 		super(transportManager, config);
 	}
 
@@ -47,7 +47,7 @@ public class ManagerComponent extends Component {
 
 	//Логика регистрации у менеджера подсистем не стандартная
 	@Override
-	protected ActiveComponentsImpl registerComponent() throws Exception {
+	protected ActiveComponentsImpl registerComponent() {
 		return null;
 	}
 

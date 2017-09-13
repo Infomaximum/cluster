@@ -41,7 +41,7 @@ public class Remotes {
 		//Кешировать proxy remoteController не получается т.к. Proxy.newProxyInstance может вернуться переиспользуемый объект в котором _properties уже есть значения и мы их затираем
 		RController remoteController = (RController) Proxy.newProxyInstance(
 				remoteControllerClazz.getClassLoader(), new Class[]{remoteControllerClazz},
-				new RemoteControllerInvocationHandler(component, subSystemKey, remoteControllerClazz.getName())
+				new RemoteControllerInvocationHandler(component, subSystemKey, remoteControllerClazz)
 		);
 
 		return (T)remoteController;
