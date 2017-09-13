@@ -1,5 +1,6 @@
 package com.infomaximum.cluster.component.custom.remote.future;
 
+import com.infomaximum.cluster.anotation.DisableValidationRemoteMethod;
 import com.infomaximum.cluster.core.remote.struct.RController;
 
 import java.util.concurrent.CompletableFuture;

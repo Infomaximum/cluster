@@ -1,5 +1,6 @@
 package com.infomaximum.cluster.core.remote;
 
+import com.infomaximum.cluster.anotation.DisableValidationRemoteMethod;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.struct.Component;
 import org.slf4j.Logger;
@@ -30,13 +31,15 @@ public abstract class AbstractRController<TComponent extends Component> implemen
 			for (Method method: interfaceClazz.getDeclaredMethods()) {
 
 				//Проверяем, что результат и аргументы сериализуемы
-				RemotePackerObjects remotePackerObjects = component.getRemotes().getRemotePackerObjects();
-				if (method.getReturnType()!=void.class && !remotePackerObjects.isSupportType(method.getReturnType())) {
-					throw new RuntimeException("Not valid remote method: " + method.getName() + ", in controller: " + interfaceClazz);
-				}
-				for (Class arg: method.getParameterTypes()) {
-					if (!remotePackerObjects.isSupportType(arg)) {
+				if (!method.isAnnotationPresent(DisableValidationRemoteMethod.class)) {
+					RemotePackerObjects remotePackerObjects = component.getRemotes().getRemotePackerObjects();
+					if (method.getReturnType()!=void.class && !remotePackerObjects.isSupportType(method.getReturnType())) {
 						throw new RuntimeException("Not valid remote method: " + method.getName() + ", in controller: " + interfaceClazz);
+					}
+					for (Class arg: method.getParameterTypes()) {
+						if (!remotePackerObjects.isSupportType(arg)) {
+							throw new RuntimeException("Not valid remote method: " + method.getName() + ", in controller: " + interfaceClazz);
+						}
 					}
 				}
 
