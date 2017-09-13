@@ -27,6 +27,7 @@ public abstract class TransportBuilder {
         this.remotePackers.add(new RemotePackerSet());
         this.remotePackers.add(new RemotePackerList());
         this.remotePackers.add(new RemotePackerSerializable());
+        this.remotePackers.add(new RemotePackerFuture());
     }
 
     public TransportBuilder withRemotePackerObject(RemotePacker remotePackerObject) {

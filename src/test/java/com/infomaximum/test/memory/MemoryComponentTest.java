@@ -1,7 +1,8 @@
-package com.infomaximum.cluster.component.memory;
+package com.infomaximum.test.memory;
 
-import com.infomaximum.cluster.ClusterTest;
+import com.infomaximum.test.ClusterTest;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
+import com.infomaximum.cluster.component.memory.MemoryComponent;
 import com.infomaximum.cluster.component.memory.remote.RControllerMemory;
 import org.junit.Assert;
 import org.junit.Test;

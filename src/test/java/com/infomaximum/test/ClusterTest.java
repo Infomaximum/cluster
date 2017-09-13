@@ -1,10 +1,11 @@
-package com.infomaximum.cluster;
+package com.infomaximum.test;
 
+import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.builder.ClusterBuilder;
 import com.infomaximum.cluster.builder.component.ComponentBuilder;
 import com.infomaximum.cluster.builder.transport.MockTransportBuilder;
 import com.infomaximum.cluster.component.memory.MemoryComponent;
-import com.infomaximum.cluster.component.future.FutureComponent;
+import com.infomaximum.cluster.component.custom.CustomComponent;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -32,7 +33,7 @@ public class ClusterTest {
                         new MockTransportBuilder()
                 )
                 .withComponentIfNotExist(new ComponentBuilder(MemoryComponent.class))
-//                .withComponentIfNotExist(new ComponentBuilder(FutureComponent.class))
+                .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
                 .build();
     }
 

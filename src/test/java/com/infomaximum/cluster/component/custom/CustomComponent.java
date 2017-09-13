@@ -1,4 +1,4 @@
-package com.infomaximum.cluster.component.future;
+package com.infomaximum.cluster.component.custom;
 
 import com.infomaximum.cluster.component.memory.MemoryComponent;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
@@ -12,14 +12,14 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by kris on 12.09.17.
  */
-public class FutureComponent extends Component {
+public class CustomComponent extends Component {
 
     private final static Logger log = LoggerFactory.getLogger(MemoryComponent.class);
 
-    public static final Info INFO = new Info.Builder(FutureComponent.class)
+    public static final Info INFO = new Info.Builder(CustomComponent.class)
             .build();
 
-    public FutureComponent(TransportManager transportManager, ComponentConfig config) throws Exception {
+    public CustomComponent(TransportManager transportManager, ComponentConfig config) throws Exception {
         super(transportManager, config);
     }
 
