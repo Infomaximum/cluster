@@ -19,8 +19,6 @@ dependencies {
 
     compile 'net.minidev:json-smart:2.2.1'
 
-    compile 'com.infomaximum:rdao:0.1.42'
-
     compile 'com.rabbitmq:amqp-client:3.6.5'
 
     compile 'org.reflections:reflections:0.9.10'
