@@ -4,18 +4,15 @@ import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.core.service.transport.Transport;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
+import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.core.service.transport.net.impl.mock.MockTransportManager;
-import com.infomaximum.cluster.core.service.transport.struct.packet.TPacketResponse;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.CacheClassForName;
 import net.minidev.json.JSONObject;
-import org.rocksdb.RocksDBException;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by kris on 14.09.16.
@@ -70,13 +67,8 @@ public class RabbitMQTransport implements Transport {
 
 	@Override
 	public JSONObject request(String targetComponentKey, Class<? extends RController> rControllerClass, Method method, Object[] args, long timeout) {
-
-
-		return null;
+		throw new RuntimeException("Not implemented");
 	}
-
-
-
 
 
 	private static JSONObject packRequest(Component component, String remoteControllerName, Method method, Object[] args) throws IOException {
@@ -102,7 +94,7 @@ public class RabbitMQTransport implements Transport {
 		return request;
 	}
 
-	private static Object unpackResponse(Component component, Method method, JSONObject response) throws ReflectiveOperationException, IOException, RocksDBException {
+	private static Object unpackResponse(Component component, Method method, JSONObject response) throws ReflectiveOperationException, IOException {
 		Object result = response.get("result");
 		if (result==null) {
 			return null;

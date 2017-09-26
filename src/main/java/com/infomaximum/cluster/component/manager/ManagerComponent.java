@@ -4,7 +4,7 @@ import com.infomaximum.cluster.component.manager.core.RegisterComponent;
 import com.infomaximum.cluster.core.component.active.ActiveComponents;
 import com.infomaximum.cluster.core.component.active.ActiveComponentsImpl;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
-import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
+import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
 import com.infomaximum.cluster.struct.config.ComponentConfig;
@@ -41,9 +41,9 @@ public class ManagerComponent extends Component {
 	}
 
 	@Override
-	public ExecutorTransport initExecutorTransport() throws ReflectiveOperationException {
-		return new ExecutorTransport(this);
-	}
+    public ExecutorTransportImpl initExecutorTransport() throws ReflectiveOperationException {
+        return new ExecutorTransportImpl(this);
+    }
 
 	//Логика регистрации у менеджера подсистем не стандартная
 	@Override

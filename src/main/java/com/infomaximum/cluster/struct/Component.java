@@ -9,6 +9,7 @@ import com.infomaximum.cluster.core.remote.Remotes;
 import com.infomaximum.cluster.core.service.transport.Transport;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
+import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.struct.config.ComponentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

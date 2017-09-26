@@ -1,5 +1,5 @@
 group 'com.infomaximum'
-version '0.0.14'
+version '0.0.15'
 
 apply plugin: 'java'
 apply plugin: 'maven'
@@ -18,8 +18,6 @@ repositories {
 dependencies {
 
     compile 'net.minidev:json-smart:2.2.1'
-
-    compile 'com.infomaximum:rdao:0.1.42'
 
     compile 'com.rabbitmq:amqp-client:3.6.5'
 
