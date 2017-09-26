@@ -2,7 +2,7 @@ package com.infomaximum.cluster.component.memory;
 
 import com.infomaximum.cluster.component.memory.core.MemoryEngine;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
-import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
+import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
 import com.infomaximum.cluster.struct.config.ComponentConfig;
@@ -31,9 +31,9 @@ public class MemoryComponent extends Component {
 	}
 
 	@Override
-	public ExecutorTransport initExecutorTransport() throws ReflectiveOperationException {
-		return new ExecutorTransport(this);
-	}
+    public ExecutorTransportImpl initExecutorTransport() throws ReflectiveOperationException {
+        return new ExecutorTransportImpl(this);
+    }
 
 	@Override
 	public Info getInfo() {
