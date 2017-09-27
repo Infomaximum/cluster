@@ -9,7 +9,9 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,33 +23,59 @@ public abstract class AbstractRController<TComponent extends Component> implemen
 
 	protected final TComponent component;
 
-	private final Map<Class<? extends RController>, Map<String, Method>> hashControllersRemoteMethods;//Хеш методов
+    private final Map<Class<? extends RController>, Map<String, List<Method>>> hashControllersRemoteMethods;//Хеш методов
 
 	protected AbstractRController(TComponent component) {
 		this.component = component;
 
-		hashControllersRemoteMethods = new HashMap<Class<? extends RController>, Map<String, Method>>();
-		for (Class interfaceClazz: this.getClass().getInterfaces()){
+        hashControllersRemoteMethods = new HashMap<Class<? extends RController>, Map<String, List<Method>>>();
+        for (Class interfaceClazz: this.getClass().getInterfaces()){
 			if (!RController.class.isAssignableFrom(interfaceClazz)) continue;
-			Map<String, Method> hashMethods = new HashMap<String, Method>();
-			for (Method method: interfaceClazz.getDeclaredMethods()) {
+            Map<String, List<Method>> hashMethods = new HashMap<String, List<Method>>();
+            for (Method method: interfaceClazz.getDeclaredMethods()) {
 
 				//Проверяем, что результат и аргументы сериализуемы
 				if (!method.isAnnotationPresent(DisableValidationRemoteMethod.class)) {
                     validationRemoteMethod(interfaceClazz, method);
                 }
 
-				hashMethods.put(method.getName(), method);
-			}
+                //Игнорируем права доступа
+                method.setAccessible(true);
+
+                List<Method> methods = hashMethods.get(method.getName());
+                if (methods == null) {
+                    methods = new ArrayList<Method>();
+                    hashMethods.put(method.getName(), methods);
+                }
+                methods.add(method);
+            }
 			hashControllersRemoteMethods.put(interfaceClazz, hashMethods);
 		}
 	}
 
-	public Method getRemoteMethod(Class<? extends RController> remoteControllerClazz, String name) {
-		Map<String, Method> hashControllerRemoteMethods = hashControllersRemoteMethods.get(remoteControllerClazz);
-		if (hashControllerRemoteMethods==null) return null;
-		return hashControllerRemoteMethods.get(name);
-	}
+    public Method getRemoteMethod(Class<? extends RController> remoteControllerClazz, String name, Class<?>[] parameterTypes) {
+        Map<String, List<Method>> hashControllerRemoteMethods = hashControllersRemoteMethods.get(remoteControllerClazz);
+        if (hashControllerRemoteMethods == null) return null;
+
+        Method method = null;
+        for (Method iMethod : hashControllerRemoteMethods.get(name)) {
+            if (iMethod.getParameterCount() != parameterTypes.length) continue;
+
+            boolean equals = true;
+            for (int iArg = 0; iArg < parameterTypes.length; iArg++) {
+                if (iMethod.getParameterTypes()[iArg] != parameterTypes[iArg]) {
+                    equals = false;
+                    break;
+                }
+            }
+
+            if (equals) {
+                method = iMethod;
+                break;
+            }
+        }
+        return method;
+    }
 
 	public Remotes getRemotes() {
 		return component.getRemotes();
