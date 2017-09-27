@@ -79,14 +79,20 @@ public class ExecutorTransportImpl implements ExecutorTransport {
         if (remoteController == null)
             throw new RuntimeException("Not found remote controller, component: " + component + ", controller: " + rControllerClassName + ", method: " + methodName);
 
-        Class<?>[] parameterTypes = new Class<?>[args.length];
-        for (int iArgs = 0; iArgs < args.length; iArgs++) {
-            parameterTypes[iArgs] = args[iArgs].getClass();
+        Class<?>[] parameterTypes;
+        if (args == null) {
+            parameterTypes = new Class<?>[0];
+        } else {
+            parameterTypes = new Class<?>[args.length];
+            for (int iArgs = 0; iArgs < args.length; iArgs++) {
+                parameterTypes[iArgs] = args[iArgs].getClass();
+            }
         }
 
         Method method = ((AbstractRController) remoteController).getRemoteMethod(remoteController.getClass().getInterfaces()[0], methodName, parameterTypes);
-        if (method == null)
+        if (method == null) {
             throw new RuntimeException("Not found remote method, subsystem: " + component + ", controller: " + rControllerClassName + ", method: " + methodName);
+        }
 
         try {
             return method.invoke(remoteController, args);
