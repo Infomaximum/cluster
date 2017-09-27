@@ -66,6 +66,10 @@ public abstract class AbstractRController<TComponent extends Component> implemen
             for (int iArg = 0; iArg < parameterTypes.length; iArg++) {
                 Class<?> iMethodArg = iMethod.getParameterTypes()[iArg];
                 Class<?> methodArg = parameterTypes[iArg];
+
+                //Если null, значит нет возможности сопоставить типы - идем дальше
+                if (methodArg == null) continue;
+
                 if (!(EqualsUtils.equalsType(iMethodArg, methodArg) || iMethodArg.isAssignableFrom(methodArg))) {
                     equals = false;
                     break;

@@ -85,7 +85,7 @@ public class ExecutorTransportImpl implements ExecutorTransport {
         } else {
             parameterTypes = new Class<?>[args.length];
             for (int iArgs = 0; iArgs < args.length; iArgs++) {
-                parameterTypes[iArgs] = args[iArgs].getClass();
+                parameterTypes[iArgs] = (args[iArgs] != null) ? args[iArgs].getClass() : null;
             }
         }
 
