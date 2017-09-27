@@ -3,6 +3,7 @@ package com.infomaximum.cluster.core.remote;
 import com.infomaximum.cluster.anotation.DisableValidationRemoteMethod;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.struct.Component;
+import com.infomaximum.cluster.utils.EqualsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,23 +20,23 @@ import java.util.Map;
  */
 public abstract class AbstractRController<TComponent extends Component> implements RController {
 
-	private final static Logger log = LoggerFactory.getLogger(AbstractRController.class);
+    private final static Logger log = LoggerFactory.getLogger(AbstractRController.class);
 
-	protected final TComponent component;
+    protected final TComponent component;
 
     private final Map<Class<? extends RController>, Map<String, List<Method>>> hashControllersRemoteMethods;//Хеш методов
 
-	protected AbstractRController(TComponent component) {
-		this.component = component;
+    protected AbstractRController(TComponent component) {
+        this.component = component;
 
         hashControllersRemoteMethods = new HashMap<Class<? extends RController>, Map<String, List<Method>>>();
         for (Class interfaceClazz: this.getClass().getInterfaces()){
-			if (!RController.class.isAssignableFrom(interfaceClazz)) continue;
+            if (!RController.class.isAssignableFrom(interfaceClazz)) continue;
             Map<String, List<Method>> hashMethods = new HashMap<String, List<Method>>();
             for (Method method: interfaceClazz.getDeclaredMethods()) {
 
-				//Проверяем, что результат и аргументы сериализуемы
-				if (!method.isAnnotationPresent(DisableValidationRemoteMethod.class)) {
+                //Проверяем, что результат и аргументы сериализуемы
+                if (!method.isAnnotationPresent(DisableValidationRemoteMethod.class)) {
                     validationRemoteMethod(interfaceClazz, method);
                 }
 
@@ -49,9 +50,9 @@ public abstract class AbstractRController<TComponent extends Component> implemen
                 }
                 methods.add(method);
             }
-			hashControllersRemoteMethods.put(interfaceClazz, hashMethods);
-		}
-	}
+            hashControllersRemoteMethods.put(interfaceClazz, hashMethods);
+        }
+    }
 
     public Method getRemoteMethod(Class<? extends RController> remoteControllerClazz, String name, Class<?>[] parameterTypes) {
         Map<String, List<Method>> hashControllerRemoteMethods = hashControllersRemoteMethods.get(remoteControllerClazz);
@@ -63,7 +64,9 @@ public abstract class AbstractRController<TComponent extends Component> implemen
 
             boolean equals = true;
             for (int iArg = 0; iArg < parameterTypes.length; iArg++) {
-                if (iMethod.getParameterTypes()[iArg] != parameterTypes[iArg]) {
+                Class<?> iMethodArg = iMethod.getParameterTypes()[iArg];
+                Class<?> methodArg = parameterTypes[iArg];
+                if (!(EqualsUtils.equalsType(iMethodArg, methodArg) || iMethodArg.isAssignableFrom(methodArg))) {
                     equals = false;
                     break;
                 }
@@ -77,9 +80,9 @@ public abstract class AbstractRController<TComponent extends Component> implemen
         return method;
     }
 
-	public Remotes getRemotes() {
-		return component.getRemotes();
-	}
+    public Remotes getRemotes() {
+        return component.getRemotes();
+    }
 
 
     private void validationRemoteMethod(Class remoteControllerClazz, Method method) {
