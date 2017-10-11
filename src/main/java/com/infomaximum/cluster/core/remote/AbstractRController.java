@@ -6,10 +6,12 @@ import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.EqualsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.reflect.generics.reflectiveObjects.TypeVariableImpl;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -110,6 +112,12 @@ public abstract class AbstractRController<TComponent extends Component> implemen
         Class clazz;
         if (type instanceof ParameterizedType) {
             clazz = (Class) ((ParameterizedType) type).getRawType();
+        } else if (type instanceof TypeVariable) {
+            for (Type iType : ((TypeVariable) type).getBounds()) {
+                boolean iValidation = validationType(iType);
+                if (!iValidation) return false;
+            }
+            return true;
         } else {
             clazz = (Class) type;
         }
