@@ -2,7 +2,6 @@ package com.infomaximum.cluster.core.remote;
 
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.struct.RController;
-import com.infomaximum.cluster.core.service.loader.LoaderComponents;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
 import com.infomaximum.cluster.utils.RandomUtil;
@@ -34,9 +33,9 @@ public class Remotes {
 		return remotePackerObjects;
 	}
 
-	public <T extends RController> T getFromSSKey(String subSystemKey, Class<T> remoteControllerClazz){
+	public <T extends RController> T getFromSSKey(String subSystemKey, Class<T> remoteControllerClazz) {
 		//Валидируем ключ подсистемы
-		LoaderComponents.validationRoleKey(subSystemKey);
+		if (subSystemKey.indexOf(':')==-1) throw new RuntimeException("Not valide componentKey: " + subSystemKey);
 
 		//Кешировать proxy remoteController не получается т.к. Proxy.newProxyInstance может вернуться переиспользуемый объект в котором _properties уже есть значения и мы их затираем
 		RController remoteController = (RController) Proxy.newProxyInstance(

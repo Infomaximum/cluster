@@ -1,6 +1,6 @@
 package com.infomaximum.test.memory;
 
-import com.infomaximum.test.ClusterTest;
+import com.infomaximum.test.BaseClusterTest;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.component.memory.MemoryComponent;
 import com.infomaximum.cluster.component.memory.remote.RControllerMemory;
@@ -15,13 +15,13 @@ import java.util.HashMap;
 /**
  * Created by kris on 26.08.16.
  */
-public class MemoryComponentTest extends ClusterTest {
+public class MemoryComponentTest extends BaseClusterTest {
 
     private final static Logger log = LoggerFactory.getLogger(MemoryComponentTest.class);
 
     @Test
     public void test1() throws Exception {
-        ManagerComponent managerComponent = getCluster().getLoaderComponents().getAnyComponent(ManagerComponent.class);
+        ManagerComponent managerComponent = getCluster().getAnyComponent(ManagerComponent.class);
         RControllerMemory rControllerMemory = managerComponent.getRemotes().get(MemoryComponent.class, RControllerMemory.class);
 
         String key = "ping";
@@ -34,7 +34,7 @@ public class MemoryComponentTest extends ClusterTest {
 
     @Test
     public void test() throws Exception {
-        ManagerComponent managerComponent = getCluster().getLoaderComponents().getAnyComponent(ManagerComponent.class);
+        ManagerComponent managerComponent = getCluster().getAnyComponent(ManagerComponent.class);
         RControllerMemory rControllerMemory = managerComponent.getRemotes().get(MemoryComponent.class, RControllerMemory.class);
 
         rControllerMemory.sets(new HashMap<String, Serializable>(){{

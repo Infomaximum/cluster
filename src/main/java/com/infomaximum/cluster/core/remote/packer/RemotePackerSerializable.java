@@ -1,6 +1,6 @@
 package com.infomaximum.cluster.core.remote.packer;
 
-import com.infomaximum.cluster.exception.ClusterRemotePackerException;
+import com.infomaximum.cluster.exception.runtime.ClusterRemotePackerException;
 import com.infomaximum.cluster.struct.Component;
 
 import java.io.*;

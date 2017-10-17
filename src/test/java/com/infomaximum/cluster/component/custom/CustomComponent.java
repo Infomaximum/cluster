@@ -1,33 +1,30 @@
 package com.infomaximum.cluster.component.custom;
 
-import com.infomaximum.cluster.component.memory.MemoryComponent;
-import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
+import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
 import com.infomaximum.cluster.struct.config.ComponentConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.infomaximum.cluster.utils.version.AppVersion;
 
 /**
  * Created by kris on 12.09.17.
  */
 public class CustomComponent extends Component {
 
-    private final static Logger log = LoggerFactory.getLogger(MemoryComponent.class);
-
     public static final Info INFO = new Info.Builder(CustomComponent.class)
+            .withEnvironmentVersion(AppVersion.getVersion(CustomComponent.class))
             .build();
 
-    public CustomComponent(TransportManager transportManager, ComponentConfig config) throws Exception {
-        super(transportManager, config);
+    public CustomComponent(ComponentConfig config) throws Exception {
+        super(config);
     }
 
     @Override
-    public void load() throws Exception {}
+    public void load() throws ClusterException {}
 
     @Override
-    public ExecutorTransportImpl initExecutorTransport() throws ReflectiveOperationException {
+    public ExecutorTransportImpl initExecutorTransport() throws ClusterException {
         return new ExecutorTransportImpl(this);
     }
 
@@ -37,6 +34,5 @@ public class CustomComponent extends Component {
     }
 
     @Override
-    public void destroyed() throws Exception {}
-
+    public void destroying() throws ClusterException {}
 }

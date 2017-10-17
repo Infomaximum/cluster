@@ -1,6 +1,6 @@
 package com.infomaximum.test.custom;
 
-import com.infomaximum.test.ClusterTest;
+import com.infomaximum.test.BaseClusterTest;
 import com.infomaximum.cluster.component.custom.CustomComponent;
 import com.infomaximum.cluster.component.custom.remote.future.RControllerFuture;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
@@ -15,13 +15,13 @@ import java.util.concurrent.Future;
 /**
  * Created by kris on 26.08.16.
  */
-public class FutureComponentTest extends ClusterTest {
+public class FutureComponentTest extends BaseClusterTest {
 
     private final static Logger log = LoggerFactory.getLogger(FutureComponentTest.class);
 
     @Test
     public void testGet() throws Exception {
-        ManagerComponent managerComponent = getCluster().getLoaderComponents().getAnyComponent(ManagerComponent.class);
+        ManagerComponent managerComponent = getCluster().getAnyComponent(ManagerComponent.class);
         RControllerFuture rControllerFuture = managerComponent.getRemotes().get(CustomComponent.class, RControllerFuture.class);
 
         Future<String> future1 = rControllerFuture.get("123", 0);
@@ -34,7 +34,7 @@ public class FutureComponentTest extends ClusterTest {
 
     @Test
     public void testErrorGet() throws Exception {
-        ManagerComponent managerComponent = getCluster().getLoaderComponents().getAnyComponent(ManagerComponent.class);
+        ManagerComponent managerComponent = getCluster().getAnyComponent(ManagerComponent.class);
         RControllerFuture rControllerFuture = managerComponent.getRemotes().get(CustomComponent.class, RControllerFuture.class);
 
         Future<String> future1 = rControllerFuture.getError("123", 0);

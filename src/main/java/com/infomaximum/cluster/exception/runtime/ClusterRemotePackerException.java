@@ -1,4 +1,4 @@
-package com.infomaximum.cluster.exception;
+package com.infomaximum.cluster.exception.runtime;
 
 /**
  * Created by user on 06.09.2017.

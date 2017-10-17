@@ -9,7 +9,7 @@ import com.infomaximum.cluster.core.remote.Remotes;
 import com.infomaximum.cluster.core.service.transport.Transport;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
-import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
+import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.config.ComponentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,52 +23,50 @@ public abstract class Component {
 
     private final static Logger log = LoggerFactory.getLogger(Component.class);
 
-    private final TransportManager transportManager;
+    private final ComponentConfig config;
 
-    private final String key;
-    protected final ComponentConfig config;
+    private TransportManager transportManager;
+    private String key;
+    private Transport transport;
+    private Remotes remote;
+    private ActiveComponents subSystemHashActives;
 
-    private final Transport transport;
-
-    private final Remotes remote;
-
-    private final ActiveComponents subSystemHashActives;
-
-    public Component(TransportManager transportManager, ComponentConfig config) throws ReflectiveOperationException {
-        this.transportManager=transportManager;
-
-        this.key = generateKey(config);
+    public Component(ComponentConfig config) {
         this.config = config;
-        this.transport = transportManager.createTransport(getInfo().getUuid(), key);;
+    }
 
+    public final void init(TransportManager transportManager) throws ClusterException {
+        this.transportManager = transportManager;
+        this.key = generateKey(config);
+        this.transport = transportManager.createTransport(getInfo().getUuid(), key);
         this.remote = new Remotes(this);
 
-        setExecutorTransport(transport);
+        try {
+            transport.setExecutor(initExecutorTransport());
+        } catch (ClusterException e) {
+            transportManager.destroyTransport(transport);
+            throw e;
+        }
 
         //Регистрируемся у менеджера подсистем
         log.info("register subsystem {} v.{}...", getInfo().getUuid(), getInfo().getVersion());
         this.subSystemHashActives = registerComponent();
-    }
 
-    public void init() {
         //Загружаемся, в случае ошибки снимаем регистрацию
         try {
             load();
-        } catch (Throwable e) {
+        } catch (ClusterException e) {
             log.error("{} Error init subsystem", this, e);
-            try {
-                unRegisterComponent();
-            } catch (Exception ex) {
-                log.error("{} Exception unRegisterComponent", this, e);
-            }
-            throw new RuntimeException(e);
+            unregisterComponent();
+            transportManager.destroyTransport(transport);
+            throw e;
         }
     }
 
-    public abstract void load() throws Exception ;
-
-
-    public abstract ExecutorTransport initExecutorTransport() throws ReflectiveOperationException;
+    public abstract Info getInfo();
+    public abstract void load() throws ClusterException;
+    public abstract ExecutorTransport initExecutorTransport() throws ClusterException;
+    public abstract void destroying() throws ClusterException;
 
     protected String generateKey(ComponentConfig config) {
         return new StringBuilder()
@@ -87,26 +85,21 @@ public abstract class Component {
         return new ActiveComponentsImpl(this, activeComponents.getItems());
     }
 
+    /**
+     * Снимаем регистрацию у менджера подсистем
+     */
+    protected void unregisterComponent() {
+        remote.getFromSSKey(ManagerComponent.KEY, RControllerManagerComponent.class).unregister(key);
+    }
+
     public Transport getTransport(){
         return transport;
     }
 
-    protected void setExecutorTransport(Transport transport) throws ReflectiveOperationException {
-        transport.setExecutor(initExecutorTransport());
-    }
-
-    /**
-     * Снимаем регистрацию у менджера подсистем
-     */
-    protected void unRegisterComponent() throws Exception {
-        remote.getFromSSKey(ManagerComponent.KEY, RControllerManagerComponent.class).unregister(key);
-    }
-
-    public abstract Info getInfo();
-
     public String getKey() {
         return key;
     }
+
     public ComponentConfig getConfig() {
         return config;
     }
@@ -118,16 +111,16 @@ public abstract class Component {
     public Remotes getRemotes() {
         return remote;
     }
+
     public ActiveComponents getActiveRoles() {
         return subSystemHashActives;
     }
 
-
     public final void destroy(){
         log.info("Destroy {}...", getInfo().getUuid());
         try {
-            destroyed();
-            unRegisterComponent();
+            destroying();
+            unregisterComponent();
             log.info("Destroy {}... completed", getInfo().getUuid());
         } catch (Exception e) {
             log.error("{} Error destroy subsystem", getInfo().getUuid(), e);
@@ -139,6 +132,4 @@ public abstract class Component {
             log.error("{} Error transport destroy subsystem", getInfo().getUuid(), e);
         }
     }
-
-    public abstract void destroyed() throws Exception;
 }
