@@ -8,14 +8,13 @@ import com.infomaximum.cluster.struct.Component;
  */
 public interface RemotePacker<T> {
 
-    public boolean isSupport(Class classType);
+    boolean isSupport(Class classType);
 
     default String getClassName(Class classType){
         return classType.getName();
     }
 
-    public Object serialize(Component component, T value);
+    Object serialize(Component component, T value);
 
-    public T deserialize(Component component, Class<T> classType, Object value);
-
+    T deserialize(Component component, Class<T> classType, Object value);
 }

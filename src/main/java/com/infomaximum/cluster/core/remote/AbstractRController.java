@@ -34,7 +34,7 @@ public abstract class AbstractRController<TComponent extends Component> implemen
         hashControllersRemoteMethods = new HashMap<Class<? extends RController>, Map<String, List<Method>>>();
         for (Class interfaceClazz: this.getClass().getInterfaces()){
             if (!RController.class.isAssignableFrom(interfaceClazz)) continue;
-            Map<String, List<Method>> hashMethods = new HashMap<String, List<Method>>();
+            Map<String, List<Method>> hashMethods = new HashMap<>();
             for (Method method: interfaceClazz.getDeclaredMethods()) {
 
                 //Проверяем, что результат и аргументы сериализуемы
@@ -47,7 +47,7 @@ public abstract class AbstractRController<TComponent extends Component> implemen
 
                 List<Method> methods = hashMethods.get(method.getName());
                 if (methods == null) {
-                    methods = new ArrayList<Method>();
+                    methods = new ArrayList<>();
                     hashMethods.put(method.getName(), methods);
                 }
                 methods.add(method);

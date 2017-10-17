@@ -11,16 +11,16 @@ import java.util.Map;
  */
 public interface RControllerMemory extends RController {
 
-	public Serializable get(String key);
+	Serializable get(String key);
 
-	public void set(String key, Serializable value);
+	void set(String key, Serializable value);
 
-	public void clear(String key);
+	void clear(String key);
 
 
-	public Map<String, Serializable> gets(String... keys);
+	Map<String, Serializable> gets(String... keys);
 
-	public void sets(Map<String, Serializable> values);
+	void sets(Map<String, Serializable> values);
 
-	public void clear(List<String> keys);
+	void clear(List<String> keys);
 }

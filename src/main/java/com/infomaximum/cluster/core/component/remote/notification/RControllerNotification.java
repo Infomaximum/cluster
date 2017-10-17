@@ -8,9 +8,9 @@ import com.infomaximum.cluster.core.remote.struct.RController;
  */
 public interface RControllerNotification extends RController {
 
-	public void notificationRegisterComponent(RuntimeComponentInfo componentInfo);
+	void notificationRegisterComponent(RuntimeComponentInfo componentInfo);
 
-	public void notificationUnRegisterComponent(RuntimeComponentInfo componentInfo);
+	void notificationUnRegisterComponent(RuntimeComponentInfo componentInfo);
 }
 
 

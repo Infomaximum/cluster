@@ -9,17 +9,15 @@ import java.util.Collection;
  */
 public interface ActiveComponents {
 
-    public Collection<RuntimeComponentInfo> registerActiveRole(RuntimeComponentInfo subSystemInfo);
+    Collection<RuntimeComponentInfo> registerActiveRole(RuntimeComponentInfo subSystemInfo);
 
-    public Collection<RuntimeComponentInfo> unRegisterActiveRole(String key);
+    Collection<RuntimeComponentInfo> unRegisterActiveRole(String key);
 
-    public Collection<RuntimeComponentInfo> getActiveSubSystems();
+    Collection<RuntimeComponentInfo> getActiveSubSystems();
 
-    public Collection<String> getActiveSubSystemKeys();
+    Collection<String> getActiveSubSystemKeys();
 
-    public Collection<String> getActiveSubSystemUuids();
+    Collection<String> getActiveSubSystemUuids();
 
-    public boolean isActiveSubSystem(String uuid);
-
-
+    boolean isActiveSubSystem(String uuid);
 }
