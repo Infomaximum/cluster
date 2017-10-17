@@ -3,7 +3,6 @@ package com.infomaximum.cluster.core.remote.packer;
 import com.infomaximum.cluster.core.remote.RemotePackerObjects;
 import com.infomaximum.cluster.exception.runtime.ClusterRemotePackerException;
 import com.infomaximum.cluster.struct.Component;
-import com.infomaximum.cluster.utils.CacheClassForName;
 import net.minidev.json.JSONObject;
 
 import java.util.*;
@@ -49,7 +48,7 @@ public class RemotePackerMap implements RemotePacker<Map> {
                 String key = entry.getKey();
 
                 JSONObject jEntryValue = (JSONObject) entry.getValue();
-                Class iClassType = CacheClassForName.get(jEntryValue.getAsString("type"));
+                Class iClassType = Class.forName(jEntryValue.getAsString("type"), true, Thread.currentThread().getContextClassLoader());
                 Object iValue = jEntryValue.get("value");
 
                 out.put(key, remotePackerObjects.deserialize(iClassType, iValue));
