@@ -1,9 +1,8 @@
 package com.infomaximum.cluster.core.remote.packer;
 
 import com.infomaximum.cluster.core.remote.RemotePackerObjects;
-import com.infomaximum.cluster.exception.ClusterRemotePackerException;
+import com.infomaximum.cluster.exception.runtime.ClusterRemotePackerException;
 import com.infomaximum.cluster.struct.Component;
-import com.infomaximum.cluster.utils.CacheClassForName;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
@@ -46,7 +45,7 @@ public class RemotePackerList implements RemotePacker<List> {
             List result = new ArrayList();
             for (Object oItem : (JSONArray) value) {
                 JSONObject item = (JSONObject) oItem;
-                Class iClassType = CacheClassForName.get(item.getAsString("type"));
+                Class iClassType = Class.forName(item.getAsString("type"), true, Thread.currentThread().getContextClassLoader());
                 Object iValue = item.get("value");
                 result.add(remotePackerObjects.deserialize(iClassType, iValue));
             }

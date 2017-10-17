@@ -7,7 +7,7 @@ import net.minidev.json.JSONObject;
  */
 public interface ComponentConfigBuilder {
 
-    public void withJSON(JSONObject data);
+    void withJSON(JSONObject data);
 
-    public ComponentConfig build();
+    ComponentConfig build();
 }

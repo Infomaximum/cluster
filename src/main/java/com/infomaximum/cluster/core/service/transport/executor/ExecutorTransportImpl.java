@@ -4,6 +4,7 @@ import com.infomaximum.cluster.core.component.remote.notification.RControllerNot
 import com.infomaximum.cluster.core.component.remote.notification.RControllerNotificationImpl;
 import com.infomaximum.cluster.core.remote.AbstractRController;
 import com.infomaximum.cluster.core.remote.struct.RController;
+import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -24,33 +25,38 @@ public class ExecutorTransportImpl implements ExecutorTransport {
     protected final Component component;
     private final Map<String, RController> hashRemoteController;
 
-    public ExecutorTransportImpl(Component component) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException {
+    public ExecutorTransportImpl(Component component) throws ClusterException {
         this.component = component;
 
         Reflections reflections = new Reflections(component.getInfo().getUuid());
 
-        this.hashRemoteController = new HashMap<String, RController>();
+        this.hashRemoteController = new HashMap<>();
 
         //Добавляем обработчик нотификаций
         RControllerNotificationImpl remoteControllerNotification = new RControllerNotificationImpl(component);
         hashRemoteController.put(RControllerNotification.class.getName(), remoteControllerNotification);
 
-        for (Class<? extends AbstractRController> classRemoteController : reflections.getSubTypesOf(AbstractRController.class)) {
-            if (classRemoteController.isInterface()) continue;
-            Constructor constructor;
-            try {
-                constructor = classRemoteController.getConstructor(component.getClass());
-            } catch (NoSuchMethodException e) {
-                log.error("Not found constructor from: {}", classRemoteController, e);
-                throw e;
-            }
-            if (constructor == null)
-                throw new RuntimeException("Not found constructor in class controller: " + classRemoteController);
-            AbstractRController rController = (AbstractRController) constructor.newInstance(component);
+        try {
+            for (Class<? extends AbstractRController> classRemoteController : reflections.getSubTypesOf(AbstractRController.class)) {
+                if (classRemoteController.isInterface()) continue;
+                Constructor constructor;
+                try {
+                    constructor = classRemoteController.getConstructor(component.getClass());
+                } catch (NoSuchMethodException e) {
+                    log.error("Not found constructor from: {}", classRemoteController, e);
+                    throw e;
+                }
+                if (constructor == null) {
+                    throw new ClusterException("Not found constructor in class controller: " + classRemoteController);
+                }
+                AbstractRController rController = (AbstractRController) constructor.newInstance(component);
 
-            for (Class<? extends RController> classRController : getRControllerClasses(rController)) {
-                hashRemoteController.put(classRController.getName(), rController);
+                for (Class<? extends RController> classRController : getRControllerClasses(rController)) {
+                    hashRemoteController.put(classRController.getName(), rController);
+                }
             }
+        } catch (ReflectiveOperationException ex) {
+            throw new ClusterException(ex);
         }
     }
 

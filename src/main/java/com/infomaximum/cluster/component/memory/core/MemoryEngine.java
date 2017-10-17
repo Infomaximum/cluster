@@ -17,7 +17,7 @@ public class MemoryEngine {
 
 	public MemoryEngine(MemoryComponent memoryComponent) {
 		this.memoryComponent = memoryComponent;
-		this.memory = new ConcurrentHashMap<String, Serializable>();
+		this.memory = new ConcurrentHashMap<>();
 	}
 
 	public void set(String key, Serializable value) {

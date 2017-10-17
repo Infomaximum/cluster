@@ -5,6 +5,5 @@ package com.infomaximum.cluster.core.remote.struct;
  */
 public interface RController {
 
-	public final static long DEFAULT_TIMEOUT = 5L * 60L * 1000L;
-
+	final static long DEFAULT_TIMEOUT = 5L * 60L * 1000L;
 }

@@ -2,7 +2,6 @@ package com.infomaximum.cluster.core.remote;
 
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.struct.RController;
-import com.infomaximum.cluster.core.service.loader.LoaderComponents;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
 import com.infomaximum.cluster.utils.RandomUtil;
@@ -34,9 +33,9 @@ public class Remotes {
 		return remotePackerObjects;
 	}
 
-	public <T extends RController> T getFromSSKey(String subSystemKey, Class<T> remoteControllerClazz){
+	public <T extends RController> T getFromSSKey(String subSystemKey, Class<T> remoteControllerClazz) {
 		//Валидируем ключ подсистемы
-		LoaderComponents.validationRoleKey(subSystemKey);
+		if (subSystemKey.indexOf(':')==-1) throw new RuntimeException("Not valide componentKey: " + subSystemKey);
 
 		//Кешировать proxy remoteController не получается т.к. Proxy.newProxyInstance может вернуться переиспользуемый объект в котором _properties уже есть значения и мы их затираем
 		RController remoteController = (RController) Proxy.newProxyInstance(
@@ -48,7 +47,7 @@ public class Remotes {
 	}
 
 	public <T extends RController> T getFromSSUuid(String uuid, Class<T> remoteControllerClazz){
-		List<String> pretendents = new ArrayList<String>();
+		List<String> pretendents = new ArrayList<>();
 		for (RuntimeComponentInfo componentInfo: component.getActiveRoles().getActiveSubSystems()) {
 			String subSystemKey = componentInfo.key;
 			String subSystemUuid = componentInfo.uuid;
@@ -73,13 +72,13 @@ public class Remotes {
 	}
 
 	public <T extends RController> Collection<T> getControllers(Class<T> remoteClassController){
-		List<RController> controllers = new ArrayList<RController>();
+		List<T> controllers = new ArrayList<>();
 		for (RuntimeComponentInfo componentInfo: component.getActiveRoles().getActiveSubSystems()) {
 			if (componentInfo.getClassNameRControllers().contains(remoteClassController.getName())) {
 				//Нашли подсиситему в которой зарегистрирован этот контроллер
 				controllers.add(getFromSSKey(componentInfo.key, remoteClassController));
 			}
 		}
-		return (Collection<T>) controllers;
+		return controllers;
 	}
 }

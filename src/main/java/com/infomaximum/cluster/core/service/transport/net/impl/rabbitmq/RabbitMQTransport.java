@@ -4,10 +4,8 @@ import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.core.service.transport.Transport;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
-import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.core.service.transport.net.impl.mock.MockTransportManager;
 import com.infomaximum.cluster.struct.Component;
-import com.infomaximum.cluster.utils.CacheClassForName;
 import net.minidev.json.JSONObject;
 
 import java.io.IOException;
@@ -103,7 +101,7 @@ public class RabbitMQTransport implements Transport {
 
 			Class classReturnType;
 			if (resultClass!=null) {
-				classReturnType = CacheClassForName.get(response.getAsString("result_class"));
+				classReturnType = Class.forName(response.getAsString("result_class"), true, Thread.currentThread().getContextClassLoader());
 			} else {
 				classReturnType = method.getReturnType();
 			}

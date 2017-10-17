@@ -34,7 +34,7 @@ public class RControllerMemoryImpl extends AbstractRController<MemoryComponent> 
 
 	@Override
 	public Map<String, Serializable> gets(String... keys) {
-		Map<String, Serializable> result = new HashMap<String, Serializable>();
+		Map<String, Serializable> result = new HashMap<>();
 		for (String key: keys) {
 			Serializable value = component.getMemoryEngine().get(key);
 			result.put(key, value);

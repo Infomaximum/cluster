@@ -38,7 +38,7 @@ public class ComponentInfos implements RemoteObject {
     }
 
     public static ComponentInfos deserialize(JSONObject json) throws ClassNotFoundException {
-        List<RuntimeComponentInfo> items = new ArrayList<RuntimeComponentInfo>();
+        List<RuntimeComponentInfo> items = new ArrayList<>();
         for (Object oItem: (JSONArray)json.get("items")) {
             items.add(RuntimeComponentInfo.deserialize((JSONObject) oItem));
         }
