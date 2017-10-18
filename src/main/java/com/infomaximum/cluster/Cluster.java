@@ -130,6 +130,7 @@ public class Cluster implements AutoCloseable {
                 for (ComponentBuilder builder : componentBuilders) {
                     components.add(builder.build());
                 }
+                appendNotExistenceDependencies(components);
 
                 cluster = new Cluster(transportBuilder.build());
 
@@ -168,6 +169,18 @@ public class Cluster implements AutoCloseable {
             }
 
             return cluster;
+        }
+
+        private static void appendNotExistenceDependencies(List<Component> source) throws ClusterException {
+            Set<Class> componentClasses = source.stream().map(component -> component.getClass()).collect(Collectors.toSet());
+            for (int i = 0; i < source.size(); ++i) {
+                for (Class dependence : source.get(i).getInfo().getDependencies()) {
+                    if (!componentClasses.contains(dependence)) {
+                        source.add(new ComponentBuilder(dependence).build());
+                        componentClasses.add(dependence);
+                    }
+                }
+            }
         }
 
         private boolean containsComponent(ComponentBuilder builder) {
