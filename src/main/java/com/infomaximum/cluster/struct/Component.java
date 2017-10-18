@@ -49,7 +49,7 @@ public abstract class Component {
         }
 
         //Регистрируемся у менеджера подсистем
-        log.info("register subsystem {} v.{}...", getInfo().getUuid(), getInfo().getVersion());
+        log.info("Register {} v.{}...", getInfo().getUuid(), getInfo().getVersion());
         this.subSystemHashActives = registerComponent();
 
         //Загружаемся, в случае ошибки снимаем регистрацию
@@ -117,11 +117,11 @@ public abstract class Component {
     }
 
     public final void destroy(){
-        log.info("Destroy {}...", getInfo().getUuid());
+        log.info("{} destroying...", getInfo().getUuid());
         try {
             destroying();
             unregisterComponent();
-            log.info("Destroy {}... completed", getInfo().getUuid());
+            log.info("{} destroyed. completed", getInfo().getUuid());
         } catch (Exception e) {
             log.error("{} Error destroy subsystem", getInfo().getUuid(), e);
         }
@@ -129,7 +129,7 @@ public abstract class Component {
         try {
             transportManager.destroyTransport(transport);
         } catch (Exception e) {
-            log.error("{} Error transport destroy subsystem", getInfo().getUuid(), e);
+            log.error("{} Error transport destroy", getInfo().getUuid(), e);
         }
     }
 }

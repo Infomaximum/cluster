@@ -31,7 +31,7 @@ public class Cluster implements AutoCloseable {
         this.components = new HashMap<>();
         this.dependencyOrderedComponents = new ArrayList<>();
 
-        log.info("init Cluster...");
+        log.info("Cluster created.");
     }
 
     public TransportManager getTransportManager() {
