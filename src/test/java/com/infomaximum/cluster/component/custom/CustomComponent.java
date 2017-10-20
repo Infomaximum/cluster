@@ -4,7 +4,6 @@ import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
-import com.infomaximum.cluster.struct.config.ComponentConfig;
 import com.infomaximum.cluster.utils.version.AppVersion;
 
 /**
@@ -15,10 +14,6 @@ public class CustomComponent extends Component {
     public static final Info INFO = new Info.Builder(CustomComponent.class)
             .withEnvironmentVersion(AppVersion.getVersion(CustomComponent.class))
             .build();
-
-    public CustomComponent(ComponentConfig config) throws Exception {
-        super(config);
-    }
 
     @Override
     public void load() throws ClusterException {}

@@ -5,7 +5,6 @@ import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
-import com.infomaximum.cluster.struct.config.ComponentConfig;
 import com.infomaximum.cluster.utils.version.AppVersion;
 
 /**
@@ -18,10 +17,6 @@ public class MemoryComponent extends Component {
             .build();
 
     private MemoryEngine memoryEngine;
-
-    public MemoryComponent(ComponentConfig config) throws Exception {
-        super(config);
-    }
 
     @Override
     public void load() throws ClusterException {
