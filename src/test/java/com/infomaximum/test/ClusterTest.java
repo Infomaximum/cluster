@@ -13,7 +13,6 @@ import com.infomaximum.cluster.exception.CompatibilityException;
 import com.infomaximum.cluster.exception.CyclicDependenceException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
-import com.infomaximum.cluster.struct.config.ComponentConfig;
 import com.infomaximum.cluster.utils.version.AppVersion;
 import org.junit.Assert;
 import org.junit.Test;
@@ -176,10 +175,6 @@ public class ClusterTest {
 
     public static abstract class BaseComponent extends Component {
 
-        private BaseComponent(ComponentConfig config) throws Exception {
-            super(config);
-        }
-
         @Override
         public void load() throws ClusterException {}
 
@@ -199,10 +194,6 @@ public class ClusterTest {
                 .withDependence(Component2.class)
                 .build();
 
-        public Component1(ComponentConfig config) throws Exception {
-            super(config);
-        }
-
         @Override
         public Info getInfo() {
             return INFO;
@@ -215,10 +206,6 @@ public class ClusterTest {
                 .withEnvironmentVersion(AppVersion.getVersion(Component2.class))
                 .withDependence(Component3.class)
                 .build();
-
-        public Component2(ComponentConfig config) throws Exception {
-            super(config);
-        }
 
         @Override
         public Info getInfo() {
@@ -233,10 +220,6 @@ public class ClusterTest {
                 .withDependence(MemoryComponent.class)
                 .build();
 
-        public Component3(ComponentConfig config) throws Exception {
-            super(config);
-        }
-
         @Override
         public Info getInfo() {
             return INFO;
@@ -250,10 +233,6 @@ public class ClusterTest {
                 .withDependence(CustomComponent.class)
                 .withDependence(CyclicComponent1.class)
                 .build();
-
-        public CyclicComponent1(ComponentConfig config) throws Exception {
-            super(config);
-        }
 
         @Override
         public void load() throws ClusterException {}
@@ -278,10 +257,6 @@ public class ClusterTest {
                 .withEnvironmentVersion(AppVersion.getVersion(CyclicComponent2.class))
                 .withDependence(CyclicComponent1.class)
                 .build();
-
-        public CyclicComponent2(ComponentConfig config) throws Exception {
-            super(config);
-        }
 
         @Override
         public void load() throws ClusterException {}

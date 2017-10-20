@@ -10,7 +10,6 @@ import com.infomaximum.cluster.core.service.transport.Transport;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
 import com.infomaximum.cluster.exception.ClusterException;
-import com.infomaximum.cluster.struct.config.ComponentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,21 +22,15 @@ public abstract class Component {
 
     private final static Logger log = LoggerFactory.getLogger(Component.class);
 
-    private final ComponentConfig config;
-
     private TransportManager transportManager;
     private String key;
     private Transport transport;
     private Remotes remote;
     private ActiveComponents subSystemHashActives;
 
-    public Component(ComponentConfig config) {
-        this.config = config;
-    }
-
     public final void init(TransportManager transportManager) throws ClusterException {
         this.transportManager = transportManager;
-        this.key = generateKey(config);
+        this.key = generateKey();
         this.transport = transportManager.createTransport(getInfo().getUuid(), key);
         this.remote = new Remotes(this);
 
@@ -49,7 +42,7 @@ public abstract class Component {
         }
 
         //Регистрируемся у менеджера подсистем
-        log.info("register subsystem {} v.{}...", getInfo().getUuid(), getInfo().getVersion());
+        log.info("Register {} ver.{}...", getInfo().getUuid(), getInfo().getVersion());
         this.subSystemHashActives = registerComponent();
 
         //Загружаемся, в случае ошибки снимаем регистрацию
@@ -68,7 +61,7 @@ public abstract class Component {
     public abstract ExecutorTransport initExecutorTransport() throws ClusterException;
     public abstract void destroying() throws ClusterException;
 
-    protected String generateKey(ComponentConfig config) {
+    protected String generateKey() {
         return new StringBuilder()
                 .append(getInfo().getUuid()).append(':').append(UUID.randomUUID().toString())
                 .toString();
@@ -100,10 +93,6 @@ public abstract class Component {
         return key;
     }
 
-    public ComponentConfig getConfig() {
-        return config;
-    }
-
     public boolean isSingleton(){
         return true;
     }
@@ -117,11 +106,11 @@ public abstract class Component {
     }
 
     public final void destroy(){
-        log.info("Destroy {}...", getInfo().getUuid());
+        log.info("{} destroying...", getInfo().getUuid());
         try {
             destroying();
             unregisterComponent();
-            log.info("Destroy {}... completed", getInfo().getUuid());
+            log.info("{} destroyed. completed", getInfo().getUuid());
         } catch (Exception e) {
             log.error("{} Error destroy subsystem", getInfo().getUuid(), e);
         }
@@ -129,7 +118,7 @@ public abstract class Component {
         try {
             transportManager.destroyTransport(transport);
         } catch (Exception e) {
-            log.error("{} Error transport destroy subsystem", getInfo().getUuid(), e);
+            log.error("{} Error transport destroy", getInfo().getUuid(), e);
         }
     }
 }
