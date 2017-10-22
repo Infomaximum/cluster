@@ -3,57 +3,49 @@ package com.infomaximum.cluster.component.manager;
 import com.infomaximum.cluster.component.manager.core.RegisterComponent;
 import com.infomaximum.cluster.core.component.active.ActiveComponents;
 import com.infomaximum.cluster.core.component.active.ActiveComponentsImpl;
-import com.infomaximum.cluster.core.service.transport.TransportManager;
-import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
+import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
+import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
-import com.infomaximum.cluster.struct.config.ComponentConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.infomaximum.cluster.utils.version.AppVersion;
 
 /**
  * Created by kris on 23.09.16.
  */
 public class ManagerComponent extends Component {
 
-	private final static Logger log = LoggerFactory.getLogger(ManagerComponent.class);
-
 	public static final Info INFO = new Info.Builder(ManagerComponent.class)
+			.withEnvironmentVersion(AppVersion.getVersion(ManagerComponent.class))
 			.build();
 
 	public static final String KEY = INFO.getUuid() + ":" + "00000000-0000-0000-0000-000000000000";
 
-
 	private RegisterComponent registerComponent;
 
-	public ManagerComponent(TransportManager transportManager, ComponentConfig config) throws Exception {
-		super(transportManager, config);
-	}
-
 	@Override
-	public void load() throws Exception {
+	public void load() throws ClusterException {
 		registerComponent = new RegisterComponent(this);
 	}
 
 	@Override
-	protected String generateKey(ComponentConfig config) {
+	protected String generateKey() {
 		return KEY;
 	}
 
 	@Override
-	public ExecutorTransport initExecutorTransport() throws ReflectiveOperationException {
-		return new ExecutorTransport(this);
+	public ExecutorTransportImpl initExecutorTransport() throws ClusterException {
+		return new ExecutorTransportImpl(this);
 	}
 
 	//Логика регистрации у менеджера подсистем не стандартная
 	@Override
-	protected ActiveComponentsImpl registerComponent() throws Exception {
+	protected ActiveComponentsImpl registerComponent() {
 		return null;
 	}
 
 	//Логика Снятия регистрации у менеджера подсистем не стандартная
 	@Override
-	protected void unRegisterComponent() throws Exception {}
+	protected void unregisterComponent() {}
 
 	@Override
 	public Info getInfo() {
@@ -66,12 +58,11 @@ public class ManagerComponent extends Component {
 	}
 
 	@Override
-	public void destroyed() throws Exception {
-
+	public void destroying() throws ClusterException {
+		// do nothing
 	}
 
 	public RegisterComponent getRegisterComponent() {
 		return registerComponent;
 	}
-
 }

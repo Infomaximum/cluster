@@ -12,13 +12,13 @@ import java.lang.reflect.Modifier;
  */
 public interface RemoteObject {
 
-	public JSONObject serialize();
+	JSONObject serialize(Component component);
 
-	public static boolean instanceOf(Class classType) {
+	static boolean instanceOf(Class classType) {
 		return RemoteObject.class.isAssignableFrom(classType);
 	}
 
-	public static <T extends RemoteObject> T deserialize(Component component, Class<T> classType, JSONObject json) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+	static <T extends RemoteObject> T deserialize(Component component, Class<T> classType, JSONObject json) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		Method method=null;
 		for (Method iMethod: classType.getMethods()) {
 			if (!iMethod.getName().equals("deserialize")) continue;

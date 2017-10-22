@@ -1,6 +1,5 @@
 package com.infomaximum.cluster.struct;
 
-import com.infomaximum.cluster.component.database.datasource.DataSourceComponent;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.component.manager.remote.managersubsystem.RControllerManagerComponent;
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
@@ -10,13 +9,10 @@ import com.infomaximum.cluster.core.remote.Remotes;
 import com.infomaximum.cluster.core.service.transport.Transport;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
-import com.infomaximum.cluster.struct.config.ComponentConfig;
-import com.infomaximum.rocksdb.core.objectsource.DomainObjectSource;
-import org.rocksdb.RocksDBException;
+import com.infomaximum.cluster.exception.ClusterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -26,73 +22,55 @@ public abstract class Component {
 
     private final static Logger log = LoggerFactory.getLogger(Component.class);
 
-    private final TransportManager transportManager;
+    private TransportManager transportManager;
+    private String key;
+    private Transport transport;
+    private Remotes remote;
+    private ActiveComponents subSystemHashActives;
 
-    private final String key;
-    protected final ComponentConfig config;
-
-    private final Transport transport;
-
-    private final Remotes remote;
-
-    private final ActiveComponents subSystemHashActives;
-
-    private DomainObjectSource domainObjectSource;
-
-    public Component(TransportManager transportManager, ComponentConfig config) throws Exception {
-        this.transportManager=transportManager;
-
-        this.key = generateKey(config);
-        this.config = config;
-        this.transport = transportManager.createTransport(getInfo().getUuid(), key);;
-
-        setExecutorTransport(transport);
-
+    public final void init(TransportManager transportManager) throws ClusterException {
+        this.transportManager = transportManager;
+        this.key = generateKey();
+        this.transport = transportManager.createTransport(getInfo().getUuid(), key);
         this.remote = new Remotes(this);
 
-        //Регистрируемся у менеджера подсистем
-        log.info("register subsystem {} v.{}...", getInfo().getUuid(), getInfo().getVersion());
-        this.subSystemHashActives = registerComponent();
-    }
+        try {
+            transport.setExecutor(initExecutorTransport());
+        } catch (ClusterException e) {
+            transportManager.destroyTransport(transport);
+            throw e;
+        }
 
-    public void init() throws Exception {
+        //Регистрируемся у менеджера подсистем
+        log.info("Register {} ver.{}...", getInfo().getUuid(), getInfo().getVersion());
+        this.subSystemHashActives = registerComponent();
+
         //Загружаемся, в случае ошибки снимаем регистрацию
         try {
-            domainObjectSource = initDomainObjectSource();
             load();
-        } catch (Throwable e) {
+        } catch (ClusterException e) {
             log.error("{} Error init subsystem", this, e);
-            try {
-                unRegisterComponent();
-            } catch (Exception ex) {
-                log.error("{} Exception unRegisterComponent", this, e);
-            }
+            unregisterComponent();
+            transportManager.destroyTransport(transport);
             throw e;
         }
     }
 
-    public abstract void load() throws Exception ;
+    public abstract Info getInfo();
+    public abstract void load() throws ClusterException;
+    public abstract ExecutorTransport initExecutorTransport() throws ClusterException;
+    public abstract void destroying() throws ClusterException;
 
-    protected DomainObjectSource initDomainObjectSource() throws RocksDBException, IOException {
-        return new DomainObjectSource(new DataSourceComponent(this));
-    }
-
-    public abstract ExecutorTransport initExecutorTransport() throws ReflectiveOperationException;
-
-    protected String generateKey(ComponentConfig config) {
+    protected String generateKey() {
         return new StringBuilder()
                 .append(getInfo().getUuid()).append(':').append(UUID.randomUUID().toString())
                 .toString();
     }
 
-    public final DomainObjectSource getDomainObjectSource(){
-        return domainObjectSource;
-    }
-
     /**
      * Регистрируемся у менджера подсистем
      */
-    protected ActiveComponentsImpl registerComponent() throws Exception {
+    protected ActiveComponentsImpl registerComponent() {
         RControllerManagerComponent rControllerManagerComponent = remote.getFromSSKey(ManagerComponent.KEY, RControllerManagerComponent.class);
         ComponentInfos activeComponents = rControllerManagerComponent.register(
                 new RuntimeComponentInfo(key, getInfo().getUuid(), isSingleton(), getTransport().getExecutor().getClassRControllers())
@@ -100,28 +78,19 @@ public abstract class Component {
         return new ActiveComponentsImpl(this, activeComponents.getItems());
     }
 
+    /**
+     * Снимаем регистрацию у менджера подсистем
+     */
+    protected void unregisterComponent() {
+        remote.getFromSSKey(ManagerComponent.KEY, RControllerManagerComponent.class).unregister(key);
+    }
+
     public Transport getTransport(){
         return transport;
     }
 
-    protected void setExecutorTransport(Transport transport) throws ReflectiveOperationException {
-        transport.setExecutor(initExecutorTransport());
-    }
-
-    /**
-     * Снимаем регистрацию у менджера подсистем
-     */
-    protected void unRegisterComponent() throws Exception {
-        remote.getFromSSKey(ManagerComponent.KEY, RControllerManagerComponent.class).unregister(key);
-    }
-
-    public abstract Info getInfo();
-
     public String getKey() {
         return key;
-    }
-    public ComponentConfig getConfig() {
-        return config;
     }
 
     public boolean isSingleton(){
@@ -131,17 +100,17 @@ public abstract class Component {
     public Remotes getRemotes() {
         return remote;
     }
+
     public ActiveComponents getActiveRoles() {
         return subSystemHashActives;
     }
 
-
     public final void destroy(){
-        log.info("Destroy {}...", getInfo().getUuid());
+        log.info("{} destroying...", getInfo().getUuid());
         try {
-            destroyed();
-            unRegisterComponent();
-            log.info("Destroy {}... completed", getInfo().getUuid());
+            destroying();
+            unregisterComponent();
+            log.info("{} destroyed. completed", getInfo().getUuid());
         } catch (Exception e) {
             log.error("{} Error destroy subsystem", getInfo().getUuid(), e);
         }
@@ -149,9 +118,7 @@ public abstract class Component {
         try {
             transportManager.destroyTransport(transport);
         } catch (Exception e) {
-            log.error("{} Error transport destroy subsystem", getInfo().getUuid(), e);
+            log.error("{} Error transport destroy", getInfo().getUuid(), e);
         }
     }
-
-    public abstract void destroyed() throws Exception;
 }

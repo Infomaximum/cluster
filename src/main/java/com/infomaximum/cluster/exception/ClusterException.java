@@ -1,14 +1,14 @@
 package com.infomaximum.cluster.exception;
 
-/**
- * Created by user on 06.09.2017.
- */
-public class ClusterException extends RuntimeException {
+public class ClusterException extends Exception {
 
     public ClusterException() {}
+
+    public ClusterException(String message) {
+        super(message);
+    }
 
     public ClusterException(Throwable cause) {
         super(cause);
     }
-
 }

@@ -26,7 +26,7 @@ public class RegisterComponent implements ActiveComponents {
 
 	public RegisterComponent(ManagerComponent managerComponent) {
 		this.managerComponent = managerComponent;
-		this.components = new ConcurrentHashMap<String, RuntimeComponentInfo>();
+		this.components = new ConcurrentHashMap<>();
 
 		//Регистрируем себя
 		registerActiveRole(new RuntimeComponentInfo(
@@ -51,7 +51,7 @@ public class RegisterComponent implements ActiveComponents {
 			if (isSingleton && getActiveSubSystemKeys().contains(uuid)) throw new RuntimeException("Subsystem: " + uuid + " does not support clusteringt");
 
 			//Сохраняем список подсистем которые необходимо оповестить
-			activeSubSystems = new HashMap<String, RuntimeComponentInfo>(components);
+			activeSubSystems = new HashMap<>(components);
 
 			//Регистрируем
 			components.put(key, subSystemInfo);
@@ -74,7 +74,7 @@ public class RegisterComponent implements ActiveComponents {
 		synchronized (components) {
 			unRegisterSubSystemInfo = components.remove(key);
 
-			activeSubSystems = new HashMap<String, RuntimeComponentInfo>(components);
+			activeSubSystems = new HashMap<>(components);
 		}
 
 		//Oповещаем все подсистемы

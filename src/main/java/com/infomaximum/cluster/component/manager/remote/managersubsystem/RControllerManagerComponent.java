@@ -9,9 +9,9 @@ import com.infomaximum.cluster.struct.ComponentInfos;
  */
 public interface RControllerManagerComponent extends RController {
 
-	public ComponentInfos register(RuntimeComponentInfo componentInfo);
+	ComponentInfos register(RuntimeComponentInfo componentInfo);
 
-	public void unregister(String componentKey);
+	void unregister(String componentKey);
 }
 
 

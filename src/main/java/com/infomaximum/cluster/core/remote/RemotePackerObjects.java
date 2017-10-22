@@ -1,7 +1,7 @@
 package com.infomaximum.cluster.core.remote;
 
 import com.infomaximum.cluster.core.remote.packer.RemotePacker;
-import com.infomaximum.cluster.exception.ClusterRemotePackerException;
+import com.infomaximum.cluster.exception.runtime.ClusterRemotePackerException;
 import com.infomaximum.cluster.struct.Component;
 
 import java.util.List;
@@ -38,5 +38,12 @@ public class RemotePackerObjects {
             if (remotePackerObject.isSupport(classType)) return remotePackerObject.getClassName(classType);
         }
         throw new ClusterRemotePackerException();
+    }
+
+    public boolean isSupportType(Class classType){
+        for (RemotePacker remotePackerObject: remotePackers) {
+            if (remotePackerObject.isSupport(classType)) return true;
+        }
+        return false;
     }
 }

@@ -20,7 +20,7 @@ public class ActiveComponentsImpl implements ActiveComponents {
 	public ActiveComponentsImpl(Component component, Collection<RuntimeComponentInfo> activeSubSystems) {
 		this.component = component;
 
-		this.componentInfos = new ConcurrentHashMap<String, RuntimeComponentInfo>();
+		this.componentInfos = new ConcurrentHashMap<>();
 		for (RuntimeComponentInfo subSystemInfo: activeSubSystems){
 			this.componentInfos.put(subSystemInfo.key, subSystemInfo);
 		}
@@ -50,7 +50,7 @@ public class ActiveComponentsImpl implements ActiveComponents {
 
 	@Override
 	public Collection<String> getActiveSubSystemUuids() {
-		HashSet<String> subSystemUuids = new HashSet<String>();
+		HashSet<String> subSystemUuids = new HashSet<>();
 		for(RuntimeComponentInfo subSystemInfo: componentInfos.values()){
 			subSystemUuids.add(subSystemInfo.uuid);
 		}

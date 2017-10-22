@@ -129,7 +129,7 @@ public class RabbitMQ implements TransportManager {
 	@Override
 	public void destroy(){
 		isDestroyed=true;
-		log.debug("RabbitMQ connection destroyed");
+		log.debug("RabbitMQ connection destroying");
 		if (connection!=null){
 			try {
 				connection.close();
