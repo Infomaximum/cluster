@@ -11,6 +11,7 @@ import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.exception.CompatibilityException;
 import com.infomaximum.cluster.exception.CyclicDependenceException;
+import com.infomaximum.cluster.exception.DependencyException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
 import com.infomaximum.cluster.utils.version.AppVersion;
@@ -169,6 +170,33 @@ public class ClusterTest {
             Assert.assertEquals(Component2.class, components.remove(0).getClass());
             Assert.assertEquals(Component1.class, components.remove(0).getClass());
 
+            Assert.assertEquals(0, components.size());
+        }
+    }
+
+    @Test
+    public void removeComponent() throws Exception {
+        try (Cluster cluster = new Cluster.Builder()
+                .withTransport(new MockTransportBuilder())
+                .withEnvironmentVersion(AppVersion.getVersion(BaseClusterTest.class))
+                .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
+                .withComponent(new ComponentBuilder(Component2.class))
+                .withComponent(new ComponentBuilder(Component1.class))
+                .withComponent(new ComponentBuilder(Component3.class))
+                .withComponentIfNotExist(new ComponentBuilder(MemoryComponent.class))
+                .build()) {
+
+            try {
+                cluster.removeComponent(cluster.getAnyComponent(Component2.class));
+                Assert.fail();
+            } catch (DependencyException e) {
+                Assert.assertTrue(true);
+            }
+
+            cluster.removeComponent(cluster.getAnyComponent(Component1.class));
+            List<BaseComponent> components = cluster.getDependencyOrderedComponentsOf(BaseComponent.class);
+            Assert.assertEquals(Component3.class, components.remove(0).getClass());
+            Assert.assertEquals(Component2.class, components.remove(0).getClass());
             Assert.assertEquals(0, components.size());
         }
     }
