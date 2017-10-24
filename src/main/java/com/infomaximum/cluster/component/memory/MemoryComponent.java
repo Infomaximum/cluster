@@ -1,5 +1,6 @@
 package com.infomaximum.cluster.component.memory;
 
+import com.infomaximum.cluster.Version;
 import com.infomaximum.cluster.component.memory.core.MemoryEngine;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.exception.ClusterException;
@@ -14,7 +15,7 @@ public class MemoryComponent extends Component {
 
     public static final Info INFO = new Info.Builder(MemoryComponent.class)
             .withUuid(MemoryComponent.class.getPackage().getName())
-            .withEnvironmentVersion(ManifestUtil.getVersion(MemoryComponent.class))
+            .withEnvironmentVersion(new Version(0, 0, 0))
             .withVersion(ManifestUtil.getVersion(MemoryComponent.class))
             .build();
 

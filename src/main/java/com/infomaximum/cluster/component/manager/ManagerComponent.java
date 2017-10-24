@@ -1,5 +1,6 @@
 package com.infomaximum.cluster.component.manager;
 
+import com.infomaximum.cluster.Version;
 import com.infomaximum.cluster.component.manager.core.RegisterComponent;
 import com.infomaximum.cluster.core.component.active.ActiveComponents;
 import com.infomaximum.cluster.core.component.active.ActiveComponentsImpl;
@@ -16,7 +17,7 @@ public class ManagerComponent extends Component {
 
 	public static final Info INFO = new Info.Builder(ManagerComponent.class)
 			.withUuid(ManagerComponent.class.getPackage().getName())
-			.withEnvironmentVersion(ManifestUtil.getVersion(ManagerComponent.class))
+			.withEnvironmentVersion(new Version(0, 0, 0))
 			.withVersion(ManifestUtil.getVersion(ManagerComponent.class))
 			.build();
 

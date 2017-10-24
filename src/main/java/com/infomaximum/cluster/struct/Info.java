@@ -1,6 +1,8 @@
 package com.infomaximum.cluster.struct;
 
 import com.infomaximum.cluster.Version;
+import com.infomaximum.cluster.component.manager.ManagerComponent;
+import com.infomaximum.cluster.component.memory.MemoryComponent;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -45,6 +47,10 @@ public class Info {
     }
 
     public boolean isCompatibleWith(Version targetEnvironmentVersion) {
+        if (componentClass == ManagerComponent.class || componentClass == MemoryComponent.class) {
+            return true;
+        }
+
         return environmentVersion.major == targetEnvironmentVersion.major &&
                 environmentVersion.minor == targetEnvironmentVersion.minor &&
                 environmentVersion.build >= targetEnvironmentVersion.build;
