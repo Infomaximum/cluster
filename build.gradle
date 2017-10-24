@@ -1,5 +1,7 @@
 group 'com.infomaximum'
 version '0.0.23'
+def environment_version = '0.7.7'
+def component_uuid = (group + '.' + rootProject.name)
 
 apply plugin: 'java'
 apply plugin: 'maven'

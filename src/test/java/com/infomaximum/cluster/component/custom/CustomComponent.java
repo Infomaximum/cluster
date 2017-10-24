@@ -4,7 +4,7 @@ import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
-import com.infomaximum.cluster.utils.version.AppVersion;
+import com.infomaximum.cluster.utils.ManifestUtil;
 
 /**
  * Created by kris on 12.09.17.
@@ -12,7 +12,9 @@ import com.infomaximum.cluster.utils.version.AppVersion;
 public class CustomComponent extends Component {
 
     public static final Info INFO = new Info.Builder(CustomComponent.class)
-            .withEnvironmentVersion(AppVersion.getVersion(CustomComponent.class))
+            .withUuid(CustomComponent.class.getPackage().getName())
+            .withEnvironmentVersion(ManifestUtil.getVersion(CustomComponent.class))
+            .withVersion(ManifestUtil.getVersion(CustomComponent.class))
             .build();
 
     @Override
