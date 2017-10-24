@@ -1,7 +1,6 @@
 package com.infomaximum.cluster.struct;
 
 import com.infomaximum.cluster.Version;
-import com.infomaximum.cluster.utils.version.AppVersion;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,8 +18,8 @@ public class Info {
 
     private Info(Builder builder) {
         this.componentClass = builder.componentClass;
-        this.uuid = componentClass.getPackage().getName();
-        this.version = AppVersion.getVersion(componentClass);
+        this.uuid = builder.uuid;
+        this.version = builder.version;
         this.dependencies = builder.dependencies == null ? new Class[0] : builder.dependencies.toArray(new Class[builder.dependencies.size()]);
         this.environmentVersion = builder.environmentVersion;
     }
@@ -57,6 +56,8 @@ public class Info {
 
         private Set<Class<? extends Component>> dependencies = new HashSet<>();
         private Version environmentVersion;
+        private Version version;
+        private String uuid;
 
         public Builder(Class<? extends Component> componentClass) {
             this.componentClass = componentClass;
@@ -67,8 +68,18 @@ public class Info {
             return this;
         }
 
+        public Builder withUuid(String uuid) {
+            this.uuid = uuid;
+            return this;
+        }
+
         public Builder withEnvironmentVersion(Version environmentVersion) {
             this.environmentVersion = environmentVersion;
+            return this;
+        }
+
+        public Builder withVersion(Version version) {
+            this.version = version;
             return this;
         }
 

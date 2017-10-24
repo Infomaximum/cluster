@@ -7,7 +7,7 @@ import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
-import com.infomaximum.cluster.utils.version.AppVersion;
+import com.infomaximum.cluster.utils.ManifestUtil;
 
 /**
  * Created by kris on 23.09.16.
@@ -15,7 +15,9 @@ import com.infomaximum.cluster.utils.version.AppVersion;
 public class ManagerComponent extends Component {
 
 	public static final Info INFO = new Info.Builder(ManagerComponent.class)
-			.withEnvironmentVersion(AppVersion.getVersion(ManagerComponent.class))
+			.withUuid(ManagerComponent.class.getPackage().getName())
+			.withEnvironmentVersion(ManifestUtil.getVersion(ManagerComponent.class))
+			.withVersion(ManifestUtil.getVersion(ManagerComponent.class))
 			.build();
 
 	public static final String KEY = INFO.getUuid() + ":" + "00000000-0000-0000-0000-000000000000";

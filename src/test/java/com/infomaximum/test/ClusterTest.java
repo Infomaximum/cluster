@@ -11,9 +11,10 @@ import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.exception.CompatibilityException;
 import com.infomaximum.cluster.exception.CyclicDependenceException;
+import com.infomaximum.cluster.exception.DependencyException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
-import com.infomaximum.cluster.utils.version.AppVersion;
+import com.infomaximum.cluster.utils.ManifestUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -27,7 +28,7 @@ public class ClusterTest {
                 .withTransport(
                         new MockTransportBuilder()
                 )
-                .withEnvironmentVersion(AppVersion.getVersion(BaseClusterTest.class))
+                .withEnvironmentVersion(ManifestUtil.getVersion(BaseClusterTest.class))
                 .withComponentIfNotExist(new ComponentBuilder(MemoryComponent.class))
                 .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
                 .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
@@ -61,7 +62,7 @@ public class ClusterTest {
                     .withTransport(
                             new MockTransportBuilder()
                     )
-                    .withEnvironmentVersion(AppVersion.getVersion(BaseClusterTest.class))
+                    .withEnvironmentVersion(ManifestUtil.getVersion(BaseClusterTest.class))
                     .withComponent(new ComponentBuilder(MemoryComponent.class))
                     .withComponent(new ComponentBuilder(CustomComponent.class))
                     .withComponent(new ComponentBuilder(MemoryComponent.class))
@@ -107,7 +108,7 @@ public class ClusterTest {
 
     @Test
     public void compatibleVersion() throws Exception {
-        Version currentVer = AppVersion.getVersion(ClusterTest.class);
+        Version currentVer = ManifestUtil.getVersion(ClusterTest.class);
 
         try (Cluster cluster = new Cluster.Builder()
                     .withTransport(
@@ -128,7 +129,7 @@ public class ClusterTest {
                 .withTransport(
                         new MockTransportBuilder()
                 )
-                .withEnvironmentVersion(AppVersion.getVersion(BaseClusterTest.class))
+                .withEnvironmentVersion(ManifestUtil.getVersion(BaseClusterTest.class))
                 .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
                 .withComponent(new ComponentBuilder(Component2.class))
                 .withComponent(new ComponentBuilder(Component1.class))
@@ -155,7 +156,7 @@ public class ClusterTest {
                 .withTransport(
                         new MockTransportBuilder()
                 )
-                .withEnvironmentVersion(AppVersion.getVersion(BaseClusterTest.class))
+                .withEnvironmentVersion(ManifestUtil.getVersion(BaseClusterTest.class))
                 .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
                 .withComponent(new ComponentBuilder(Component2.class))
                 .withComponent(new ComponentBuilder(Component1.class))
@@ -169,6 +170,33 @@ public class ClusterTest {
             Assert.assertEquals(Component2.class, components.remove(0).getClass());
             Assert.assertEquals(Component1.class, components.remove(0).getClass());
 
+            Assert.assertEquals(0, components.size());
+        }
+    }
+
+    @Test
+    public void removeComponent() throws Exception {
+        try (Cluster cluster = new Cluster.Builder()
+                .withTransport(new MockTransportBuilder())
+                .withEnvironmentVersion(ManifestUtil.getVersion(BaseClusterTest.class))
+                .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
+                .withComponent(new ComponentBuilder(Component2.class))
+                .withComponent(new ComponentBuilder(Component1.class))
+                .withComponent(new ComponentBuilder(Component3.class))
+                .withComponentIfNotExist(new ComponentBuilder(MemoryComponent.class))
+                .build()) {
+
+            try {
+                cluster.removeComponent(cluster.getAnyComponent(Component2.class));
+                Assert.fail();
+            } catch (DependencyException e) {
+                Assert.assertTrue(true);
+            }
+
+            cluster.removeComponent(cluster.getAnyComponent(Component1.class));
+            List<BaseComponent> components = cluster.getDependencyOrderedComponentsOf(BaseComponent.class);
+            Assert.assertEquals(Component3.class, components.remove(0).getClass());
+            Assert.assertEquals(Component2.class, components.remove(0).getClass());
             Assert.assertEquals(0, components.size());
         }
     }
@@ -190,7 +218,9 @@ public class ClusterTest {
     public static class Component1 extends BaseComponent {
 
         public static final Info INFO = new Info.Builder(Component1.class)
-                .withEnvironmentVersion(AppVersion.getVersion(Component1.class))
+                .withUuid(Component1.class.getPackage().getName())
+                .withEnvironmentVersion(ManifestUtil.getVersion(Component1.class))
+                .withVersion(ManifestUtil.getVersion(Component1.class))
                 .withDependence(Component2.class)
                 .build();
 
@@ -203,7 +233,9 @@ public class ClusterTest {
     public static class Component2 extends BaseComponent {
 
         public static final Info INFO = new Info.Builder(Component2.class)
-                .withEnvironmentVersion(AppVersion.getVersion(Component2.class))
+                .withUuid(Component2.class.getPackage().getName())
+                .withEnvironmentVersion(ManifestUtil.getVersion(Component2.class))
+                .withVersion(ManifestUtil.getVersion(Component2.class))
                 .withDependence(Component3.class)
                 .build();
 
@@ -216,7 +248,9 @@ public class ClusterTest {
     public static class Component3 extends BaseComponent {
 
         public static final Info INFO = new Info.Builder(Component3.class)
-                .withEnvironmentVersion(AppVersion.getVersion(Component3.class))
+                .withUuid(Component3.class.getPackage().getName())
+                .withEnvironmentVersion(ManifestUtil.getVersion(Component3.class))
+                .withVersion(ManifestUtil.getVersion(Component3.class))
                 .withDependence(MemoryComponent.class)
                 .build();
 
@@ -229,7 +263,9 @@ public class ClusterTest {
     public static class CyclicComponent1 extends Component {
 
         public static final Info INFO = new Info.Builder(CyclicComponent1.class)
-                .withEnvironmentVersion(AppVersion.getVersion(CyclicComponent1.class))
+                .withUuid(CyclicComponent1.class.getPackage().getName())
+                .withEnvironmentVersion(ManifestUtil.getVersion(CyclicComponent1.class))
+                .withVersion(ManifestUtil.getVersion(CyclicComponent1.class))
                 .withDependence(CustomComponent.class)
                 .withDependence(CyclicComponent1.class)
                 .build();
@@ -254,7 +290,9 @@ public class ClusterTest {
     public static class CyclicComponent2 extends Component {
 
         public static final Info INFO = new Info.Builder(CyclicComponent2.class)
-                .withEnvironmentVersion(AppVersion.getVersion(CyclicComponent2.class))
+                .withUuid(CyclicComponent2.class.getPackage().getName())
+                .withEnvironmentVersion(ManifestUtil.getVersion(CyclicComponent2.class))
+                .withVersion(ManifestUtil.getVersion(CyclicComponent2.class))
                 .withDependence(CyclicComponent1.class)
                 .build();
 

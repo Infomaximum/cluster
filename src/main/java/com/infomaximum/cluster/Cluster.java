@@ -6,6 +6,7 @@ import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.exception.CompatibilityException;
 import com.infomaximum.cluster.exception.CyclicDependenceException;
+import com.infomaximum.cluster.exception.DependencyException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.RandomUtil;
 import org.slf4j.Logger;
@@ -63,6 +64,22 @@ public class Cluster implements AutoCloseable {
                 .filter(component -> baseClass.isAssignableFrom(component.getClass()))
                 .map(component -> (T)component)
                 .collect(Collectors.toList());
+    }
+
+    public void removeComponent(Component component) throws ClusterException {
+        for (int i = dependencyOrderedComponents.size() - 1; i > -1; --i) {
+            Component another = dependencyOrderedComponents.get(i);
+            if (another == component) {
+                dependencyOrderedComponents.remove(i);
+                break;
+            }
+
+            if (Arrays.asList(another.getInfo().getDependencies()).contains(component.getClass())) {
+                throw new DependencyException(another, component);
+            }
+        }
+
+        closeComponent(component);
     }
 
     @Override
