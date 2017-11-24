@@ -65,24 +65,4 @@ public class MockTransport implements Transport {
 		return mockTransportManager.transitRequest(targetComponentKey, rControllerClass.getName(), method.getName(), args);
 	}
 
-
-//	@Override
-//	public JSONObject request(String subSystemKey, JSONObject request) throws Exception {
-//		return request(subSystemKey, request, 5L * 60L * 1000L);
-//	}
-//
-//	@Override
-//	public JSONObject request(String subSystemKey, JSONObject request, long timeout) throws Exception {
-//		Future<TPacketResponse> responseFuture = futureRequest(subSystemKey, request);
-//		TPacketResponse packetResponse = responseFuture.get(timeout, TimeUnit.MILLISECONDS);
-//		if (packetResponse.getException()!=null){
-//			throw packetResponse.getException();
-//		} else {
-//			return packetResponse.getData();
-//		}
-//	}
-
-//	private Future<TPacketResponse> futureRequest(String subSystemKey, JSONObject request) {
-//		return mockTransportManager.transitRequest(subSystemKey, request);
-//	}
 }
