@@ -37,7 +37,11 @@ public class ManifestUtil {
             if (version == null) {
                 version = getDefinedGradleValue("environment_version", Paths.get("build.gradle"));
             }
-            return Version.parse(version);
+            if (version != null) {
+                return Version.parse(version);
+            } else {
+                return getVersion(clazz);
+            }
         } catch (IOException e) {
             throw new VersionNotFoundException(e);
         }
