@@ -15,12 +15,12 @@ public class RControllerNotificationImpl extends AbstractRController<Component> 
 
 	@Override
 	public void notificationRegisterComponent(RuntimeComponentInfo componentInfo) {
-		component.getActiveRoles().registerActiveRole(componentInfo);
+		component.getActiveComponents().registerActiveRole(componentInfo);
 	}
 
 	@Override
 	public void notificationUnRegisterComponent(RuntimeComponentInfo componentInfo) {
-		component.getActiveRoles().unRegisterActiveRole(componentInfo.key);
+		component.getActiveComponents().unRegisterActiveRole(componentInfo.key);
 	}
 }
 

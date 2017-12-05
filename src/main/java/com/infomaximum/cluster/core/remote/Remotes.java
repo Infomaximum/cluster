@@ -48,7 +48,7 @@ public class Remotes {
 
 	public <T extends RController> T getFromSSUuid(String uuid, Class<T> remoteControllerClazz){
 		List<String> pretendents = new ArrayList<>();
-		for (RuntimeComponentInfo componentInfo: component.getActiveRoles().getActiveSubSystems()) {
+		for (RuntimeComponentInfo componentInfo : component.getActiveComponents().getActiveSubSystems()) {
 			String subSystemKey = componentInfo.key;
 			String subSystemUuid = componentInfo.uuid;
 
@@ -73,7 +73,7 @@ public class Remotes {
 
 	public <T extends RController> Collection<T> getControllers(Class<T> remoteClassController){
 		List<T> controllers = new ArrayList<>();
-		for (RuntimeComponentInfo componentInfo: component.getActiveRoles().getActiveSubSystems()) {
+		for (RuntimeComponentInfo componentInfo : component.getActiveComponents().getActiveSubSystems()) {
 			if (componentInfo.getClassNameRControllers().contains(remoteClassController.getName())) {
 				//Нашли подсиситему в которой зарегистрирован этот контроллер
 				controllers.add(getFromSSKey(componentInfo.key, remoteClassController));
