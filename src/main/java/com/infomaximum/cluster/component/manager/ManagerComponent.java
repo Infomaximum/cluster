@@ -56,7 +56,7 @@ public class ManagerComponent extends Component {
 	}
 
 	@Override
-	public ActiveComponents getActiveRoles() {
+	public ActiveComponents getActiveComponents() {
 		return registerComponent;
 	}
 

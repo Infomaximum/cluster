@@ -26,7 +26,7 @@ public abstract class Component {
     private String key;
     private Transport transport;
     private Remotes remote;
-    private ActiveComponents subSystemHashActives;
+    private ActiveComponents activeComponents;
 
     public final void init(TransportManager transportManager) throws ClusterException {
         this.transportManager = transportManager;
@@ -43,7 +43,7 @@ public abstract class Component {
 
         //Регистрируемся у менеджера подсистем
         log.info("Register {} ver.{}...", getInfo().getUuid(), getInfo().getVersion());
-        this.subSystemHashActives = registerComponent();
+        this.activeComponents = registerComponent();
 
         //Загружаемся, в случае ошибки снимаем регистрацию
         try {
@@ -101,8 +101,8 @@ public abstract class Component {
         return remote;
     }
 
-    public ActiveComponents getActiveRoles() {
-        return subSystemHashActives;
+    public ActiveComponents getActiveComponents() {
+        return activeComponents;
     }
 
     public final void destroy(){
