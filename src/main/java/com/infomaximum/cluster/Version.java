@@ -41,6 +41,6 @@ public class Version {
 
     @Override
     public String toString() {
-        return  major + "." + minor + "." + build;
+        return major + "." + minor + "." + build;
     }
 }
