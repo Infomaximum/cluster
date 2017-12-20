@@ -184,7 +184,7 @@ public class Cluster implements AutoCloseable {
                             && nextComponent.getClass() != ManagerComponent.class
                             && nextComponent.getClass() != MemoryComponent.class
                             ) {
-                        if (!controlComponentVersion.isSupportVersion(nextComponent.getInfo())) {
+                        if (!controlComponentVersion.isSupportVersion(environmentVersion, nextComponent.getInfo().getEnvironmentVersion())) {
                             throw new CompatibilityException(nextComponent, environmentVersion);
                         }
                     }
