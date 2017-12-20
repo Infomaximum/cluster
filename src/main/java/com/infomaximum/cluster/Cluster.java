@@ -2,12 +2,14 @@ package com.infomaximum.cluster;
 
 import com.infomaximum.cluster.builder.transport.TransportBuilder;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
+import com.infomaximum.cluster.component.memory.MemoryComponent;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.exception.CompatibilityException;
 import com.infomaximum.cluster.exception.CyclicDependenceException;
 import com.infomaximum.cluster.exception.DependencyException;
 import com.infomaximum.cluster.struct.Component;
+import com.infomaximum.cluster.struct.ControlComponentVersion;
 import com.infomaximum.cluster.utils.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,6 +111,8 @@ public class Cluster implements AutoCloseable {
         private List<ComponentBuilder> componentBuilders = new ArrayList<>();
         private Version environmentVersion;
 
+        private ControlComponentVersion controlComponentVersion;
+
         public Builder() {}
 
         public Builder withEnvironmentVersion(Version environmentVersion) {
@@ -133,6 +137,11 @@ public class Cluster implements AutoCloseable {
             if (!containsComponent(componentBuilder)) {
                 componentBuilders.add(componentBuilder);
             }
+            return this;
+        }
+
+        public Builder withControlComponentVersion(ControlComponentVersion controlComponentVersion) {
+            this.controlComponentVersion = controlComponentVersion;
             return this;
         }
 
@@ -170,8 +179,14 @@ public class Cluster implements AutoCloseable {
                         throw new CyclicDependenceException(components.stream().map(cb -> cb.getClass().getName()).collect(Collectors.toList()));
                     }
 
-                    if (!nextComponent.getInfo().isCompatibleWith(environmentVersion)) {
-                        throw new CompatibilityException(nextComponent, environmentVersion);
+                    //Проверяем корректоность версии
+                    if (controlComponentVersion != null
+                            && nextComponent.getClass() != ManagerComponent.class
+                            && nextComponent.getClass() != MemoryComponent.class
+                            ) {
+                        if (!controlComponentVersion.isSupportVersion(nextComponent.getInfo())) {
+                            throw new CompatibilityException(nextComponent, environmentVersion);
+                        }
                     }
 
                     cluster.appendComponent(nextComponent);
