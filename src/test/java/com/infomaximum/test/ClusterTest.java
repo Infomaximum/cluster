@@ -119,7 +119,7 @@ public class ClusterTest {
                 .withComponent(new ComponentBuilder(CustomComponent.class))
                 .withControlComponentVersion(new ControlComponentVersion() {
                     @Override
-                    public boolean isSupportVersion(Info info) {
+                    public boolean isSupportVersion(Version environmentVersion, Version componentEnvironmentVersion) {
                         return false;
                     }
                 })
