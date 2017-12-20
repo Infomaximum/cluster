@@ -15,11 +15,6 @@ public class ManifestUtilTest {
     }
 
     @Test
-    public void getEnvironmentVersion() {
-        Assert.assertTrue(Version.compare(ManifestUtil.getEnvironmentVersion(ManifestUtilTest.class), new Version(0, 7, 7)) == 0);
-    }
-
-    @Test
     public void getComponentUUID() {
         Assert.assertEquals("com.infomaximum.cluster", ManifestUtil.getComponentUUID(ManifestUtilTest.class));
     }

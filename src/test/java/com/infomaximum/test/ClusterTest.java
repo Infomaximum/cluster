@@ -13,6 +13,7 @@ import com.infomaximum.cluster.exception.CompatibilityException;
 import com.infomaximum.cluster.exception.CyclicDependenceException;
 import com.infomaximum.cluster.exception.DependencyException;
 import com.infomaximum.cluster.struct.Component;
+import com.infomaximum.cluster.struct.ControlComponentVersion;
 import com.infomaximum.cluster.struct.Info;
 import com.infomaximum.cluster.utils.ManifestUtil;
 import org.junit.Assert;
@@ -59,14 +60,14 @@ public class ClusterTest {
     @Test
     public void componentAlreadyExists() throws Exception {
         try (Cluster cluster = new Cluster.Builder()
-                    .withTransport(
-                            new MockTransportBuilder()
-                    )
-                    .withEnvironmentVersion(ManifestUtil.getVersion(BaseClusterTest.class))
-                    .withComponent(new ComponentBuilder(MemoryComponent.class))
-                    .withComponent(new ComponentBuilder(CustomComponent.class))
-                    .withComponent(new ComponentBuilder(MemoryComponent.class))
-                    .build()) {
+                .withTransport(
+                        new MockTransportBuilder()
+                )
+                .withEnvironmentVersion(ManifestUtil.getVersion(BaseClusterTest.class))
+                .withComponent(new ComponentBuilder(MemoryComponent.class))
+                .withComponent(new ComponentBuilder(CustomComponent.class))
+                .withComponent(new ComponentBuilder(MemoryComponent.class))
+                .build()) {
 
         } catch (RuntimeException ex) {
             if (ex.getMessage().contains(MemoryComponent.class.getName())) {
@@ -81,13 +82,13 @@ public class ClusterTest {
     @Test
     public void cyclicDependence() throws Exception {
         try (Cluster cluster = new Cluster.Builder()
-                    .withTransport(
-                            new MockTransportBuilder()
-                    )
-                    .withEnvironmentVersion(new Version(0, 0 ,1))
-                    .withComponent(new ComponentBuilder(CyclicComponent1.class))
-                    .withComponent(new ComponentBuilder(CyclicComponent2.class))
-                    .build()) {
+                .withTransport(
+                        new MockTransportBuilder()
+                )
+                .withEnvironmentVersion(new Version(0, 0, 1))
+                .withComponent(new ComponentBuilder(CyclicComponent1.class))
+                .withComponent(new ComponentBuilder(CyclicComponent2.class))
+                .build()) {
             Assert.fail();
         } catch (CyclicDependenceException ex) {
             Assert.assertTrue(true);
@@ -111,12 +112,18 @@ public class ClusterTest {
         Version currentVer = ManifestUtil.getVersion(ClusterTest.class);
 
         try (Cluster cluster = new Cluster.Builder()
-                    .withTransport(
-                            new MockTransportBuilder()
-                    )
-                    .withEnvironmentVersion(new Version(currentVer.major, currentVer.minor + 1,currentVer.build))
-                    .withComponent(new ComponentBuilder(CustomComponent.class))
-                    .build()) {
+                .withTransport(
+                        new MockTransportBuilder()
+                )
+                .withEnvironmentVersion(new Version(currentVer.major, currentVer.minor + 1, currentVer.build))
+                .withComponent(new ComponentBuilder(CustomComponent.class))
+                .withControlComponentVersion(new ControlComponentVersion() {
+                    @Override
+                    public boolean isSupportVersion(Info info) {
+                        return false;
+                    }
+                })
+                .build()) {
             Assert.fail();
         } catch (CompatibilityException ex) {
             Assert.assertTrue(true);
@@ -211,7 +218,7 @@ public class ClusterTest {
             return new ExecutorTransportImpl(this);
         }
 
-         @Override
+        @Override
         public void destroying() throws ClusterException {}
     }
 

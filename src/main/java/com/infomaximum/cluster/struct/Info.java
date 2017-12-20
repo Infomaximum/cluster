@@ -46,16 +46,6 @@ public class Info {
         return environmentVersion;
     }
 
-    public boolean isCompatibleWith(Version targetEnvironmentVersion) {
-        if (componentClass == ManagerComponent.class || componentClass == MemoryComponent.class) {
-            return true;
-        }
-
-        return environmentVersion.major == targetEnvironmentVersion.major &&
-                environmentVersion.minor == targetEnvironmentVersion.minor &&
-                environmentVersion.build >= targetEnvironmentVersion.build;
-    }
-
     public static class Builder {
 
         private final Class<? extends Component> componentClass;
