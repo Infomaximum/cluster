@@ -1,5 +1,6 @@
 package com.infomaximum.cluster.component.custom;
 
+import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
@@ -16,6 +17,10 @@ public class CustomComponent extends Component {
             .withEnvironmentVersion(ManifestUtil.getVersion(CustomComponent.class))
             .withVersion(ManifestUtil.getVersion(CustomComponent.class))
             .build();
+
+    public CustomComponent(Cluster cluster) {
+        super(cluster);
+    }
 
     @Override
     public void load() throws ClusterException {}

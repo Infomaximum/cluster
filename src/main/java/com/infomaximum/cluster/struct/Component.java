@@ -1,5 +1,6 @@
 package com.infomaximum.cluster.struct;
 
+import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.component.manager.remote.managersubsystem.RControllerManagerComponent;
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
@@ -22,11 +23,16 @@ public abstract class Component {
 
     private final static Logger log = LoggerFactory.getLogger(Component.class);
 
+    protected final Cluster cluster;
     private TransportManager transportManager;
     private String key;
     private Transport transport;
     private Remotes remote;
     private ActiveComponents activeComponents;
+
+    public Component(Cluster cluster) {
+        this.cluster = cluster;
+    }
 
     public final void init(TransportManager transportManager) throws ClusterException {
         this.transportManager = transportManager;

@@ -9,11 +9,9 @@ import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.component.memory.MemoryComponent;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.exception.ClusterException;
-import com.infomaximum.cluster.exception.CompatibilityException;
 import com.infomaximum.cluster.exception.CyclicDependenceException;
 import com.infomaximum.cluster.exception.DependencyException;
 import com.infomaximum.cluster.struct.Component;
-import com.infomaximum.cluster.struct.ControlComponentVersion;
 import com.infomaximum.cluster.struct.Info;
 import com.infomaximum.cluster.utils.ManifestUtil;
 import org.junit.Assert;
@@ -108,29 +106,6 @@ public class ClusterTest {
     }
 
     @Test
-    public void compatibleVersion() throws Exception {
-        Version currentVer = ManifestUtil.getVersion(ClusterTest.class);
-
-        try (Cluster cluster = new Cluster.Builder()
-                .withTransport(
-                        new MockTransportBuilder()
-                )
-                .withEnvironmentVersion(new Version(currentVer.major, currentVer.minor + 1, currentVer.build))
-                .withComponent(new ComponentBuilder(CustomComponent.class))
-                .withControlComponentVersion(new ControlComponentVersion() {
-                    @Override
-                    public boolean isSupportVersion(Version environmentVersion, Version componentEnvironmentVersion) {
-                        return false;
-                    }
-                })
-                .build()) {
-            Assert.fail();
-        } catch (CompatibilityException ex) {
-            Assert.assertTrue(true);
-        }
-    }
-
-    @Test
     public void dependenceOrdered1() throws Exception {
         try (Cluster cluster = new Cluster.Builder()
                 .withTransport(
@@ -210,6 +185,10 @@ public class ClusterTest {
 
     public static abstract class BaseComponent extends Component {
 
+        public BaseComponent(Cluster cluster) {
+            super(cluster);
+        }
+
         @Override
         public void load() throws ClusterException {}
 
@@ -231,6 +210,10 @@ public class ClusterTest {
                 .withDependence(Component2.class)
                 .build();
 
+        public Component1(Cluster cluster) {
+            super(cluster);
+        }
+
         @Override
         public Info getInfo() {
             return INFO;
@@ -245,6 +228,10 @@ public class ClusterTest {
                 .withVersion(ManifestUtil.getVersion(Component2.class))
                 .withDependence(Component3.class)
                 .build();
+
+        public Component2(Cluster cluster) {
+            super(cluster);
+        }
 
         @Override
         public Info getInfo() {
@@ -261,6 +248,10 @@ public class ClusterTest {
                 .withDependence(MemoryComponent.class)
                 .build();
 
+        public Component3(Cluster cluster) {
+            super(cluster);
+        }
+
         @Override
         public Info getInfo() {
             return INFO;
@@ -276,6 +267,10 @@ public class ClusterTest {
                 .withDependence(CustomComponent.class)
                 .withDependence(CyclicComponent1.class)
                 .build();
+
+        public CyclicComponent1(Cluster cluster) {
+            super(cluster);
+        }
 
         @Override
         public void load() throws ClusterException {}
@@ -302,6 +297,10 @@ public class ClusterTest {
                 .withVersion(ManifestUtil.getVersion(CyclicComponent2.class))
                 .withDependence(CyclicComponent1.class)
                 .build();
+
+        public CyclicComponent2(Cluster cluster) {
+            super(cluster);
+        }
 
         @Override
         public void load() throws ClusterException {}
