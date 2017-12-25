@@ -1,5 +1,6 @@
 package com.infomaximum.cluster.component.memory;
 
+import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.Version;
 import com.infomaximum.cluster.component.memory.core.MemoryEngine;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
@@ -20,6 +21,10 @@ public class MemoryComponent extends Component {
             .build();
 
     private MemoryEngine memoryEngine;
+
+    public MemoryComponent(Cluster cluster) {
+        super(cluster);
+    }
 
     @Override
     public void load() throws ClusterException {

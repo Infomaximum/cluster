@@ -2,14 +2,11 @@ package com.infomaximum.cluster;
 
 import com.infomaximum.cluster.builder.transport.TransportBuilder;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
-import com.infomaximum.cluster.component.memory.MemoryComponent;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.exception.ClusterException;
-import com.infomaximum.cluster.exception.CompatibilityException;
 import com.infomaximum.cluster.exception.CyclicDependenceException;
 import com.infomaximum.cluster.exception.DependencyException;
 import com.infomaximum.cluster.struct.Component;
-import com.infomaximum.cluster.struct.ControlComponentVersion;
 import com.infomaximum.cluster.utils.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,8 +108,6 @@ public class Cluster implements AutoCloseable {
         private List<ComponentBuilder> componentBuilders = new ArrayList<>();
         private Version environmentVersion;
 
-        private ControlComponentVersion controlComponentVersion;
-
         public Builder() {}
 
         public Builder withEnvironmentVersion(Version environmentVersion) {
@@ -140,25 +135,20 @@ public class Cluster implements AutoCloseable {
             return this;
         }
 
-        public Builder withControlComponentVersion(ControlComponentVersion controlComponentVersion) {
-            this.controlComponentVersion = controlComponentVersion;
-            return this;
-        }
-
         public Cluster build() throws ClusterException {
             Cluster cluster = null;
 
             try {
                 List<Component> components = new ArrayList<>(componentBuilders.size() + 1);
 
-                //TODO необходима правильная инициализация менеджера, в настоящий момент считаем, что приложение у нас одно поэтому инициализируем его прямо тут
-                components.add(new ManagerComponent());
-                for (ComponentBuilder builder : componentBuilders) {
-                    components.add(builder.build());
-                }
-                appendNotExistenceDependencies(components);
-
                 cluster = new Cluster(transportBuilder.build());
+
+                //TODO необходима правильная инициализация менеджера, в настоящий момент считаем, что приложение у нас одно поэтому инициализируем его прямо тут
+                components.add(new ManagerComponent(cluster));
+                for (ComponentBuilder builder : componentBuilders) {
+                    components.add(builder.build(cluster));
+                }
+                appendNotExistenceDependencies(cluster, components);
 
                 while (!components.isEmpty()) {
                     Component nextComponent = null;
@@ -179,16 +169,6 @@ public class Cluster implements AutoCloseable {
                         throw new CyclicDependenceException(components.stream().map(cb -> cb.getClass().getName()).collect(Collectors.toList()));
                     }
 
-                    //Проверяем корректоность версии
-                    if (controlComponentVersion != null
-                            && nextComponent.getClass() != ManagerComponent.class
-                            && nextComponent.getClass() != MemoryComponent.class
-                            ) {
-                        if (!controlComponentVersion.isSupportVersion(environmentVersion, nextComponent.getInfo().getEnvironmentVersion())) {
-                            throw new CompatibilityException(nextComponent, environmentVersion);
-                        }
-                    }
-
                     cluster.appendComponent(nextComponent);
 
                     components.remove(componentIndex);
@@ -203,12 +183,12 @@ public class Cluster implements AutoCloseable {
             return cluster;
         }
 
-        private static void appendNotExistenceDependencies(List<Component> source) throws ClusterException {
+        private static void appendNotExistenceDependencies(Cluster cluster, List<Component> source) throws ClusterException {
             Set<Class> componentClasses = source.stream().map(Component::getClass).collect(Collectors.toSet());
             for (int i = 0; i < source.size(); ++i) {
                 for (Class dependence : source.get(i).getInfo().getDependencies()) {
                     if (!componentClasses.contains(dependence)) {
-                        source.add(new ComponentBuilder(dependence).build());
+                        source.add(new ComponentBuilder(dependence).build(cluster));
                         componentClasses.add(dependence);
                     }
                 }
