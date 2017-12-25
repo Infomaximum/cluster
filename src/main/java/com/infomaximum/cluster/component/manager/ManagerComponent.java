@@ -16,10 +16,7 @@ import com.infomaximum.cluster.utils.ManifestUtil;
  */
 public class ManagerComponent extends Component {
 
-	public static final Info INFO = new Info.Builder(ManagerComponent.class)
-			.withUuid(ManagerComponent.class.getPackage().getName())
-			.withEnvironmentVersion(new Version(0, 0, 0))
-			.withVersion(ManifestUtil.getVersion(ManagerComponent.class))
+	public static final Info INFO = new Info.Builder("com.infomaximum.cluster.component.manager", ManagerComponent.class)
 			.build();
 
 	public static final String KEY = INFO.getUuid() + ":" + "00000000-0000-0000-0000-000000000000";

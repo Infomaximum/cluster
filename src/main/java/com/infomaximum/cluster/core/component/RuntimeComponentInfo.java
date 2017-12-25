@@ -18,11 +18,10 @@ public class RuntimeComponentInfo implements RemoteObject {
     public final String key;
     public final String uuid;
     public final boolean isSingleton;
-    public final String version;
     private Collection<String> classNameRControllers;
 
-    public RuntimeComponentInfo(String key, String uuid, String version, boolean isSingleton, Collection<Class<? extends RController>> classRControllers) {
-        this(key, uuid, version, isSingleton);
+    public RuntimeComponentInfo(String key, String uuid, boolean isSingleton, Collection<Class<? extends RController>> classRControllers) {
+        this(key, uuid, isSingleton);
 
         this.classNameRControllers=new HashSet<>();
         for (Class<? extends RController> classRController: classRControllers){
@@ -30,10 +29,9 @@ public class RuntimeComponentInfo implements RemoteObject {
         }
     }
 
-    private RuntimeComponentInfo(String key, String uuid, String version, boolean isSingleton) {
+    private RuntimeComponentInfo(String key, String uuid, boolean isSingleton) {
         this.key = key;
         this.uuid = uuid;
-        this.version = version;
         this.isSingleton = isSingleton;
     }
 
@@ -46,7 +44,6 @@ public class RuntimeComponentInfo implements RemoteObject {
         JSONObject out = new JSONObject();
         out.put("key", key);
         out.put("uuid", uuid);
-        out.put("version", version);
         out.put("is_singleton", isSingleton);
 
         JSONArray outRControllers = new JSONArray();
@@ -59,10 +56,9 @@ public class RuntimeComponentInfo implements RemoteObject {
     public static RuntimeComponentInfo deserialize(JSONObject json) throws ClassNotFoundException {
         String key = json.getAsString("key");
         String uuid = json.getAsString("uuid");
-        String version = json.getAsString("version");
         boolean isSingleton = (boolean)json.get("is_singleton");
 
-        RuntimeComponentInfo subSystemInfo = new RuntimeComponentInfo(key, uuid, version, isSingleton);
+        RuntimeComponentInfo subSystemInfo = new RuntimeComponentInfo(key, uuid, isSingleton);
 
         Collection<String> classNameRControllers = new HashSet<String>();
         for (Object oRController: (JSONArray)json.get("remote_controllers")) {

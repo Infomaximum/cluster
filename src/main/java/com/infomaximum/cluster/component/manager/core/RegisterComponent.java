@@ -32,7 +32,6 @@ public class RegisterComponent implements ActiveComponents {
 		registerActiveRole(new RuntimeComponentInfo(
 				managerComponent.getKey(),
 				managerComponent.getInfo().getUuid(),
-				managerComponent.getInfo().getVersion().toString(),
 				managerComponent.isSingleton(),
 				managerComponent.getTransport().getExecutor().getClassRControllers()
 		));
