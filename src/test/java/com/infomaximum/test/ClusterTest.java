@@ -203,10 +203,7 @@ public class ClusterTest {
 
     public static class Component1 extends BaseComponent {
 
-        public static final Info INFO = new Info.Builder(Component1.class)
-                .withUuid(Component1.class.getPackage().getName())
-                .withEnvironmentVersion(ManifestUtil.getVersion(Component1.class))
-                .withVersion(ManifestUtil.getVersion(Component1.class))
+        public static final Info INFO = new Info.Builder(Component1.class.getPackage().getName(), Component1.class)
                 .withDependence(Component2.class)
                 .build();
 
@@ -222,10 +219,7 @@ public class ClusterTest {
 
     public static class Component2 extends BaseComponent {
 
-        public static final Info INFO = new Info.Builder(Component2.class)
-                .withUuid(Component2.class.getPackage().getName())
-                .withEnvironmentVersion(ManifestUtil.getVersion(Component2.class))
-                .withVersion(ManifestUtil.getVersion(Component2.class))
+        public static final Info INFO = new Info.Builder(Component2.class.getPackage().getName(), Component2.class)
                 .withDependence(Component3.class)
                 .build();
 
@@ -241,10 +235,7 @@ public class ClusterTest {
 
     public static class Component3 extends BaseComponent {
 
-        public static final Info INFO = new Info.Builder(Component3.class)
-                .withUuid(Component3.class.getPackage().getName())
-                .withEnvironmentVersion(ManifestUtil.getVersion(Component3.class))
-                .withVersion(ManifestUtil.getVersion(Component3.class))
+        public static final Info INFO = new Info.Builder(Component3.class.getPackage().getName(), Component3.class)
                 .withDependence(MemoryComponent.class)
                 .build();
 
@@ -260,10 +251,7 @@ public class ClusterTest {
 
     public static class CyclicComponent1 extends Component {
 
-        public static final Info INFO = new Info.Builder(CyclicComponent1.class)
-                .withUuid(CyclicComponent1.class.getPackage().getName())
-                .withEnvironmentVersion(ManifestUtil.getVersion(CyclicComponent1.class))
-                .withVersion(ManifestUtil.getVersion(CyclicComponent1.class))
+        public static final Info INFO = new Info.Builder(CyclicComponent1.class.getPackage().getName(), CyclicComponent1.class)
                 .withDependence(CustomComponent.class)
                 .withDependence(CyclicComponent1.class)
                 .build();
@@ -291,10 +279,7 @@ public class ClusterTest {
 
     public static class CyclicComponent2 extends Component {
 
-        public static final Info INFO = new Info.Builder(CyclicComponent2.class)
-                .withUuid(CyclicComponent2.class.getPackage().getName())
-                .withEnvironmentVersion(ManifestUtil.getVersion(CyclicComponent2.class))
-                .withVersion(ManifestUtil.getVersion(CyclicComponent2.class))
+        public static final Info INFO = new Info.Builder(CyclicComponent2.class.getPackage().getName(), CyclicComponent2.class)
                 .withDependence(CyclicComponent1.class)
                 .build();
 

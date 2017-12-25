@@ -14,10 +14,7 @@ import com.infomaximum.cluster.utils.ManifestUtil;
  */
 public class MemoryComponent extends Component {
 
-    public static final Info INFO = new Info.Builder(MemoryComponent.class)
-            .withUuid(MemoryComponent.class.getPackage().getName())
-            .withEnvironmentVersion(new Version(0, 0, 0))
-            .withVersion(ManifestUtil.getVersion(MemoryComponent.class))
+    public static final Info INFO = new Info.Builder("com.infomaximum.cluster.component.memory", MemoryComponent.class)
             .build();
 
     private MemoryEngine memoryEngine;

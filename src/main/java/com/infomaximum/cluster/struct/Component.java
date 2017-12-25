@@ -48,7 +48,7 @@ public abstract class Component {
         }
 
         //Регистрируемся у менеджера подсистем
-        log.info("Register {} ver.{}...", getInfo().getUuid(), getInfo().getVersion());
+        log.info("Register {}", getInfo().getUuid());
         this.activeComponents = registerComponent();
 
         //Загружаемся, в случае ошибки снимаем регистрацию
@@ -79,7 +79,7 @@ public abstract class Component {
     protected ActiveComponentsImpl registerComponent() {
         RControllerManagerComponent rControllerManagerComponent = remote.getFromSSKey(ManagerComponent.KEY, RControllerManagerComponent.class);
         ComponentInfos activeComponents = rControllerManagerComponent.register(
-                new RuntimeComponentInfo(key, getInfo().getUuid(), getInfo().getVersion().toString(), isSingleton(), getTransport().getExecutor().getClassRControllers())
+                new RuntimeComponentInfo(key, getInfo().getUuid(), isSingleton(), getTransport().getExecutor().getClassRControllers())
         );
         return new ActiveComponentsImpl(this, activeComponents.getItems());
     }
