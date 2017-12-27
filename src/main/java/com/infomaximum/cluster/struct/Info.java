@@ -12,13 +12,22 @@ import java.util.Set;
  */
 public class Info {
 
-    private final Class<? extends Component> componentClass;
     private final String uuid;
+    private final Class<? extends Component> componentClass;
+
     private final Class<? extends Component>[] dependencies;
 
     protected Info(Builder builder) {
-        this.componentClass = builder.componentClass;
+
+        if (builder.uuid == null || builder.uuid.isEmpty()) throw new IllegalArgumentException("Bad uuid component");
         this.uuid = builder.uuid;
+
+        if (builder.componentClass == null) throw new IllegalArgumentException("Not found class component");
+        if (!builder.componentClass.getPackage().getName().equals(uuid)) {
+            throw new IllegalArgumentException(builder.componentClass + " is not correspond to uuid: " + uuid);
+        }
+        this.componentClass = builder.componentClass;
+
         this.dependencies = builder.dependencies == null ? new Class[0] : builder.dependencies.toArray(new Class[builder.dependencies.size()]);
     }
 
@@ -36,14 +45,18 @@ public class Info {
 
     public static class Builder {
 
-        private String uuid;
-        private final Class<? extends Component> componentClass;
+        private final String uuid;
+        private Class<? extends Component> componentClass;
 
         private Set<Class<? extends Component>> dependencies = new HashSet<>();
 
-        public Builder(String uuid, Class<? extends Component> componentClass) {
-            this.componentClass = componentClass;
+        public Builder(String uuid) {
             this.uuid = uuid;
+        }
+
+        public Builder withComponentClass(Class<? extends Component> componentClass) {
+            this.componentClass = componentClass;
+            return this;
         }
 
         public Builder withDependence(Class<? extends Component> dependence){

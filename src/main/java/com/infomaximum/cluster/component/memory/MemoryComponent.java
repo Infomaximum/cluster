@@ -14,7 +14,8 @@ import com.infomaximum.cluster.utils.ManifestUtil;
  */
 public class MemoryComponent extends Component {
 
-    public static final Info INFO = new Info.Builder("com.infomaximum.cluster.component.memory", MemoryComponent.class)
+    public static final Info INFO = new Info.Builder("com.infomaximum.cluster.component.memory")
+            .withComponentClass(MemoryComponent.class)
             .build();
 
     private MemoryEngine memoryEngine;
