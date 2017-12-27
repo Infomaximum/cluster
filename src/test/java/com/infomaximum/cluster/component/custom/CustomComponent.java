@@ -12,7 +12,8 @@ import com.infomaximum.cluster.utils.ManifestUtil;
  */
 public class CustomComponent extends Component {
 
-    public static final Info INFO = new Info.Builder(CustomComponent.class.getPackage().getName(), CustomComponent.class)
+    public static final Info INFO = new Info.Builder(CustomComponent.class.getPackage().getName())
+            .withComponentClass(CustomComponent.class)
             .build();
 
     public CustomComponent(Cluster cluster) {
