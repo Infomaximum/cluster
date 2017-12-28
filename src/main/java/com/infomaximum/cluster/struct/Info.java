@@ -28,7 +28,9 @@ public class Info {
         }
         this.componentClass = builder.componentClass;
 
-        this.dependencies = builder.dependencies == null ? new Class[0] : builder.dependencies.toArray(new Class[builder.dependencies.size()]);
+        this.dependencies = builder.dependencies == null
+                ? new Class[0]
+                : (Class<? extends Component>[]) builder.dependencies.toArray(new Class[builder.dependencies.size()]);
     }
 
     public String getUuid() {
@@ -43,7 +45,7 @@ public class Info {
         return dependencies;
     }
 
-    public static class Builder {
+    public static class Builder<T extends Builder> {
 
         private final String uuid;
         private Class<? extends Component> componentClass;
@@ -54,14 +56,14 @@ public class Info {
             this.uuid = uuid;
         }
 
-        public Builder withComponentClass(Class<? extends Component> componentClass) {
+        public T withComponentClass(Class<? extends Component> componentClass) {
             this.componentClass = componentClass;
-            return this;
+            return (T) this;
         }
 
-        public Builder withDependence(Class<? extends Component> dependence){
+        public T withDependence(Class<? extends Component> dependence) {
             dependencies.add(dependence);
-            return this;
+            return (T) this;
         }
 
         public Info build(){
