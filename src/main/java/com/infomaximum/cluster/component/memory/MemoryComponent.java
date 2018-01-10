@@ -1,13 +1,11 @@
 package com.infomaximum.cluster.component.memory;
 
 import com.infomaximum.cluster.Cluster;
-import com.infomaximum.cluster.Version;
 import com.infomaximum.cluster.component.memory.core.MemoryEngine;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
-import com.infomaximum.cluster.utils.ManifestUtil;
 
 /**
  * Created by kris on 17.10.16.

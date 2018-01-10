@@ -2,7 +2,6 @@ package com.infomaximum.test;
 
 import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.ComponentBuilder;
-import com.infomaximum.cluster.Version;
 import com.infomaximum.cluster.builder.transport.MockTransportBuilder;
 import com.infomaximum.cluster.component.custom.CustomComponent;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
@@ -13,7 +12,6 @@ import com.infomaximum.cluster.exception.CyclicDependenceException;
 import com.infomaximum.cluster.exception.DependencyException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
-import com.infomaximum.cluster.utils.ManifestUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -27,7 +25,6 @@ public class ClusterTest {
                 .withTransport(
                         new MockTransportBuilder()
                 )
-                .withEnvironmentVersion(ManifestUtil.getVersion(BaseClusterTest.class))
                 .withComponentIfNotExist(new ComponentBuilder(MemoryComponent.class))
                 .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
                 .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
@@ -41,7 +38,6 @@ public class ClusterTest {
                 .withTransport(
                         new MockTransportBuilder()
                 )
-                .withEnvironmentVersion(new Version(0, 0 ,1))
                 .withComponent(new ComponentBuilder(Component3.class))
                 .build()) {
 
@@ -61,7 +57,6 @@ public class ClusterTest {
                 .withTransport(
                         new MockTransportBuilder()
                 )
-                .withEnvironmentVersion(ManifestUtil.getVersion(BaseClusterTest.class))
                 .withComponent(new ComponentBuilder(MemoryComponent.class))
                 .withComponent(new ComponentBuilder(CustomComponent.class))
                 .withComponent(new ComponentBuilder(MemoryComponent.class))
@@ -83,7 +78,6 @@ public class ClusterTest {
                 .withTransport(
                         new MockTransportBuilder()
                 )
-                .withEnvironmentVersion(new Version(0, 0, 1))
                 .withComponent(new ComponentBuilder(CyclicComponent1.class))
                 .withComponent(new ComponentBuilder(CyclicComponent2.class))
                 .build()) {
@@ -96,7 +90,6 @@ public class ClusterTest {
                 .withTransport(
                         new MockTransportBuilder()
                 )
-                .withEnvironmentVersion(new Version(0, 0 ,1))
                 .withComponent(new ComponentBuilder(CyclicComponent1.class))
                 .build()) {
             Assert.fail();
@@ -111,7 +104,6 @@ public class ClusterTest {
                 .withTransport(
                         new MockTransportBuilder()
                 )
-                .withEnvironmentVersion(ManifestUtil.getVersion(BaseClusterTest.class))
                 .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
                 .withComponent(new ComponentBuilder(Component2.class))
                 .withComponent(new ComponentBuilder(Component1.class))
@@ -138,7 +130,6 @@ public class ClusterTest {
                 .withTransport(
                         new MockTransportBuilder()
                 )
-                .withEnvironmentVersion(ManifestUtil.getVersion(BaseClusterTest.class))
                 .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
                 .withComponent(new ComponentBuilder(Component2.class))
                 .withComponent(new ComponentBuilder(Component1.class))
@@ -160,7 +151,6 @@ public class ClusterTest {
     public void removeComponent() throws Exception {
         try (Cluster cluster = new Cluster.Builder()
                 .withTransport(new MockTransportBuilder())
-                .withEnvironmentVersion(ManifestUtil.getVersion(BaseClusterTest.class))
                 .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
                 .withComponent(new ComponentBuilder(Component2.class))
                 .withComponent(new ComponentBuilder(Component1.class))
