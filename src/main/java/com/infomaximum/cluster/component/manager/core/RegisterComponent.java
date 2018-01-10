@@ -3,7 +3,7 @@ package com.infomaximum.cluster.component.manager.core;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.component.active.ActiveComponents;
-import com.infomaximum.cluster.core.component.remote.notification.RControllerNotification;
+import com.infomaximum.cluster.core.remote.controller.notification.RControllerNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
