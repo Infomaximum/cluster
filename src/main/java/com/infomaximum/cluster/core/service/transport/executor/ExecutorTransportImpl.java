@@ -1,8 +1,5 @@
 package com.infomaximum.cluster.core.service.transport.executor;
 
-import com.infomaximum.cluster.Cluster;
-import com.infomaximum.cluster.anotation.DisableAutoInit;
-import com.infomaximum.cluster.core.remote.controller.notification.RControllerNotification;
 import com.infomaximum.cluster.core.remote.controller.notification.RControllerNotificationImpl;
 import com.infomaximum.cluster.core.remote.AbstractRController;
 import com.infomaximum.cluster.core.remote.struct.RController;
@@ -104,7 +101,6 @@ public class ExecutorTransportImpl implements ExecutorTransport {
             Reflections reflections = new Reflections(component.getInfo().getUuid());
             for (Class<? extends AbstractRController> classRemoteController : reflections.getSubTypesOf(AbstractRController.class)) {
                 if (classRemoteController.isInterface()) continue;
-                if (classRemoteController.getAnnotation(DisableAutoInit.class) != null) continue;
 
                 AbstractRController rController;
                 try {
