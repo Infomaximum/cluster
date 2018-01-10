@@ -1,5 +1,7 @@
 package com.infomaximum.cluster.core.service.transport.executor;
 
+import com.infomaximum.cluster.Cluster;
+import com.infomaximum.cluster.anotation.DisableAutoInit;
 import com.infomaximum.cluster.core.remote.controller.notification.RControllerNotification;
 import com.infomaximum.cluster.core.remote.controller.notification.RControllerNotificationImpl;
 import com.infomaximum.cluster.core.remote.AbstractRController;
@@ -25,45 +27,9 @@ public class ExecutorTransportImpl implements ExecutorTransport {
     protected final Component component;
     private final Map<String, RController> hashRemoteController;
 
-    public ExecutorTransportImpl(Component component) throws ClusterException {
+    private ExecutorTransportImpl(Component component, Map<String, RController> hashRemoteController) throws ClusterException {
         this.component = component;
-
-        Reflections reflections = new Reflections(component.getInfo().getUuid());
-
-        this.hashRemoteController = new HashMap<>();
-
-        //Добавляем обработчик нотификаций
-        RControllerNotificationImpl remoteControllerNotification = new RControllerNotificationImpl(component);
-        hashRemoteController.put(RControllerNotification.class.getName(), remoteControllerNotification);
-
-        try {
-            for (Class<? extends AbstractRController> classRemoteController : reflections.getSubTypesOf(AbstractRController.class)) {
-                if (classRemoteController.isInterface()) continue;
-                Constructor constructor;
-                try {
-                    constructor = classRemoteController.getConstructor(component.getClass());
-                } catch (NoSuchMethodException e) {
-                    log.error("Not found constructor from: {}", classRemoteController, e);
-                    throw e;
-                }
-                if (constructor == null) {
-                    throw new ClusterException("Not found constructor in class controller: " + classRemoteController);
-                }
-                AbstractRController rController = (AbstractRController) constructor.newInstance(component);
-
-                for (Class<? extends RController> classRController : getRControllerClasses(rController)) {
-                    hashRemoteController.put(classRController.getName(), rController);
-                }
-            }
-        } catch (ReflectiveOperationException ex) {
-            throw new ClusterException(ex);
-        }
-    }
-
-    public void registerRController(RController rController) {
-        for (Class<? extends RController> classRController : getRControllerClasses(rController)) {
-            hashRemoteController.put(classRController.getName(), rController);
-        }
+        this.hashRemoteController = hashRemoteController;
     }
 
     @Override
@@ -112,11 +78,58 @@ public class ExecutorTransportImpl implements ExecutorTransport {
         }
     }
 
-    private static Set<Class<? extends RController>> getRControllerClasses(RController rController) {
-        Set<Class<? extends RController>> rControllerClasses = new HashSet<>();
-        for (Class iClass : rController.getClass().getInterfaces()) {
-            if (RController.class.isAssignableFrom(iClass)) rControllerClasses.add(iClass);
+    public static class Builder {
+
+        private final Component component;
+        private final Map<String, RController> hashRemoteController;
+
+        public Builder(Component component) throws ClusterException {
+            this.component = component;
+            this.hashRemoteController = new HashMap<>();
         }
-        return rControllerClasses;
+
+        public Builder withRemoteController(AbstractRController rController) {
+            for (Class<? extends RController> classRController : getRControllerClasses(rController)) {
+                hashRemoteController.put(classRController.getName(), rController);
+            }
+            return this;
+        }
+
+        public ExecutorTransportImpl build() throws ClusterException {
+
+            //Добавляем обработчик нотификаций
+            withRemoteController(new RControllerNotificationImpl(component));
+
+            //Ищем автоматически
+            Reflections reflections = new Reflections(component.getInfo().getUuid());
+            for (Class<? extends AbstractRController> classRemoteController : reflections.getSubTypesOf(AbstractRController.class)) {
+                if (classRemoteController.isInterface()) continue;
+                if (classRemoteController.getAnnotation(DisableAutoInit.class) != null) continue;
+
+                AbstractRController rController;
+                try {
+                    Constructor constructor = classRemoteController.getConstructor(component.getClass());
+                    constructor.setAccessible(true);
+                    rController = (AbstractRController) constructor.newInstance(component);
+                } catch (ReflectiveOperationException e) {
+                    throw new ClusterException("Exception init remote controller: " + classRemoteController, e);
+                }
+
+                for (Class<? extends RController> classRController : getRControllerClasses(rController)) {
+                    hashRemoteController.put(classRController.getName(), rController);
+                }
+            }
+
+            return new ExecutorTransportImpl(component, hashRemoteController);
+        }
+
+
+        private static Set<Class<? extends RController>> getRControllerClasses(RController rController) {
+            Set<Class<? extends RController>> rControllerClasses = new HashSet<>();
+            for (Class iClass : rController.getClass().getInterfaces()) {
+                if (RController.class.isAssignableFrom(iClass)) rControllerClasses.add(iClass);
+            }
+            return rControllerClasses;
+        }
     }
 }

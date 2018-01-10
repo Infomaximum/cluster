@@ -11,4 +11,8 @@ public class ClusterException extends Exception {
     public ClusterException(Throwable cause) {
         super(cause);
     }
+
+    public ClusterException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

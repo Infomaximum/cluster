@@ -29,7 +29,7 @@ public class MemoryComponent extends Component {
 
     @Override
     public ExecutorTransportImpl initExecutorTransport() throws ClusterException {
-        return new ExecutorTransportImpl(this);
+        return new ExecutorTransportImpl.Builder(this).build();
     }
 
     @Override
