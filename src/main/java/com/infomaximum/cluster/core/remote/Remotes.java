@@ -33,14 +33,14 @@ public class Remotes {
 		return remotePackerObjects;
 	}
 
-	public <T extends RController> T getFromSSKey(String subSystemKey, Class<T> remoteControllerClazz) {
+	public <T extends RController> T getFromSSKey(String componentKey, Class<T> remoteControllerClazz) {
 		//Валидируем ключ подсистемы
-		if (subSystemKey.indexOf(':')==-1) throw new RuntimeException("Not valide componentKey: " + subSystemKey);
+		if (componentKey.indexOf(':') == -1) throw new RuntimeException("Not valid componentKey: " + componentKey);
 
-		//Кешировать proxy remoteController не получается т.к. Proxy.newProxyInstance может вернуться переиспользуемый объект в котором _properties уже есть значения и мы их затираем
+		//Кешировать proxy remoteController нельзя т.к. Proxy.newProxyInstance может вернуться переиспользуемый объект в котором _properties уже заполнен и мы иего перезатрем
 		RController remoteController = (RController) Proxy.newProxyInstance(
 				remoteControllerClazz.getClassLoader(), new Class[]{remoteControllerClazz},
-				new RemoteControllerInvocationHandler(component, subSystemKey, remoteControllerClazz)
+				new RemoteControllerInvocationHandler(component, componentKey, remoteControllerClazz)
 		);
 
 		return (T)remoteController;
@@ -49,17 +49,17 @@ public class Remotes {
 	public <T extends RController> T getFromSSUuid(String uuid, Class<T> remoteControllerClazz){
 		List<String> pretendents = new ArrayList<>();
 		for (RuntimeComponentInfo componentInfo : component.getActiveComponents().getActiveSubSystems()) {
-			String subSystemKey = componentInfo.key;
-			String subSystemUuid = componentInfo.uuid;
+			String componentKey = componentInfo.key;
+			String componentUuid = componentInfo.uuid;
 
-			if (subSystemUuid.equals(uuid)) pretendents.add(subSystemKey);
+			if (componentUuid.equals(uuid)) pretendents.add(componentKey);
 		}
-		if (pretendents.isEmpty()) throw new RuntimeException("Not found remote subsystem: " + uuid);
+		if (pretendents.isEmpty()) throw new RuntimeException("Not found remote component: " + uuid);
 		return getFromSSKey(pretendents.get(RandomUtil.random.nextInt(pretendents.size())), remoteControllerClazz);
 	}
 
-	public <T extends RController> T get(Class<? extends Component> classRole, Class<T> remoteControllerClazz) throws NoSuchFieldException, IllegalAccessException {
-		Info info = (Info) classRole.getField("INFO").get(null);
+	public <T extends RController> T get(Class<? extends Component> classComponent, Class<T> remoteControllerClazz) throws NoSuchFieldException, IllegalAccessException {
+		Info info = (Info) classComponent.getField("INFO").get(null);
 		return getFromSSUuid(info.getUuid(), remoteControllerClazz);
 	}
 
@@ -67,8 +67,8 @@ public class Remotes {
 		return null;
 	}
 
-	public <T extends RController> Collection<T> getControllers(Class<? extends Component> roleClass, Class<T> classController){
-		throw new RuntimeException("Не реализованно");
+	public <T extends RController> Collection<T> getControllers(Class<? extends Component> classComponent, Class<T> classController) {
+		throw new RuntimeException("Not implemented");
 	}
 
 	public <T extends RController> Collection<T> getControllers(Class<T> remoteClassController){

@@ -1,4 +1,4 @@
-package com.infomaximum.cluster.core.component.remote.notification;
+package com.infomaximum.cluster.core.remote.controller.notification;
 
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.struct.RController;
