@@ -184,7 +184,7 @@ public class ClusterTest {
 
         @Override
         public ExecutorTransportImpl initExecutorTransport() throws ClusterException {
-            return new ExecutorTransportImpl(this);
+            return new ExecutorTransportImpl.Builder(this).build();
         }
 
         @Override
@@ -259,7 +259,7 @@ public class ClusterTest {
 
         @Override
         public ExecutorTransportImpl initExecutorTransport() throws ClusterException {
-            return new ExecutorTransportImpl(this);
+            return new ExecutorTransportImpl.Builder(this).build();
         }
 
         @Override
@@ -287,7 +287,7 @@ public class ClusterTest {
 
         @Override
         public ExecutorTransportImpl initExecutorTransport() throws ClusterException {
-            return new ExecutorTransportImpl(this);
+            return new ExecutorTransportImpl.Builder(this).build();
         }
 
         @Override
