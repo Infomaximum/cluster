@@ -1,9 +1,5 @@
 package com.infomaximum.cluster.struct;
 
-import com.infomaximum.cluster.Version;
-import com.infomaximum.cluster.component.manager.ManagerComponent;
-import com.infomaximum.cluster.component.memory.MemoryComponent;
-
 import java.util.HashSet;
 import java.util.Set;
 

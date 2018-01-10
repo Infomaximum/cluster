@@ -106,14 +106,8 @@ public class Cluster implements AutoCloseable {
 
         private TransportBuilder transportBuilder;
         private List<ComponentBuilder> componentBuilders = new ArrayList<>();
-        private Version environmentVersion;
 
         public Builder() {}
-
-        public Builder withEnvironmentVersion(Version environmentVersion) {
-            this.environmentVersion = environmentVersion;
-            return this;
-        }
 
         public Builder withTransport(TransportBuilder transportBuilder) {
             this.transportBuilder = transportBuilder;

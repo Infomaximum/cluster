@@ -5,7 +5,6 @@ import com.infomaximum.cluster.ComponentBuilder;
 import com.infomaximum.cluster.builder.transport.MockTransportBuilder;
 import com.infomaximum.cluster.component.memory.MemoryComponent;
 import com.infomaximum.cluster.component.custom.CustomComponent;
-import com.infomaximum.cluster.utils.ManifestUtil;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -25,7 +24,6 @@ public abstract class BaseClusterTest {
                 .withTransport(
                         new MockTransportBuilder()
                 )
-                .withEnvironmentVersion(ManifestUtil.getVersion(BaseClusterTest.class))
                 .withComponentIfNotExist(new ComponentBuilder(MemoryComponent.class))
                 .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
                 .build();
