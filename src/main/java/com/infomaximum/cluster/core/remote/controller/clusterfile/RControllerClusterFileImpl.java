@@ -47,6 +47,7 @@ public class RControllerClusterFileImpl extends AbstractRController<Component> i
         for (SourceClusterFile source : sources) {
             if (source.contains(clusterFileUUID)) {
                 source.delete(clusterFileUUID);
+                return;
             }
         }
         throw new FileNotFoundException("File not found: " + clusterFileUUID);
@@ -57,6 +58,7 @@ public class RControllerClusterFileImpl extends AbstractRController<Component> i
         for (SourceClusterFile source : sources) {
             if (source.contains(clusterFileUUID)) {
                 source.deleteIfExists(clusterFileUUID);
+                return;
             }
         }
     }
