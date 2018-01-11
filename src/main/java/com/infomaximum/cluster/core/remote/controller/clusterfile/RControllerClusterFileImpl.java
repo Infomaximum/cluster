@@ -67,6 +67,8 @@ public class RControllerClusterFileImpl extends AbstractRController<Component> i
         private final List<SourceClusterFile> sources;
 
         public Builder(Component component, SourceClusterFile source) {
+            if (component == null || source == null) throw new IllegalArgumentException();
+
             this.component = component;
 
             this.sources = new ArrayList<SourceClusterFile>();
@@ -74,6 +76,7 @@ public class RControllerClusterFileImpl extends AbstractRController<Component> i
         }
 
         public Builder withSource(SourceClusterFile source) {
+            if (source == null) throw new IllegalArgumentException();
             sources.add(source);
             return this;
         }
