@@ -12,7 +12,7 @@ public class URIClusterFile {
     public static String SCHEME_CLUSTER_FILE = "cfile";
 
     public static String createSURI(String componentKey, String filePathUUID) {
-        return new StringBuilder().append(SCHEME_CLUSTER_FILE).append(':').append(componentKey).append(':').append(filePathUUID).toString();
+        return new StringBuilder().append(SCHEME_CLUSTER_FILE).append(':').append(componentKey).append('/').append(filePathUUID).toString();
     }
 
     public static URI createURI(String componentKey, String fileUUID) {
