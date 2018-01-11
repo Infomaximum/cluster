@@ -26,7 +26,7 @@ public class ClusterFile {
         this.uri = uri;
         if (uri.getScheme() == null) throw new RuntimeException("Scheme is null, uri: " + uri.toString());
         if (!uri.getScheme().equals(SCHEME_FILE) && !uri.getScheme().equals(URIClusterFile.SCHEME_CLUSTER_FILE)) {
-            throw new RuntimeException("Scheme is not support, uri: " + uri.toString() + ", scheme: " + uri.getScheme());
+            throw new RuntimeException("Scheme is not support, uri: " + uri.toString());
         }
     }
 
