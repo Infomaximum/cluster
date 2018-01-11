@@ -4,6 +4,8 @@ import java.io.IOException;
 
 public interface SourceClusterFile {
 
+    boolean contains(String clusterFileUUID) throws IOException;
+
     long getSize(String clusterFileUUID) throws IOException;
 
     byte[] getContent(String clusterFileUUID) throws IOException;
