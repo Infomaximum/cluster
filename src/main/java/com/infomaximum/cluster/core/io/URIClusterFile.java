@@ -12,12 +12,12 @@ public class URIClusterFile {
     public static String SCHEME_CLUSTER_FILE = "cfile";
 
     public static String createSURI(String componentKey, String filePathUUID) {
-        return new StringBuilder().append(SCHEME_CLUSTER_FILE).append(':').append(componentKey).append(':').append(filePathUUID).toString();
+        return new StringBuilder().append(SCHEME_CLUSTER_FILE).append(':').append(componentKey).append('/').append(filePathUUID).toString();
     }
 
-    public static URI createURI(String componentKey, String filePathUUID) {
+    public static URI createURI(String componentKey, String fileUUID) {
         try {
-            return new URI(createSURI(componentKey, filePathUUID));
+            return new URI(createSURI(componentKey, fileUUID));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
