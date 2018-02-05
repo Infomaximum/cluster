@@ -30,6 +30,14 @@ public class ClusterFile {
         }
     }
 
+    public URI getUri() {
+        return uri;
+    }
+
+    public boolean isLocalFile() {
+        return SCHEME_FILE.equals(uri.getScheme());
+    }
+
     public void copyTo(Path file) throws IOException {
         if (isLocalFile()) {
             Files.copy(Paths.get(uri), file);
@@ -77,8 +85,5 @@ public class ClusterFile {
         }
     }
 
-    public boolean isLocalFile() {
-        return SCHEME_FILE.equals(uri.getScheme());
-    }
 
 }
