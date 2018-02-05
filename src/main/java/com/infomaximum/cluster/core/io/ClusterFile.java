@@ -30,11 +30,19 @@ public class ClusterFile {
         }
     }
 
+    public URI getUri() {
+        return uri;
+    }
+
+    public boolean isLocalFile() {
+        return SCHEME_FILE.equals(uri.getScheme());
+    }
+
     public void copyTo(Path file) throws IOException {
         if (isLocalFile()) {
             Files.copy(Paths.get(uri), file);
         } else {
-            //TODO Ulitin V. Необходимо подумать как переписать на поточную обработку, сейчас есть будут большие накладные расходы на оперативку
+            //TODO Ulitin V. Необходимо подумать как переписать на поточную обработку, сейчас будут большие накладные расходы на оперативку
             RControllerClusterFile controllerClusterFile = component.getRemotes().getFromSSKey(URIClusterFile.getPathToComponentKey(uri), RControllerClusterFile.class);
             byte[] content = controllerClusterFile.getContent(URIClusterFile.getPathToFileUUID(uri));
             Files.write(file, content);
@@ -77,8 +85,5 @@ public class ClusterFile {
         }
     }
 
-    public boolean isLocalFile() {
-        return SCHEME_FILE.equals(uri.getScheme());
-    }
 
 }
