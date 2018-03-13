@@ -1,7 +1,8 @@
 package com.infomaximum.cluster.core.remote.packer;
 
-import com.infomaximum.cluster.core.remote.RemotePackerObjects;
 import com.infomaximum.cluster.struct.Component;
+
+import java.lang.reflect.Type;
 
 /**
  * Created by user on 06.09.2017.
@@ -14,7 +15,9 @@ public interface RemotePacker<T> {
         return classType.getName();
     }
 
-    Object serialize(Component component, T value);
+    void validation(Type classType);
 
-    T deserialize(Component component, Class<T> classType, Object value);
+    byte[] serialize(Component component, T value);
+
+    T deserialize(Component component, Class<T> classType, byte[] value);
 }

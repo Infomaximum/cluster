@@ -30,8 +30,8 @@ public class ExecutorTransportImpl implements ExecutorTransport {
     }
 
     @Override
-    public Collection<Class<? extends RController>> getClassRControllers() {
-        Collection<Class<? extends RController>> rControllers = new HashSet<Class<? extends RController>>();
+    public HashSet<Class<? extends RController>> getClassRControllers() {
+        HashSet<Class<? extends RController>> rControllers = new HashSet<Class<? extends RController>>();
         for (RController rController : hashRemoteController.values()) {
             Class clazz = rController.getClass();
             for (Class interfaceClass : clazz.getInterfaces()) {

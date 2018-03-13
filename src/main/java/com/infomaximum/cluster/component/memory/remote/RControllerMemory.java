@@ -3,6 +3,8 @@ package com.infomaximum.cluster.component.memory.remote;
 import com.infomaximum.cluster.core.remote.struct.RController;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,9 +20,9 @@ public interface RControllerMemory extends RController {
 	void clear(String key);
 
 
-	Map<String, Serializable> gets(String... keys);
+    HashMap<String, Serializable> gets(String... keys);
 
-	void sets(Map<String, Serializable> values);
+    void sets(HashMap<String, Serializable> values);
 
-	void clear(List<String> keys);
+    void clear(ArrayList<String> keys);
 }

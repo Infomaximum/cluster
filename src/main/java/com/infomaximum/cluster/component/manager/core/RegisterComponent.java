@@ -7,10 +7,7 @@ import com.infomaximum.cluster.core.remote.controller.notification.RControllerNo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -38,12 +35,12 @@ public class RegisterComponent implements ActiveComponents {
 	}
 
 	@Override
-	public Collection<RuntimeComponentInfo> registerActiveRole(RuntimeComponentInfo subSystemInfo) {
-		String key = subSystemInfo.key;
+    public ArrayList<RuntimeComponentInfo> registerActiveRole(RuntimeComponentInfo subSystemInfo) {
+        String key = subSystemInfo.key;
 		String uuid = subSystemInfo.uuid;
 		boolean isSingleton = subSystemInfo.isSingleton;
 
-		if (components.containsKey(key)) return components.values();
+        if (components.containsKey(key)) return new ArrayList<>(components.values());
 
 		Map<String, RuntimeComponentInfo> activeSubSystems;
 		synchronized (components) {
@@ -62,8 +59,8 @@ public class RegisterComponent implements ActiveComponents {
 			managerComponent.getRemotes().getFromSSKey(keySubSystem, RControllerNotification.class).notificationRegisterComponent(subSystemInfo);
 		}
 
-		return components.values();
-	}
+        return new ArrayList<>(components.values());
+    }
 
 	@Override
 	public Collection<RuntimeComponentInfo> unRegisterActiveRole(String key) {

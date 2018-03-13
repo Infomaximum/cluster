@@ -4,18 +4,11 @@ import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.core.service.transport.Transport;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.net.event.IAMQPConnect;
-import com.infomaximum.cluster.core.service.transport.struct.TransportConfig;
 import com.infomaximum.cluster.utils.ExecutorUtil;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.ShutdownListener;
-import com.rabbitmq.client.ShutdownSignalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -25,17 +18,17 @@ public class RabbitMQ implements TransportManager {
 
 	private final static Logger log = LoggerFactory.getLogger(RabbitMQ.class);
 
-	private final ConnectionFactory connectionFactory;
-	private Connection connection;
+//	private final ConnectionFactory connectionFactory;
+//	private Connection connection;
 
 	private List<IAMQPConnect> listenersIAMQPConnect;
 
 	private boolean isDestroyed=false;
 
-	public RabbitMQ(TransportConfig transportConfig) throws Exception {
-		connectionFactory = new ConnectionFactory();
-		connectionFactory.setUri(transportConfig.url);
-		connectionFactory.setRequestedHeartbeat(60);//Detecting Dead TCP Connections
+    public RabbitMQ() throws Exception {
+//		connectionFactory = new ConnectionFactory();
+//		connectionFactory.setUri(transportConfig.url);
+//		connectionFactory.setRequestedHeartbeat(60);//Detecting Dead TCP Connections
 
 		listenersIAMQPConnect = new CopyOnWriteArrayList<IAMQPConnect>();
 
@@ -53,25 +46,25 @@ public class RabbitMQ implements TransportManager {
 
 				log.debug("RabbitMQ connect...");
 				try {
-					connection = connectionFactory.newConnection(ExecutorUtil.executors);
-					connection.addShutdownListener(new ShutdownListener() {
-						public void shutdownCompleted(ShutdownSignalException cause) {
-							connection.removeShutdownListener(this);
-
-							connection = null;
-							for(IAMQPConnect item: listenersIAMQPConnect) {//Оповещаем подписчиков о разединении
-								try {
-									item.disconnected();
-								} catch (Exception e) {
-									log.error("Exception fire rmq Disconnected", e);
-								}
-							}
-
-							if (isDestroyed) return;
-							connect();
-						}
-					});
-					log.debug("RabbitMQ connected");
+//					connection = connectionFactory.newConnection(ExecutorUtil.executors);
+//					connection.addShutdownListener(new ShutdownListener() {
+//						public void shutdownCompleted(ShutdownSignalException cause) {
+//							connection.removeShutdownListener(this);
+//
+//							connection = null;
+//							for(IAMQPConnect item: listenersIAMQPConnect) {//Оповещаем подписчиков о разединении
+//								try {
+//									item.disconnected();
+//								} catch (Exception e) {
+//									log.error("Exception fire rmq Disconnected", e);
+//								}
+//							}
+//
+//							if (isDestroyed) return;
+//							connect();
+//						}
+//					});
+                    log.debug("RabbitMQ connected");
 
 					for(IAMQPConnect item: listenersIAMQPConnect) {//Оповещаем подписчиков о соединении
 						try {
@@ -130,12 +123,12 @@ public class RabbitMQ implements TransportManager {
 	public void destroy(){
 		isDestroyed=true;
 		log.debug("RabbitMQ connection destroying");
-		if (connection!=null){
-			try {
-				connection.close();
-			} catch (IOException e) {
-				log.error("RabbitMQ close connected error", e);
-			}
-		}
-	}
+//		if (connection!=null){
+//			try {
+//				connection.close();
+//			} catch (IOException e) {
+//				log.error("RabbitMQ close connected error", e);
+//			}
+//		}
+    }
 }

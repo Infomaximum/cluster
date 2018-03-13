@@ -2,9 +2,6 @@ package com.infomaximum.cluster.core.component;
 
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.core.remote.struct.RemoteObject;
-import com.infomaximum.cluster.struct.Component;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -18,9 +15,9 @@ public class RuntimeComponentInfo implements RemoteObject {
     public final String key;
     public final String uuid;
     public final boolean isSingleton;
-    private Collection<String> classNameRControllers;
+    private HashSet<String> classNameRControllers;
 
-    public RuntimeComponentInfo(String key, String uuid, boolean isSingleton, Collection<Class<? extends RController>> classRControllers) {
+    public RuntimeComponentInfo(String key, String uuid, boolean isSingleton, HashSet<Class<? extends RController>> classRControllers) {
         this(key, uuid, isSingleton);
 
         this.classNameRControllers=new HashSet<>();
@@ -37,36 +34,5 @@ public class RuntimeComponentInfo implements RemoteObject {
 
     public Collection<String> getClassNameRControllers() {
         return Collections.unmodifiableCollection(classNameRControllers);
-    }
-
-    @Override
-    public JSONObject serialize(Component component) {
-        JSONObject out = new JSONObject();
-        out.put("key", key);
-        out.put("uuid", uuid);
-        out.put("is_singleton", isSingleton);
-
-        JSONArray outRControllers = new JSONArray();
-        outRControllers.addAll(classNameRControllers);
-        out.put("remote_controllers", outRControllers);
-
-        return out;
-    }
-
-    public static RuntimeComponentInfo deserialize(JSONObject json) throws ClassNotFoundException {
-        String key = json.getAsString("key");
-        String uuid = json.getAsString("uuid");
-        boolean isSingleton = (boolean)json.get("is_singleton");
-
-        RuntimeComponentInfo subSystemInfo = new RuntimeComponentInfo(key, uuid, isSingleton);
-
-        Collection<String> classNameRControllers = new HashSet<String>();
-        for (Object oRController: (JSONArray)json.get("remote_controllers")) {
-            String classNameRController = (String)oRController;
-            classNameRControllers.add(classNameRController);
-        }
-        subSystemInfo.classNameRControllers = classNameRControllers;
-
-        return subSystemInfo;
     }
 }

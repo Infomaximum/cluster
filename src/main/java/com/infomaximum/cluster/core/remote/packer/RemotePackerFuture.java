@@ -2,6 +2,7 @@ package com.infomaximum.cluster.core.remote.packer;
 
 import com.infomaximum.cluster.struct.Component;
 
+import java.lang.reflect.Type;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -20,7 +21,12 @@ public class RemotePackerFuture implements RemotePacker<CompletableFuture> {
     }
 
     @Override
-    public Object serialize(Component component, CompletableFuture value) {
+    public void validation(Type classType) {
+        //TODO не реализовано, реализовать проверку
+    }
+
+    @Override
+    public byte[] serialize(Component component, CompletableFuture value) {
         //TODO не реализовано, реализовать через
 //        future.whenComplete((s, throwable) -> {
 //            log.debug("futureError: thenAccept");
@@ -30,7 +36,7 @@ public class RemotePackerFuture implements RemotePacker<CompletableFuture> {
     }
 
     @Override
-    public CompletableFuture deserialize(Component component, Class classType, Object value) {
+    public CompletableFuture deserialize(Component component, Class classType, byte[] value) {
         //TODO не реализовано, реализовать через
 //        future.whenComplete((s, throwable) -> {
 //            log.debug("futureError: thenAccept");
