@@ -3,7 +3,9 @@ package com.infomaximum.cluster.core.remote;
 import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.exception.runtime.ClusterRemotePackerException;
 import com.infomaximum.cluster.struct.Component;
+import com.infomaximum.cluster.utils.ReflectionUtils;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -19,14 +21,14 @@ public class RemotePackerObjects {
         this.remotePackers = component.getTransport().getRemotePackers();
     }
 
-    public Object serialize(Object value) {
+    public byte[] serialize(Object value) {
         for (RemotePacker remotePackerObject: remotePackers) {
             if (remotePackerObject.isSupport(value.getClass())) return remotePackerObject.serialize(component, value);
         }
         throw new ClusterRemotePackerException();
     }
 
-    public Object deserialize(Class classType, Object value){
+    public Object deserialize(Class classType, byte[] value) {
         for (RemotePacker remotePackerObject: remotePackers) {
             if (remotePackerObject.isSupport(classType)) return remotePackerObject.deserialize(component, classType, value);
         }
@@ -40,9 +42,13 @@ public class RemotePackerObjects {
         throw new ClusterRemotePackerException();
     }
 
-    public boolean isSupportType(Class classType){
+    public boolean isSupportAndValidationType(Type classType) {
         for (RemotePacker remotePackerObject: remotePackers) {
-            if (remotePackerObject.isSupport(classType)) return true;
+            if (remotePackerObject.isSupport(ReflectionUtils.getRawClass(classType))) {
+                //Валидируем класс
+                remotePackerObject.validation(classType);
+                return true;
+            }
         }
         return false;
     }

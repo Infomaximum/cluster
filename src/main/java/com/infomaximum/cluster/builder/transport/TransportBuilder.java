@@ -15,16 +15,7 @@ public abstract class TransportBuilder {
 
     public TransportBuilder() {
         this.remotePackers=new ArrayList<>();
-        this.remotePackers.add(new RemotePackerString());
-        this.remotePackers.add(new RemotePackerBoolean());
-        this.remotePackers.add(new RemotePackerLong());
-        this.remotePackers.add(new RemotePackerInteger());
-        this.remotePackers.add(new RemotePackerByte());
-        this.remotePackers.add(new RemotePackerJSONObject());
-        this.remotePackers.add(new RemotePackerJSONArray());
         this.remotePackers.add(new RemotePackerRemoteObject());
-        this.remotePackers.add(new RemotePackerMap());
-        this.remotePackers.add(new RemotePackerCollection());
         this.remotePackers.add(new RemotePackerSerializable());
         this.remotePackers.add(new RemotePackerFuture());
     }

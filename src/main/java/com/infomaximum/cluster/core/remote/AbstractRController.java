@@ -2,6 +2,7 @@ package com.infomaximum.cluster.core.remote;
 
 import com.infomaximum.cluster.anotation.DisableValidationRemoteMethod;
 import com.infomaximum.cluster.core.remote.struct.RController;
+import com.infomaximum.cluster.core.remote.utils.RemoteControllerUtils;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.EqualsUtils;
 import org.slf4j.Logger;
@@ -37,7 +38,7 @@ public abstract class AbstractRController<TComponent extends Component> implemen
 
                 //Проверяем, что результат и аргументы сериализуемы
                 if (!method.isAnnotationPresent(DisableValidationRemoteMethod.class)) {
-                    validationRemoteMethod(interfaceClazz, method);
+                    RemoteControllerUtils.validationRemoteMethod(component, interfaceClazz, method);
                 }
 
                 //Игнорируем права доступа
@@ -88,51 +89,4 @@ public abstract class AbstractRController<TComponent extends Component> implemen
         return component.getRemotes();
     }
 
-
-    private void validationRemoteMethod(Class remoteControllerClazz, Method method) {
-        //Валидируем return type
-        if (!validationType(method.getGenericReturnType())) {
-            throw new RuntimeException("Not valid return type: " + method.getGenericReturnType() + " in remote method: " + method.getName() + ", in controller: " + remoteControllerClazz);
-        }
-
-        //Валидируем аргументы
-        for (Type genericType : method.getGenericParameterTypes()) {
-            if (!validationType(genericType)) {
-                throw new RuntimeException("Not valid argument: " + genericType + " remote method: " + method.getName() + ", in controller: " + remoteControllerClazz);
-            }
-        }
-    }
-
-    private boolean validationType(Type type) {
-        if (type == void.class || type == Void.class) return true;
-
-        //Сначала получаем изначальный raw class
-        Class clazz;
-        if (type instanceof ParameterizedType) {
-            clazz = (Class) ((ParameterizedType) type).getRawType();
-        } else if (type instanceof TypeVariable) {
-            for (Type iType : ((TypeVariable) type).getBounds()) {
-                boolean iValidation = validationType(iType);
-                if (!iValidation) return false;
-            }
-            return true;
-        } else {
-            clazz = (Class) type;
-        }
-
-        //Валидируем raw class
-        RemotePackerObjects remotePackerObjects = component.getRemotes().getRemotePackerObjects();
-        boolean isValidation = remotePackerObjects.isSupportType(clazz);
-        if (!isValidation) return false;
-
-        //Валидируем если надо его дженерики
-        if (type instanceof ParameterizedType) {
-            for (Type iType : ((ParameterizedType) type).getActualTypeArguments()) {
-                boolean iValidation = validationType(iType);
-                if (!iValidation) return false;
-            }
-        }
-
-        return true;
-    }
 }

@@ -6,7 +6,9 @@ import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.AbstractRController;
 import com.infomaximum.cluster.struct.ComponentInfos;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Created by kris on 02.11.16.
@@ -20,8 +22,8 @@ public class RControllerManagerComponentImpl extends AbstractRController<Manager
 	@Override
 	public ComponentInfos register(RuntimeComponentInfo componentInfo) {
 		RegisterComponent registerComponent = component.getRegisterComponent();
-		Collection<RuntimeComponentInfo> subSystemInfoList = registerComponent.registerActiveRole(componentInfo);
-		return new ComponentInfos(subSystemInfoList);
+        ArrayList<RuntimeComponentInfo> subSystemInfoList = registerComponent.registerActiveRole(componentInfo);
+        return new ComponentInfos(subSystemInfoList);
 	}
 
 	@Override

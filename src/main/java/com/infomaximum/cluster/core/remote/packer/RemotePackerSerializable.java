@@ -4,6 +4,7 @@ import com.infomaximum.cluster.exception.runtime.ClusterRemotePackerException;
 import com.infomaximum.cluster.struct.Component;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.util.Base64;
 
 /**
@@ -13,15 +14,21 @@ public class RemotePackerSerializable implements RemotePacker<Serializable> {
 
     @Override
     public boolean isSupport(Class classType) {
-        return (Serializable.class.isAssignableFrom(classType));
+        return (classType.isPrimitive() || Serializable.class.isAssignableFrom(classType));
     }
 
     @Override
-    public Object serialize(Component component, Serializable value) {
+    public void validation(Type classType) {
+        //К сожалению из-за слишком большого многообразия реализация - адекватную
+        // проверку на этапе компиляции реализовать не удастся
+    }
+
+    @Override
+    public byte[] serialize(Component component, Serializable value) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             try(ObjectOutputStream oos = new ObjectOutputStream(baos)) {
                 oos.writeObject(value);
-                return Base64.getEncoder().encodeToString(baos.toByteArray());
+                return baos.toByteArray();
             }
         } catch (Exception e) {
             throw new ClusterRemotePackerException(e);
@@ -29,10 +36,9 @@ public class RemotePackerSerializable implements RemotePacker<Serializable> {
     }
 
     @Override
-    public Serializable deserialize(Component component, Class classType, Object value) {
+    public Serializable deserialize(Component component, Class classType, byte[] value) {
         try {
-            byte[] data = Base64.getDecoder().decode((String)value);
-            try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data))) {
+            try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(value))) {
                 return (Serializable) ois.readObject();
             }
         } catch (Exception e) {
