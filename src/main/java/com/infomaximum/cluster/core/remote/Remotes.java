@@ -2,6 +2,7 @@ package com.infomaximum.cluster.core.remote;
 
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.struct.RController;
+import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
 import com.infomaximum.cluster.utils.RandomUtil;
@@ -58,9 +59,13 @@ public class Remotes {
 		return getFromSSKey(pretendents.get(RandomUtil.random.nextInt(pretendents.size())), remoteControllerClazz);
 	}
 
-	public <T extends RController> T get(Class<? extends Component> classComponent, Class<T> remoteControllerClazz) throws NoSuchFieldException, IllegalAccessException {
-		Info info = (Info) classComponent.getField("INFO").get(null);
-		return getFromSSUuid(info.getUuid(), remoteControllerClazz);
+	public <T extends RController> T get(Class<? extends Component> classComponent, Class<T> remoteControllerClazz) throws ClusterException {
+		try {
+			Info info = (Info) classComponent.getField("INFO").get(null);
+			return getFromSSUuid(info.getUuid(), remoteControllerClazz);
+		} catch (ReflectiveOperationException e) {
+			throw new ClusterException(e);
+		}
 	}
 
 	public <T extends RController> T get(Class<T> clazz){
