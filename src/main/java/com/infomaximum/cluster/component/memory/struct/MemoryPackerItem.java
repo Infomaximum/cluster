@@ -3,9 +3,9 @@ package com.infomaximum.cluster.component.memory.struct;
 /**
  * Created by kris on 09.03.16.
  */
-public interface MemoryPackerItem {
+public interface MemoryPackerItem<T> {
 
-    Object deserialize(final String strValue);
+    T deserialize(final byte[] value);
 
-    String serialize(final Object value);
+    byte[] serialize(final T value);
 }
