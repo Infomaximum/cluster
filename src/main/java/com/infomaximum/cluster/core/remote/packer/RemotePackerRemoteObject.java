@@ -68,10 +68,16 @@ public class RemotePackerRemoteObject implements RemotePacker<RemoteObject> {
 
                 //Проверяем все поля
                 for (Field iField : clazz.getDeclaredFields()) {
-                    if (Modifier.isTransient(iField.getModifiers()))
+                    if (Modifier.isTransient(iField.getModifiers())) {
                         continue;//Игнорируем поля помеченые как "не сериалезуемые"
+                    }
+                    if (iField.getType() == RemoteObject.class) {
+                        continue;//Поле указывает на интерфейс RemoteObject - нечего проверять
+                    }
 
                     Type iType = iField.getGenericType();
+
+                    if (type == iType) continue;//Попытка уйти в рекурсию
 
                     validationWorker(iType, new ArrayList<String>(trace) {{
                         add(type.getTypeName());
