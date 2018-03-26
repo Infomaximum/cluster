@@ -27,9 +27,23 @@ public class ResultValidator {
         return trace;
     }
 
+    @Override
+    public String toString() {
+        if (success) {
+            return "ResultValidator(status: success)";
+        } else {
+            return new StringBuilder()
+                    .append("ResultValidator(status: fail, type: ")
+                    .append(type)
+                    .append(", trace: ")
+                    .append(String.join(" => ", trace))
+                    .toString();
+        }
+    }
+
     public void check() {
         if (success) return;
-        throw new RuntimeException("Not serializable class: " + type + ", trace: " + String.join(" => ", trace));
+        throw new RuntimeException("Not serializable class. ResultValidator: " + this.toString());
     }
 
     protected static ResultValidator buildFailResultValidator(Type type, List<String> trace) {
