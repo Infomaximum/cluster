@@ -32,12 +32,16 @@ public class ResultValidator {
         if (success) {
             return "ResultValidator(status: success)";
         } else {
-            return new StringBuilder()
+            StringBuilder sBuilder = new StringBuilder()
                     .append("ResultValidator(status: fail, type: ")
-                    .append(type)
-                    .append(", trace: ")
-                    .append(String.join(" => ", trace))
-                    .toString();
+                    .append(type);
+            if (trace != null && trace.isEmpty()) {
+                sBuilder
+                        .append(", trace: ")
+                        .append(String.join(" => ", trace));
+            }
+            sBuilder.append(')');
+            return sBuilder.toString();
         }
     }
 
