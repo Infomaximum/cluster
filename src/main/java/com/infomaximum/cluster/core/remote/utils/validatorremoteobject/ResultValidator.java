@@ -1,6 +1,7 @@
 package com.infomaximum.cluster.core.remote.utils.validatorremoteobject;
 
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 
 public class ResultValidator {
@@ -15,11 +16,15 @@ public class ResultValidator {
     private ResultValidator(boolean success, Type type, List<String> trace) {
         this.success = success;
         this.type = type;
-        this.trace = trace;
+        this.trace = (trace != null) ? Collections.unmodifiableList(trace) : null;
     }
 
     public boolean isSuccess() {
         return success;
+    }
+
+    public List<String> getTrace() {
+        return trace;
     }
 
     public void check() {
