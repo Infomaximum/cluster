@@ -35,7 +35,7 @@ public class ResultValidator {
             StringBuilder sBuilder = new StringBuilder()
                     .append("ResultValidator(status: fail, type: ")
                     .append(type);
-            if (trace != null && trace.isEmpty()) {
+            if (trace != null && !trace.isEmpty()) {
                 sBuilder
                         .append(", trace: ")
                         .append(String.join(" => ", trace));
