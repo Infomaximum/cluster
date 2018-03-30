@@ -2,6 +2,7 @@ package com.infomaximum.cluster.core.remote;
 
 import com.infomaximum.cluster.anotation.DisableValidationRemoteMethod;
 import com.infomaximum.cluster.core.remote.struct.RController;
+import com.infomaximum.cluster.core.remote.utils.RemoteControllerAnalysis;
 import com.infomaximum.cluster.core.remote.utils.RemoteControllerUtils;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.EqualsUtils;
@@ -33,25 +34,9 @@ public abstract class AbstractRController<TComponent extends Component> implemen
         hashControllersRemoteMethods = new HashMap<Class<? extends RController>, Map<String, List<Method>>>();
         for (Class interfaceClazz: this.getClass().getInterfaces()){
             if (!RController.class.isAssignableFrom(interfaceClazz)) continue;
-            Map<String, List<Method>> hashMethods = new HashMap<>();
-            for (Method method: interfaceClazz.getDeclaredMethods()) {
 
-                //Проверяем, что результат и аргументы сериализуемы
-                if (!method.isAnnotationPresent(DisableValidationRemoteMethod.class)) {
-                    RemoteControllerUtils.validationRemoteMethod(component, interfaceClazz, method);
-                }
-
-                //Игнорируем права доступа
-                method.setAccessible(true);
-
-                List<Method> methods = hashMethods.get(method.getName());
-                if (methods == null) {
-                    methods = new ArrayList<>();
-                    hashMethods.put(method.getName(), methods);
-                }
-                methods.add(method);
-            }
-            hashControllersRemoteMethods.put(interfaceClazz, hashMethods);
+            RemoteControllerAnalysis remoteControllerAnalysis = new RemoteControllerAnalysis(component, interfaceClazz);
+            hashControllersRemoteMethods.put(interfaceClazz, remoteControllerAnalysis.getMethods());
         }
     }
 
