@@ -1,5 +1,5 @@
 group 'com.infomaximum'
-version '0.0.58'
+version '0.0.59'
 
 apply plugin: 'java'
 apply plugin: 'maven'
@@ -20,13 +20,12 @@ dependencies {
 
     compile 'org.reflections:reflections:0.9.11'
 
-    compile 'org.slf4j:slf4j-api:1.7.21'
-
+    compile 'org.slf4j:slf4j-api:1.7.25'
 
     testCompile 'junit:junit:4.12'
 
-    testCompile 'ch.qos.logback:logback-core:1.2.2'
-    testCompile 'ch.qos.logback:logback-classic:1.2.2'
+    testCompile 'ch.qos.logback:logback-core:1.2.3'
+    testCompile 'ch.qos.logback:logback-classic:1.2.3'
 
-    testCompile 'commons-io:commons-io:2.5'
+    testCompile 'commons-io:commons-io:2.6'
 }
