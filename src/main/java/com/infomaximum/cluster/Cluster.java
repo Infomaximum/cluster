@@ -58,6 +58,16 @@ public class Cluster implements AutoCloseable {
         return (T) components.get(RandomUtil.random.nextInt(components.size()));
     }
 
+    public Component getAnyComponent(String uuidComponent) {
+        for (Map.Entry<Class<? extends Component>, List<Component>> entry : this.components.entrySet()) {
+            List<Component> components = entry.getValue();
+            if (components.isEmpty()) continue;
+            Component component = components.get(0);
+            if (component.getInfo().getUuid().equals(uuidComponent)) return component;
+        }
+        return null;
+    }
+
     public <T extends Component> List<T> getDependencyOrderedComponentsOf(Class<T> baseClass) {
         return dependencyOrderedComponents.stream()
                 .filter(component -> baseClass.isAssignableFrom(component.getClass()))
