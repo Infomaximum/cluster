@@ -2,9 +2,12 @@ package com.infomaximum.cluster.core.io;
 
 import com.infomaximum.cluster.core.remote.controller.clusterfile.RControllerClusterFile;
 import com.infomaximum.cluster.struct.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,6 +17,8 @@ import java.nio.file.Paths;
  * cfile:com.infomaximum.cluster.component.manager:00000000-0000-0000-0000-00000000000/UUID
  */
 public class ClusterFile {
+
+    private final static Logger log = LoggerFactory.getLogger(ClusterFile.class);
 
     private static String SCHEME_FILE = "file";
 
@@ -38,10 +43,15 @@ public class ClusterFile {
         return SCHEME_FILE.equals(uri.getScheme());
     }
 
-    public void copyTo(Path file) throws IOException {
+    public void copyTo(Path file, CopyOption... options) throws IOException {
         if (isLocalFile()) {
-            Files.copy(Paths.get(uri), file);
+            Files.copy(Paths.get(uri), file, options);
         } else {
+            //TODO Необходима поддержка CopyOption...
+            if (options.length > 0) {
+                log.warn("Not implemented options!!!");
+            }
+
             //TODO Ulitin V. Необходимо подумать как переписать на поточную обработку, сейчас будут большие накладные расходы на оперативку
             RControllerClusterFile controllerClusterFile = component.getRemotes().getFromSSKey(URIClusterFile.getPathToComponentKey(uri), RControllerClusterFile.class);
             byte[] content = controllerClusterFile.getContent(URIClusterFile.getPathToFileUUID(uri));
@@ -67,11 +77,11 @@ public class ClusterFile {
         }
     }
 
-    public void moveTo(Path target) throws IOException {
+    public void moveTo(Path target, CopyOption... options) throws IOException {
         if (isLocalFile()) {
-            Files.move(Paths.get(uri), target);
+            Files.move(Paths.get(uri), target, options);
         } else {
-            copyTo(target);
+            copyTo(target, options);
             delete();
         }
     }
@@ -84,6 +94,5 @@ public class ClusterFile {
             return controllerClusterFile.getSize(URIClusterFile.getPathToFileUUID(uri));
         }
     }
-
 
 }
