@@ -1,5 +1,6 @@
 package com.infomaximum.cluster.core.remote.controller.clusterfile;
 
+import com.infomaximum.cluster.core.remote.struct.ClusterInputStream;
 import com.infomaximum.cluster.core.remote.struct.RController;
 
 import java.io.IOException;
@@ -11,7 +12,7 @@ public interface RControllerClusterFile extends RController {
 
     long getSize(String clusterFileUUID) throws IOException;
 
-    byte[] getContent(String clusterFileUUID) throws IOException;
+    ClusterInputStream getInputStream(String clusterFileUUID) throws IOException;
 
     void delete(String clusterFileUUID) throws IOException;
 

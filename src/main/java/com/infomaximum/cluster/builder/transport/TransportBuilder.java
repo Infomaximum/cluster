@@ -14,10 +14,11 @@ public abstract class TransportBuilder {
     private List<RemotePacker> remotePackers;
 
     public TransportBuilder() {
-        this.remotePackers=new ArrayList<>();
+        this.remotePackers = new ArrayList<>();
         this.remotePackers.add(new RemotePackerRemoteObject());
         this.remotePackers.add(new RemotePackerSerializable());
         this.remotePackers.add(new RemotePackerFuture());
+        this.remotePackers.add(new RemotePackerClasterInputStream());
     }
 
     public TransportBuilder withRemotePackerObject(RemotePacker remotePackerObject) {

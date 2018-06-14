@@ -1,6 +1,7 @@
 package com.infomaximum.cluster.core.remote.controller.clusterfile;
 
 import com.infomaximum.cluster.core.remote.AbstractRController;
+import com.infomaximum.cluster.core.remote.struct.ClusterInputStream;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.storage.SourceClusterFile;
 
@@ -33,10 +34,10 @@ public class RControllerClusterFileImpl extends AbstractRController<Component> i
     }
 
     @Override
-    public byte[] getContent(String clusterFileUUID) throws IOException {
+    public ClusterInputStream getInputStream(String clusterFileUUID) throws IOException {
         for (SourceClusterFile source : sources) {
             if (source.contains(clusterFileUUID)) {
-                return source.getContent(clusterFileUUID);
+                return new ClusterInputStream(source.getInputStream(clusterFileUUID));
             }
         }
         throw new FileNotFoundException("File not found: " + clusterFileUUID);
