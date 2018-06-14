@@ -1,6 +1,8 @@
 package com.infomaximum.cluster.core.io;
 
-import com.infomaximum.cluster.core.remote.controller.clusterfile.RControllerClusterFile;
+import com.infomaximum.cluster.core.io.provider.ClusterFileProvider;
+import com.infomaximum.cluster.core.io.provider.ClusterFileProviderLocalImpl;
+import com.infomaximum.cluster.core.io.provider.ClusterFileProviderRemoteImpl;
 import com.infomaximum.cluster.struct.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.CopyOption;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -22,17 +23,15 @@ public class ClusterFile {
 
     private static String SCHEME_FILE = "file";
 
-    private final Component component;
     private final URI uri;
 
-    public ClusterFile(Component component, URI uri) {
-        this.component = component;
+    private final ClusterFileProvider clusterFileProvider;
 
+    public ClusterFile(Component component, URI uri) {
         this.uri = uri;
-        if (uri.getScheme() == null) throw new RuntimeException("Scheme is null, uri: " + uri.toString());
-        if (!uri.getScheme().equals(SCHEME_FILE) && !uri.getScheme().equals(URIClusterFile.SCHEME_CLUSTER_FILE)) {
-            throw new RuntimeException("Scheme is not support, uri: " + uri.toString());
-        }
+        if (uri.getScheme() == null) throw new IllegalArgumentException("Scheme is null, uri: " + uri.toString());
+
+        clusterFileProvider = provider(component, uri);
     }
 
     public URI getUri() {
@@ -44,55 +43,32 @@ public class ClusterFile {
     }
 
     public void copyTo(Path file, CopyOption... options) throws IOException {
-        if (isLocalFile()) {
-            Files.copy(Paths.get(uri), file, options);
-        } else {
-            //TODO Необходима поддержка CopyOption...
-            if (options.length > 0) {
-                log.warn("Not implemented options!!!");
-            }
-
-            //TODO Ulitin V. Необходимо подумать как переписать на поточную обработку, сейчас будут большие накладные расходы на оперативку
-            RControllerClusterFile controllerClusterFile = component.getRemotes().getFromSSKey(URIClusterFile.getPathToComponentKey(uri), RControllerClusterFile.class);
-            byte[] content = controllerClusterFile.getContent(URIClusterFile.getPathToFileUUID(uri));
-            Files.write(file, content);
-        }
+        clusterFileProvider.copyTo(file, options);
     }
 
     public void delete() throws IOException {
-        if (isLocalFile()) {
-            Files.delete(Paths.get(uri));
-        } else {
-            RControllerClusterFile controllerClusterFile = component.getRemotes().getFromSSKey(URIClusterFile.getPathToComponentKey(uri), RControllerClusterFile.class);
-            controllerClusterFile.delete(URIClusterFile.getPathToFileUUID(uri));
-        }
+        clusterFileProvider.delete();
     }
 
     public void deleteIfExists() throws IOException {
-        if (isLocalFile()) {
-            Files.deleteIfExists(Paths.get(uri));
-        } else {
-            RControllerClusterFile controllerClusterFile = component.getRemotes().getFromSSKey(URIClusterFile.getPathToComponentKey(uri), RControllerClusterFile.class);
-            controllerClusterFile.deleteIfExists(URIClusterFile.getPathToFileUUID(uri));
-        }
+        clusterFileProvider.deleteIfExists();
     }
 
     public void moveTo(Path target, CopyOption... options) throws IOException {
-        if (isLocalFile()) {
-            Files.move(Paths.get(uri), target, options);
-        } else {
-            copyTo(target, options);
-            delete();
-        }
+        clusterFileProvider.moveTo(target, options);
     }
 
     public long getSize() throws IOException {
-        if (isLocalFile()) {
-            return Files.size(Paths.get(uri));
-        } else {
-            RControllerClusterFile controllerClusterFile = component.getRemotes().getFromSSKey(URIClusterFile.getPathToComponentKey(uri), RControllerClusterFile.class);
-            return controllerClusterFile.getSize(URIClusterFile.getPathToFileUUID(uri));
-        }
+        return clusterFileProvider.getSize();
     }
 
+    private static ClusterFileProvider provider(Component component, URI source) {
+        if (source.getScheme().equals(SCHEME_FILE)) {
+            return new ClusterFileProviderLocalImpl(Paths.get(source));
+        } else if (source.getScheme().equals(URIClusterFile.SCHEME_CLUSTER_FILE)) {
+            return new ClusterFileProviderRemoteImpl(component, source);
+        } else {
+            throw new RuntimeException("Scheme is not support, uri: " + source.toString());
+        }
+    }
 }
