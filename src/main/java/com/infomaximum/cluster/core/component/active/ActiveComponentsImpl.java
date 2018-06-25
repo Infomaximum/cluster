@@ -52,7 +52,7 @@ public class ActiveComponentsImpl implements ActiveComponents {
 	public Collection<String> getActiveSubSystemUuids() {
 		HashSet<String> subSystemUuids = new HashSet<>();
 		for(RuntimeComponentInfo subSystemInfo: componentInfos.values()){
-			subSystemUuids.add(subSystemInfo.uuid);
+			subSystemUuids.add(subSystemInfo.info.getUuid());
 		}
 		return subSystemUuids;
 	}

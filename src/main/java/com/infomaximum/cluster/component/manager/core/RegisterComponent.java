@@ -28,7 +28,7 @@ public class RegisterComponent implements ActiveComponents {
 		//Регистрируем себя
 		registerActiveRole(new RuntimeComponentInfo(
 				managerComponent.getKey(),
-				managerComponent.getInfo().getUuid(),
+				managerComponent.getInfo(),
 				managerComponent.isSingleton(),
 				managerComponent.getTransport().getExecutor().getClassRControllers()
 		));
@@ -37,7 +37,7 @@ public class RegisterComponent implements ActiveComponents {
 	@Override
     public ArrayList<RuntimeComponentInfo> registerActiveRole(RuntimeComponentInfo subSystemInfo) {
         String key = subSystemInfo.key;
-		String uuid = subSystemInfo.uuid;
+		String uuid = subSystemInfo.info.getUuid();
 		boolean isSingleton = subSystemInfo.isSingleton;
 
         if (components.containsKey(key)) return new ArrayList<>(components.values());
@@ -96,7 +96,7 @@ public class RegisterComponent implements ActiveComponents {
 	public Collection<String> getActiveSubSystemUuids() {
 		HashSet<String> subSystemUuids = new HashSet<String>();
 		for(RuntimeComponentInfo subSystemInfo: components.values()){
-			subSystemUuids.add(subSystemInfo.uuid);
+			subSystemUuids.add(subSystemInfo.info.getUuid());
 		}
 		return subSystemUuids;
 	}

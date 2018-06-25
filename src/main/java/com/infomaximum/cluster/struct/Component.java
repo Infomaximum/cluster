@@ -79,7 +79,7 @@ public abstract class Component {
     protected ActiveComponentsImpl registerComponent() {
         RControllerManagerComponent rControllerManagerComponent = remote.getFromSSKey(ManagerComponent.KEY, RControllerManagerComponent.class);
         ComponentInfos activeComponents = rControllerManagerComponent.register(
-                new RuntimeComponentInfo(key, getInfo().getUuid(), isSingleton(), getTransport().getExecutor().getClassRControllers())
+                new RuntimeComponentInfo(key, getInfo(), isSingleton(), getTransport().getExecutor().getClassRControllers())
         );
         return new ActiveComponentsImpl(this, activeComponents.getItems());
     }
