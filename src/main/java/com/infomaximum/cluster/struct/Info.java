@@ -11,9 +11,9 @@ import java.util.Set;
 public class Info implements RemoteObject {
 
     private final String uuid;
-    private final Class<? extends Component> componentClass;
+    private final Class componentClass;
 
-    private final Class<? extends Component>[] dependencies;
+    private final Class[] dependencies;
 
     protected Info(Builder builder) {
 
@@ -28,7 +28,7 @@ public class Info implements RemoteObject {
 
         this.dependencies = builder.dependencies == null
                 ? new Class[0]
-                : (Class<? extends Component>[]) builder.dependencies.toArray(new Class[builder.dependencies.size()]);
+                : (Class<Component>[]) builder.dependencies.toArray(new Class[builder.dependencies.size()]);
     }
 
     public String getUuid() {
