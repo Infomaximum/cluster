@@ -1,12 +1,14 @@
 package com.infomaximum.cluster.struct;
 
+import com.infomaximum.cluster.core.remote.struct.RemoteObject;
+
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Created by kris on 20.06.17.
  */
-public class Info {
+public class Info implements RemoteObject {
 
     private final String uuid;
     private final Class<? extends Component> componentClass;

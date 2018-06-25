@@ -51,7 +51,7 @@ public class Remotes {
 		List<String> pretendents = new ArrayList<>();
 		for (RuntimeComponentInfo componentInfo : component.getActiveComponents().getActiveSubSystems()) {
 			String componentKey = componentInfo.key;
-			String componentUuid = componentInfo.uuid;
+			String componentUuid = componentInfo.info.getUuid();
 
 			if (componentUuid.equals(uuid)) pretendents.add(componentKey);
 		}
