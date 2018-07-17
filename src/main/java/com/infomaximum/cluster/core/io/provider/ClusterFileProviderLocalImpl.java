@@ -1,6 +1,7 @@
 package com.infomaximum.cluster.core.io.provider;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,6 +22,11 @@ public class ClusterFileProviderLocalImpl implements ClusterFileProvider {
     @Override
     public void copyTo(Path file, CopyOption... options) throws IOException {
         Files.copy(source, file, options);
+    }
+
+    @Override
+    public void copyTo(OutputStream target) throws IOException {
+        Files.copy(source, target);
     }
 
     @Override
