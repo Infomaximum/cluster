@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.CopyOption;
 import java.nio.file.Path;
@@ -44,6 +45,10 @@ public class ClusterFile {
 
     public void copyTo(Path file, CopyOption... options) throws IOException {
         clusterFileProvider.copyTo(file, options);
+    }
+
+    public void copyTo(OutputStream target) throws IOException {
+        clusterFileProvider.copyTo(target);
     }
 
     public void delete() throws IOException {
