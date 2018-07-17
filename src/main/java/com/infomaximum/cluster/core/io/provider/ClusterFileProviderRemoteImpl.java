@@ -6,6 +6,7 @@ import com.infomaximum.cluster.struct.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
@@ -30,6 +31,16 @@ public class ClusterFileProviderRemoteImpl implements ClusterFileProvider {
     public void copyTo(Path file, CopyOption... options) throws IOException {
         InputStream inputStream = controllerClusterFile.getInputStream(URIClusterFile.getPathToFileUUID(uri));
         Files.copy(inputStream, file, options);
+    }
+
+    @Override
+    public void copyTo(OutputStream target) throws IOException {
+        InputStream inputStream = controllerClusterFile.getInputStream(URIClusterFile.getPathToFileUUID(uri));
+        byte[] buf = new byte[8192];
+        int n;
+        while ((n = inputStream.read(buf)) > 0) {
+            target.write(buf, 0, n);
+        }
     }
 
     @Override
