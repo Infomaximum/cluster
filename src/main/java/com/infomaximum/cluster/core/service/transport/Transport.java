@@ -3,7 +3,6 @@ package com.infomaximum.cluster.core.service.transport;
 import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
-import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -11,31 +10,41 @@ import java.util.List;
 /**
  * Created by kris on 14.09.16.
  */
-public interface Transport {
+public class Transport {
 
-	public String getSubSystemUuid();
+	private final TransportManager transportManager;
 
-	public String getSubSystemKey();
+	private final String subSystemUuid;
+	private final String subSystemKey;
+	private ExecutorTransport executorTransport;
 
+	public Transport(TransportManager transportManager, String subSystemUuid, String subSystemKey) {
+		this.transportManager = transportManager;
+		this.subSystemUuid = subSystemUuid;
+		this.subSystemKey = subSystemKey;
+	}
 
+	public String getSubSystemUuid() {
+		return subSystemUuid;
+	}
 
-	public void setExecutor(ExecutorTransport executorTransport);
+	public String getSubSystemKey() {
+		return subSystemKey;
+	}
 
-	public ExecutorTransport getExecutor();
+	public void setExecutor(ExecutorTransport executorTransport) {
+		this.executorTransport = executorTransport;
+	}
 
-	public List<RemotePacker> getRemotePackers();
+	public ExecutorTransport getExecutor() {
+		return executorTransport;
+	}
 
-	public boolean isConnected();
+	public List<RemotePacker> getRemotePackers() {
+		return transportManager.getRemotePackers();
+	}
 
-
-	public Object request(String targetComponentKey, Class<? extends RController> rControllerClass, Method method, Object[] args) throws Exception;
-
-	public Object request(String targetComponentKey, Class<? extends RController> rControllerClass, Method method, Object[] args, long timeout) throws Exception;
-
-
-//	public JSONObject request(String remoteControllerKey, JSONObject request) throws Exception;
-//
-//	public JSONObject request(String remoteControllerKey, JSONObject request, long timeout) throws Exception;
-
-//	public Future<TPacketResponse> futureRequest(String remoteControllerKey, JSONObject request);
+	public Object request(String targetComponentKey, Class<? extends RController> rControllerClass, Method method, Object[] args) throws Exception {
+		return transportManager.transitRequest(targetComponentKey, rControllerClass.getName(), method.getName(), args);
+	}
 }

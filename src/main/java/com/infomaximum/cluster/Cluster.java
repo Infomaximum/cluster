@@ -1,8 +1,9 @@
 package com.infomaximum.cluster;
 
-import com.infomaximum.cluster.builder.transport.TransportBuilder;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
+import com.infomaximum.cluster.core.remote.packer.*;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
+import com.infomaximum.cluster.core.service.transport.network.NetworkTransport;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.exception.CyclicDependenceException;
 import com.infomaximum.cluster.exception.DependencyException;
@@ -114,13 +115,27 @@ public class Cluster implements AutoCloseable {
 
     public static class Builder {
 
-        private TransportBuilder transportBuilder;
+        private final List<RemotePacker> remotePackers;
+
+        private NetworkTransport networkTransport;
+
         private List<ComponentBuilder> componentBuilders = new ArrayList<>();
 
-        public Builder() {}
+        public Builder() {
+            this.remotePackers = new ArrayList<>();
+            this.remotePackers.add(new RemotePackerRemoteObject());
+            this.remotePackers.add(new RemotePackerSerializable());
+            this.remotePackers.add(new RemotePackerFuture());
+            this.remotePackers.add(new RemotePackerClasterInputStream());
+        }
 
-        public Builder withTransport(TransportBuilder transportBuilder) {
-            this.transportBuilder = transportBuilder;
+        public Builder withNetworkTransport(NetworkTransport networkTransport) {
+            this.networkTransport = networkTransport;
+            return this;
+        }
+
+        public Builder withRemotePackerObject(RemotePacker remotePackerObject) {
+            remotePackers.add(remotePackerObject);
             return this;
         }
 
@@ -141,11 +156,12 @@ public class Cluster implements AutoCloseable {
 
         public Cluster build() throws ClusterException {
             Cluster cluster = null;
-
             try {
-                List<Component> components = new ArrayList<>(componentBuilders.size() + 1);
+                TransportManager transportManager = new TransportManager(remotePackers);
 
-                cluster = new Cluster(transportBuilder.build());
+                cluster = new Cluster(transportManager);
+
+                List<Component> components = new ArrayList<>(componentBuilders.size() + 1);
 
                 //TODO необходима правильная инициализация менеджера, в настоящий момент считаем, что приложение у нас одно поэтому инициализируем его прямо тут
                 components.add(new ManagerComponent(cluster));
