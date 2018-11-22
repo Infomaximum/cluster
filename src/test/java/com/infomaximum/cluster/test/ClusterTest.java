@@ -2,14 +2,13 @@ package com.infomaximum.cluster.test;
 
 import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.ComponentBuilder;
-import com.infomaximum.cluster.builder.transport.MockTransportBuilder;
-import com.infomaximum.cluster.server.custom.CustomComponent;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.component.memory.MemoryComponent;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.exception.CyclicDependenceException;
 import com.infomaximum.cluster.exception.DependencyException;
+import com.infomaximum.cluster.server.custom.CustomComponent;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
 import org.junit.Assert;
@@ -22,9 +21,6 @@ public class ClusterTest {
     @Test
     public void createValidCluster() throws Exception {
         try (Cluster cluster = new Cluster.Builder()
-                .withTransport(
-                        new MockTransportBuilder()
-                )
                 .withComponentIfNotExist(new ComponentBuilder(MemoryComponent.class))
                 .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
                 .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
@@ -35,9 +31,6 @@ public class ClusterTest {
     @Test
     public void implicitCreateComponent() throws Exception {
         try (Cluster cluster = new Cluster.Builder()
-                .withTransport(
-                        new MockTransportBuilder()
-                )
                 .withComponent(new ComponentBuilder(Component3.class))
                 .build()) {
 
@@ -54,9 +47,6 @@ public class ClusterTest {
     @Test
     public void componentAlreadyExists() throws Exception {
         try (Cluster cluster = new Cluster.Builder()
-                .withTransport(
-                        new MockTransportBuilder()
-                )
                 .withComponent(new ComponentBuilder(MemoryComponent.class))
                 .withComponent(new ComponentBuilder(CustomComponent.class))
                 .withComponent(new ComponentBuilder(MemoryComponent.class))
@@ -75,9 +65,6 @@ public class ClusterTest {
     @Test
     public void cyclicDependence() throws Exception {
         try (Cluster cluster = new Cluster.Builder()
-                .withTransport(
-                        new MockTransportBuilder()
-                )
                 .withComponent(new ComponentBuilder(CyclicComponent1.class))
                 .withComponent(new ComponentBuilder(CyclicComponent2.class))
                 .build()) {
@@ -87,9 +74,6 @@ public class ClusterTest {
         }
 
         try (Cluster cluster = new Cluster.Builder()
-                .withTransport(
-                        new MockTransportBuilder()
-                )
                 .withComponent(new ComponentBuilder(CyclicComponent1.class))
                 .build()) {
             Assert.fail();
@@ -101,9 +85,6 @@ public class ClusterTest {
     @Test
     public void dependenceOrdered1() throws Exception {
         try (Cluster cluster = new Cluster.Builder()
-                .withTransport(
-                        new MockTransportBuilder()
-                )
                 .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
                 .withComponent(new ComponentBuilder(Component2.class))
                 .withComponent(new ComponentBuilder(Component1.class))
@@ -127,9 +108,6 @@ public class ClusterTest {
     @Test
     public void dependenceOrdered2() throws Exception {
         try (Cluster cluster = new Cluster.Builder()
-                .withTransport(
-                        new MockTransportBuilder()
-                )
                 .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
                 .withComponent(new ComponentBuilder(Component2.class))
                 .withComponent(new ComponentBuilder(Component1.class))
@@ -150,7 +128,6 @@ public class ClusterTest {
     @Test
     public void removeComponent() throws Exception {
         try (Cluster cluster = new Cluster.Builder()
-                .withTransport(new MockTransportBuilder())
                 .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
                 .withComponent(new ComponentBuilder(Component2.class))
                 .withComponent(new ComponentBuilder(Component1.class))

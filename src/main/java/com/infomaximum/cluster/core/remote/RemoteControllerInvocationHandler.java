@@ -2,6 +2,7 @@ package com.infomaximum.cluster.core.remote;
 
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.struct.Component;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 

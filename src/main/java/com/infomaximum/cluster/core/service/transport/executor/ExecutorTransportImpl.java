@@ -1,9 +1,8 @@
 package com.infomaximum.cluster.core.service.transport.executor;
 
-import com.infomaximum.cluster.core.remote.controller.notification.RControllerNotificationImpl;
 import com.infomaximum.cluster.core.remote.AbstractRController;
+import com.infomaximum.cluster.core.remote.controller.notification.RControllerNotificationImpl;
 import com.infomaximum.cluster.core.remote.struct.RController;
-import com.infomaximum.cluster.core.remote.utils.RemoteControllerAnalysis;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
 import org.reflections.Reflections;
@@ -13,7 +12,10 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by kris on 14.09.16.
@@ -65,7 +67,7 @@ public class ExecutorTransportImpl implements ExecutorTransport {
         }
 
         try {
-            return method.invoke(remoteController, args);
+            return method.invoke(remoteController, (Object[]) args);
         } catch (InvocationTargetException e) {
             Throwable targetException = e.getTargetException();
             if (targetException instanceof Exception) {
