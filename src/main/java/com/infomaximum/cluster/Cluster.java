@@ -3,7 +3,7 @@ package com.infomaximum.cluster;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.core.remote.packer.*;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
-import com.infomaximum.cluster.core.service.transport.network.NetworkTransport;
+import com.infomaximum.cluster.core.service.transport.network.NetworkTransit;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.exception.CyclicDependenceException;
 import com.infomaximum.cluster.exception.DependencyException;
@@ -117,7 +117,7 @@ public class Cluster implements AutoCloseable {
 
         private final List<RemotePacker> remotePackers;
 
-        private NetworkTransport networkTransport;
+        private NetworkTransit networkTransit;
 
         private List<ComponentBuilder> componentBuilders = new ArrayList<>();
 
@@ -129,8 +129,8 @@ public class Cluster implements AutoCloseable {
             this.remotePackers.add(new RemotePackerClasterInputStream());
         }
 
-        public Builder withNetworkTransport(NetworkTransport networkTransport) {
-            this.networkTransport = networkTransport;
+        public Builder withNetworkTransport(NetworkTransit networkTransit) {
+            this.networkTransit = networkTransit;
             return this;
         }
 
