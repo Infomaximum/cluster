@@ -29,8 +29,9 @@ public class ClusterFileProviderRemoteImpl implements ClusterFileProvider {
 
     @Override
     public void copyTo(Path file, CopyOption... options) throws IOException {
-        InputStream inputStream = controllerClusterFile.getInputStream(URIClusterFile.getPathToFileUUID(uri));
-        Files.copy(inputStream, file, options);
+        try (InputStream inputStream = controllerClusterFile.getInputStream(URIClusterFile.getPathToFileUUID(uri))) {
+            Files.copy(inputStream, file, options);
+        }
     }
 
     @Override
