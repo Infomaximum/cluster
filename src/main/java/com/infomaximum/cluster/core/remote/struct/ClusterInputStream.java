@@ -15,4 +15,10 @@ public final class ClusterInputStream extends InputStream {
     public int read() throws IOException {
         return inputStream.read();
     }
+
+    @Override
+    public void close() throws IOException {
+        super.close();
+        inputStream.close();
+    }
 }
