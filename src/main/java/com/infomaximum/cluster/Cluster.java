@@ -22,13 +22,17 @@ public class Cluster implements AutoCloseable {
 
     private final static Logger log = LoggerFactory.getLogger(Cluster.class);
 
-    private TransportManager transportManager;
+    private final NetworkTransit networkTransit;
+
+    private final TransportManager transportManager;
 
     private final Map<Class<? extends Component>, List<Component>> components;
     private final List<Component> dependencyOrderedComponents;
 
-    private Cluster(TransportManager transportManager) {
+    private Cluster(NetworkTransit networkTransit, TransportManager transportManager) {
+        this.networkTransit = networkTransit;
         this.transportManager = transportManager;
+
         this.components = new HashMap<>();
         this.dependencyOrderedComponents = new ArrayList<>();
 
@@ -51,7 +55,7 @@ public class Cluster implements AutoCloseable {
         dependencyOrderedComponents.add(component);
     }
 
-    public <T extends Component> T getAnyComponent(Class<T> classComponent){
+    public <T extends Component> T getAnyComponent(Class<T> classComponent) {
         List<Component> components = this.components.get(classComponent);
         if (components == null) {
             return null;
@@ -72,7 +76,7 @@ public class Cluster implements AutoCloseable {
     public <T extends Component> List<T> getDependencyOrderedComponentsOf(Class<T> baseClass) {
         return dependencyOrderedComponents.stream()
                 .filter(component -> baseClass.isAssignableFrom(component.getClass()))
-                .map(component -> (T)component)
+                .map(component -> (T) component)
                 .collect(Collectors.toList());
     }
 
@@ -99,6 +103,9 @@ public class Cluster implements AutoCloseable {
         }
 
         transportManager.destroy();
+        if (networkTransit != null) {
+            networkTransit.close();
+        }
     }
 
     private void closeComponent(Component component) {
@@ -159,7 +166,7 @@ public class Cluster implements AutoCloseable {
             try {
                 TransportManager transportManager = new TransportManager(remotePackers);
 
-                cluster = new Cluster(transportManager);
+                cluster = new Cluster(networkTransit, transportManager);
 
                 List<Component> components = new ArrayList<>(componentBuilders.size() + 1);
 
