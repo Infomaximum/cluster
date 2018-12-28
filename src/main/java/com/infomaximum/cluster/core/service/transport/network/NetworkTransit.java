@@ -16,6 +16,10 @@ public abstract class NetworkTransit {
         this.listeners = new CopyOnWriteArrayList<>();
     }
 
+    public NetworkTransitState getState() {
+        return state;
+    }
+
     protected void setState(NetworkTransitState state) {
         if (this.state == state) return;
         this.state = state;
