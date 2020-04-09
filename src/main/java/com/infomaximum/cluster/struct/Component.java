@@ -34,7 +34,7 @@ public abstract class Component {
         this.cluster = cluster;
     }
 
-    public final void init(TransportManager transportManager) throws ClusterException {
+    public void init(TransportManager transportManager) throws ClusterException {
         this.transportManager = transportManager;
         this.key = generateKey();
         this.transport = transportManager.createTransport(getInfo().getUuid(), key);
@@ -50,20 +50,9 @@ public abstract class Component {
         //Регистрируемся у менеджера подсистем
         log.info("Register {}", getInfo().getUuid());
         this.activeComponents = registerComponent();
-
-        //Загружаемся, в случае ошибки снимаем регистрацию
-        try {
-            load();
-        } catch (ClusterException e) {
-            log.error("{} Error init subsystem", this, e);
-            unregisterComponent();
-            transportManager.destroyTransport(transport);
-            throw e;
-        }
     }
 
     public abstract Info getInfo();
-    public abstract void load() throws ClusterException;
     public abstract ExecutorTransport initExecutorTransport() throws ClusterException;
     public abstract void destroying() throws ClusterException;
 

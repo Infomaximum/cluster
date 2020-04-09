@@ -20,10 +20,6 @@ public class MemoryComponent extends Component {
 
     public MemoryComponent(Cluster cluster) {
         super(cluster);
-    }
-
-    @Override
-    public void load() throws ClusterException {
         this.memoryEngine = new MemoryEngine(this);
     }
 

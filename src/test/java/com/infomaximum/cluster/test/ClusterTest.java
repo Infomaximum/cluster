@@ -157,10 +157,6 @@ public class ClusterTest {
         }
 
         @Override
-        public void load() throws ClusterException {
-        }
-
-        @Override
         public ExecutorTransportImpl initExecutorTransport() throws ClusterException {
             return new ExecutorTransportImpl.Builder(this).build();
         }
@@ -234,10 +230,6 @@ public class ClusterTest {
         }
 
         @Override
-        public void load() throws ClusterException {
-        }
-
-        @Override
         public ExecutorTransportImpl initExecutorTransport() throws ClusterException {
             return new ExecutorTransportImpl.Builder(this).build();
         }
@@ -261,10 +253,6 @@ public class ClusterTest {
 
         public CyclicComponent2(Cluster cluster) {
             super(cluster);
-        }
-
-        @Override
-        public void load() throws ClusterException {
         }
 
         @Override

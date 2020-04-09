@@ -20,10 +20,6 @@ public class CustomComponent extends Component {
     }
 
     @Override
-    public void load() throws ClusterException {
-    }
-
-    @Override
     public ExecutorTransportImpl initExecutorTransport() throws ClusterException {
         return new ExecutorTransportImpl.Builder(this).build();
     }
