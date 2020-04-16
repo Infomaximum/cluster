@@ -1,9 +1,9 @@
-package com.infomaximum.cluster.exception.runtime;
+package com.infomaximum.cluster.exception;
 
 /**
  * Created by user on 06.09.2017.
  */
-public class ClusterRemoteException extends RuntimeException {
+public class ClusterRemoteException extends ClusterException {
 
     public ClusterRemoteException() {}
 

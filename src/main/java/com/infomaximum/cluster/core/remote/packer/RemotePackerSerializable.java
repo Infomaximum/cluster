@@ -1,11 +1,10 @@
 package com.infomaximum.cluster.core.remote.packer;
 
-import com.infomaximum.cluster.exception.runtime.ClusterRemotePackerException;
+import com.infomaximum.cluster.exception.ClusterRemotePackerException;
 import com.infomaximum.cluster.struct.Component;
 
 import java.io.*;
 import java.lang.reflect.Type;
-import java.util.Base64;
 
 /**
  * Created by user on 06.09.2017.

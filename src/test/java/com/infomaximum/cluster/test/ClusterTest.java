@@ -5,9 +5,9 @@ import com.infomaximum.cluster.ComponentBuilder;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.component.memory.MemoryComponent;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
+import com.infomaximum.cluster.exception.ClusterDependencyException;
 import com.infomaximum.cluster.exception.ClusterException;
-import com.infomaximum.cluster.exception.CyclicDependenceException;
-import com.infomaximum.cluster.exception.DependencyException;
+import com.infomaximum.cluster.exception.clusterDependencyCycleException;
 import com.infomaximum.cluster.server.custom.CustomComponent;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
@@ -69,7 +69,7 @@ public class ClusterTest {
                 .withComponent(new ComponentBuilder(CyclicComponent2.class))
                 .build()) {
             Assert.fail();
-        } catch (CyclicDependenceException ex) {
+        } catch (clusterDependencyCycleException ex) {
             Assert.assertTrue(true);
         }
 
@@ -77,7 +77,7 @@ public class ClusterTest {
                 .withComponent(new ComponentBuilder(CyclicComponent1.class))
                 .build()) {
             Assert.fail();
-        } catch (CyclicDependenceException ex) {
+        } catch (clusterDependencyCycleException ex) {
             Assert.assertTrue(true);
         }
     }
@@ -138,7 +138,7 @@ public class ClusterTest {
             try {
                 cluster.removeComponent(cluster.getAnyComponent(Component2.class));
                 Assert.fail();
-            } catch (DependencyException e) {
+            } catch (ClusterDependencyException e) {
                 Assert.assertTrue(true);
             }
 

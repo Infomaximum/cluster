@@ -4,9 +4,9 @@ import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.core.remote.packer.*;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.network.NetworkTransit;
+import com.infomaximum.cluster.exception.ClusterDependencyException;
 import com.infomaximum.cluster.exception.ClusterException;
-import com.infomaximum.cluster.exception.CyclicDependenceException;
-import com.infomaximum.cluster.exception.DependencyException;
+import com.infomaximum.cluster.exception.clusterDependencyCycleException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.RandomUtil;
 import org.slf4j.Logger;
@@ -89,7 +89,7 @@ public class Cluster implements AutoCloseable {
             }
 
             if (Arrays.asList(another.getInfo().getDependencies()).contains(component.getClass())) {
-                throw new DependencyException(another, component);
+                throw new ClusterDependencyException(another, component);
             }
         }
 
@@ -193,7 +193,7 @@ public class Cluster implements AutoCloseable {
                     }
 
                     if (nextComponent == null) {
-                        throw new CyclicDependenceException(components.stream().map(cb -> cb.getClass().getName()).collect(Collectors.toList()));
+                        throw new clusterDependencyCycleException(components.stream().map(cb -> cb.getClass().getName()).collect(Collectors.toList()));
                     }
 
                     cluster.appendComponent(nextComponent);
