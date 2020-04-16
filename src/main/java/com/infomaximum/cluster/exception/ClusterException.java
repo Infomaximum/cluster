@@ -1,6 +1,6 @@
 package com.infomaximum.cluster.exception;
 
-public class ClusterException extends Exception {
+public class ClusterException extends RuntimeException {
 
     public ClusterException() {}
 
