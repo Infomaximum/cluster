@@ -45,7 +45,7 @@ public class Info implements RemoteObject {
 
     public static class Builder<T extends Builder> {
 
-        private final String uuid;
+        public final String uuid;
         private Class<? extends Component> componentClass;
 
         private Set<Class<? extends Component>> dependencies = new HashSet<>();
