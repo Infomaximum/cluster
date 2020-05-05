@@ -3,10 +3,7 @@ package com.infomaximum.cluster.core.remote.utils;
 import com.infomaximum.cluster.core.remote.RemotePackerObjects;
 import com.infomaximum.cluster.struct.Component;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
+import java.lang.reflect.*;
 
 public class RemoteControllerUtils {
 
@@ -33,6 +30,17 @@ public class RemoteControllerUtils {
             clazz = (Class) ((ParameterizedType) type).getRawType();
         } else if (type instanceof TypeVariable) {
             for (Type iType : ((TypeVariable) type).getBounds()) {
+                boolean iValidation = validationType(component, iType);
+                if (!iValidation) return false;
+            }
+            return true;
+        } else if (type instanceof WildcardType) {
+            WildcardType wildcardType = (WildcardType) type;
+            for (Type iType : wildcardType.getLowerBounds()) {
+                boolean iValidation = validationType(component, iType);
+                if (!iValidation) return false;
+            }
+            for (Type iType : wildcardType.getUpperBounds()) {
                 boolean iValidation = validationType(component, iType);
                 if (!iValidation) return false;
             }
