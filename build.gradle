@@ -1,5 +1,5 @@
 group 'com.infomaximum'
-version '0.0.68'
+version '0.0.69'
 
 apply plugin: 'java'
 apply plugin: 'maven'
@@ -18,9 +18,9 @@ repositories {
 
 dependencies {
 
-    compile 'org.reflections:reflections:0.9.11'
+    compile 'org.reflections:reflections:0.9.12'
 
-    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile 'org.slf4j:slf4j-api:1.7.30'
 
     testCompile 'junit:junit:4.12'
 
