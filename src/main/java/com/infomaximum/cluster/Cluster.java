@@ -133,6 +133,7 @@ public class Cluster implements AutoCloseable {
             this.remotePackers.add(new RemotePackerRemoteObject());
             this.remotePackers.add(new RemotePackerSerializable());
             this.remotePackers.add(new RemotePackerFuture());
+            this.remotePackers.add(new RemotePackerOptional());
             this.remotePackers.add(new RemotePackerClasterInputStream());
         }
 
