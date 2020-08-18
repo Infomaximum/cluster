@@ -21,4 +21,5 @@ public interface ClusterFileProvider {
 
     long getSize() throws IOException;
 
+    byte[] getContent() throws IOException;
 }

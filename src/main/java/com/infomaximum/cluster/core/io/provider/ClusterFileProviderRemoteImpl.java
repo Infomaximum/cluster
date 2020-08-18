@@ -4,6 +4,7 @@ import com.infomaximum.cluster.core.io.URIClusterFile;
 import com.infomaximum.cluster.core.remote.controller.clusterfile.RControllerClusterFile;
 import com.infomaximum.cluster.struct.Component;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -36,11 +37,12 @@ public class ClusterFileProviderRemoteImpl implements ClusterFileProvider {
 
     @Override
     public void copyTo(OutputStream target) throws IOException {
-        InputStream inputStream = controllerClusterFile.getInputStream(URIClusterFile.getPathToFileUUID(uri));
-        byte[] buf = new byte[8192];
-        int n;
-        while ((n = inputStream.read(buf)) > 0) {
-            target.write(buf, 0, n);
+        try (InputStream inputStream = controllerClusterFile.getInputStream(URIClusterFile.getPathToFileUUID(uri))) {
+            byte[] buf = new byte[8192];
+            int n;
+            while ((n = inputStream.read(buf)) > 0) {
+                target.write(buf, 0, n);
+            }
         }
     }
 
@@ -63,5 +65,18 @@ public class ClusterFileProviderRemoteImpl implements ClusterFileProvider {
     @Override
     public long getSize() throws IOException {
         return controllerClusterFile.getSize(URIClusterFile.getPathToFileUUID(uri));
+    }
+
+    @Override
+    public byte[] getContent() throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        try (InputStream inputStream = controllerClusterFile.getInputStream(URIClusterFile.getPathToFileUUID(uri))) {
+            int nRead;
+            byte[] data = new byte[2048];
+            while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+        }
+        return buffer.toByteArray();
     }
 }

@@ -48,4 +48,9 @@ public class ClusterFileProviderLocalImpl implements ClusterFileProvider {
     public long getSize() throws IOException {
         return Files.size(source);
     }
+
+    @Override
+    public byte[] getContent() throws IOException {
+        return Files.readAllBytes(source);
+    }
 }
