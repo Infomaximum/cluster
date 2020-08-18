@@ -67,6 +67,10 @@ public class ClusterFile {
         return clusterFileProvider.getSize();
     }
 
+    public byte[] getContent() throws IOException {
+        return clusterFileProvider.getContent();
+    }
+
     private static ClusterFileProvider provider(Component component, URI source) {
         if (source.getScheme().equals(SCHEME_FILE)) {
             return new ClusterFileProviderLocalImpl(Paths.get(source));
