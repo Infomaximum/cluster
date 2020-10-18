@@ -178,6 +178,11 @@ public class ClusterTest {
         }
 
         @Override
+        public boolean isSingleton() {
+            return false;
+        }
+
+        @Override
         public Info getInfo() {
             return INFO;
         }
@@ -195,6 +200,11 @@ public class ClusterTest {
         }
 
         @Override
+        public boolean isSingleton() {
+            return false;
+        }
+
+        @Override
         public Info getInfo() {
             return INFO;
         }
@@ -209,6 +219,11 @@ public class ClusterTest {
 
         public Component3(Cluster cluster) {
             super(cluster);
+        }
+
+        @Override
+        public boolean isSingleton() {
+            return false;
         }
 
         @Override

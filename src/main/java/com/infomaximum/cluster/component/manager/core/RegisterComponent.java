@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Created by kris on 23.09.16.
@@ -45,7 +46,9 @@ public class RegisterComponent implements ActiveComponents {
 		Map<String, RuntimeComponentInfo> activeSubSystems;
 		synchronized (components) {
 			//Первым делом проверем на уникальность.
-			if (isSingleton && getActiveSubSystemKeys().contains(uuid)) throw new RuntimeException("Subsystem: " + uuid + " does not support clusteringt");
+			if (isSingleton && getActiveComponentUUIDs().contains(uuid)) {
+				throw new RuntimeException("Component: " + uuid + " does not support clustering");
+			}
 
 			//Сохраняем список подсистем которые необходимо оповестить
 			activeSubSystems = new HashMap<>(components);
@@ -56,7 +59,7 @@ public class RegisterComponent implements ActiveComponents {
 
 		//Оповещаем все подсистемы о новом модуле
 		for(String keySubSystem: activeSubSystems.keySet()) {
-			managerComponent.getRemotes().getFromSSKey(keySubSystem, RControllerNotification.class).notificationRegisterComponent(subSystemInfo);
+			managerComponent.getRemotes().getFromCKey(keySubSystem, RControllerNotification.class).notificationRegisterComponent(subSystemInfo);
 		}
 
         return new ArrayList<>(components.values());
@@ -76,24 +79,30 @@ public class RegisterComponent implements ActiveComponents {
 
 		//Oповещаем все подсистемы
 		for(String keySubSystem: activeSubSystems.keySet()) {
-			managerComponent.getRemotes().getFromSSKey(keySubSystem, RControllerNotification.class).notificationUnRegisterComponent(unRegisterSubSystemInfo);
+			managerComponent.getRemotes().getFromCKey(keySubSystem, RControllerNotification.class).notificationUnRegisterComponent(unRegisterSubSystemInfo);
 		}
 
 		return components.values();
 	}
 
 	@Override
-	public Collection<RuntimeComponentInfo> getActiveSubSystems() {
+	public Collection<RuntimeComponentInfo> getActiveComponents() {
 		return components.values();
 	}
 
 	@Override
-	public Collection<String> getActiveSubSystemKeys() {
+	public Collection<String> getActiveComponentKeys() {
 		return new HashSet<String>(components.keySet());
 	}
 
+	public Collection<String> getActiveComponentUUIDs() {
+		return components.values().stream()
+				.map(runtimeComponentInfo -> runtimeComponentInfo.info.getUuid())
+				.collect(Collectors.toSet());
+	}
+
 	@Override
-	public Collection<String> getActiveSubSystemUuids() {
+	public Collection<String> getActiveComponentUuids() {
 		HashSet<String> subSystemUuids = new HashSet<String>();
 		for(RuntimeComponentInfo subSystemInfo: components.values()){
 			subSystemUuids.add(subSystemInfo.info.getUuid());
@@ -102,7 +111,7 @@ public class RegisterComponent implements ActiveComponents {
 	}
 
 	@Override
-	public boolean isActiveSubSystem(String uuid) {
-		return getActiveSubSystemUuids().contains(uuid);
+	public boolean isActiveComponent(String uuid) {
+		return getActiveComponentUuids().contains(uuid);
 	}
 }

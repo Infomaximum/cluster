@@ -7,6 +7,7 @@ import java.util.Optional;
 
 /**
  * Created by user on 06.09.2017.
+ * TODO Ulitin V. Когда будем разъезжаться по серверам реализовать
  */
 public class RemotePackerOptional implements RemotePacker<Optional> {
 
