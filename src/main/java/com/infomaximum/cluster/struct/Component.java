@@ -38,7 +38,7 @@ public abstract class Component {
         this.transportManager = transportManager;
         this.key = generateKey();
         this.transport = transportManager.createTransport(getInfo().getUuid(), key);
-        this.remote = new Remotes(this);
+        this.remote = new Remotes(cluster, this);
 
         try {
             transport.setExecutor(initExecutorTransport());
@@ -53,7 +53,9 @@ public abstract class Component {
     }
 
     public abstract Info getInfo();
+
     public abstract ExecutorTransport initExecutorTransport() throws ClusterException;
+
     public abstract void destroying() throws ClusterException;
 
     protected String generateKey() {
@@ -80,7 +82,7 @@ public abstract class Component {
         remote.getFromCKey(ManagerComponent.KEY, RControllerManagerComponent.class).unregister(key);
     }
 
-    public Transport getTransport(){
+    public Transport getTransport() {
         return transport;
     }
 
@@ -88,7 +90,7 @@ public abstract class Component {
         return key;
     }
 
-    public boolean isSingleton(){
+    public boolean isSingleton() {
         return true;
     }
 
@@ -100,7 +102,7 @@ public abstract class Component {
         return activeComponents;
     }
 
-    public final void destroy(){
+    public final void destroy() {
         log.info("{} destroying...", getInfo().getUuid());
         try {
             destroying();
