@@ -2,9 +2,7 @@ package com.infomaximum.cluster.core.remote;
 
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.struct.RController;
-import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
-import com.infomaximum.cluster.struct.Info;
 import com.infomaximum.cluster.utils.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +32,7 @@ public class Remotes {
 		return remotePackerObjects;
 	}
 
-	public <T extends RController> T getFromSSKey(String componentKey, Class<T> remoteControllerClazz) {
+	public <T extends RController> T getFromCKey(String componentKey, Class<T> remoteControllerClazz) {
 		//Валидируем ключ подсистемы
 		if (componentKey.indexOf(':') == -1) throw new RuntimeException("Not valid componentKey: " + componentKey);
 
@@ -47,29 +45,20 @@ public class Remotes {
 		return (T)remoteController;
 	}
 
-	public <T extends RController> T getFromSSUuid(String uuid, Class<T> remoteControllerClazz){
+	public <T extends RController> T get(String uuid, Class<T> remoteControllerClazz) {
 		List<String> pretendents = new ArrayList<>();
-		for (RuntimeComponentInfo componentInfo : component.getActiveComponents().getActiveSubSystems()) {
+		for (RuntimeComponentInfo componentInfo : component.getActiveComponents().getActiveComponents()) {
 			String componentKey = componentInfo.key;
 			String componentUuid = componentInfo.info.getUuid();
 
 			if (componentUuid.equals(uuid)) pretendents.add(componentKey);
 		}
 		if (pretendents.isEmpty()) throw new RuntimeException("Not found remote component: " + uuid);
-		return getFromSSKey(pretendents.get(RandomUtil.random.nextInt(pretendents.size())), remoteControllerClazz);
-	}
-
-	public <T extends RController> T get(Class<? extends Component> classComponent, Class<T> remoteControllerClazz) throws ClusterException {
-		try {
-			Info info = (Info) classComponent.getField("INFO").get(null);
-			return getFromSSUuid(info.getUuid(), remoteControllerClazz);
-		} catch (ReflectiveOperationException e) {
-			throw new ClusterException(e);
-		}
+		return getFromCKey(pretendents.get(RandomUtil.random.nextInt(pretendents.size())), remoteControllerClazz);
 	}
 
 	public <T extends RController> T get(Class<T> clazz){
-		return null;
+		throw new RuntimeException("Not implemented");
 	}
 
 	public <T extends RController> Collection<T> getControllers(Class<? extends Component> classComponent, Class<T> classController) {
@@ -78,10 +67,10 @@ public class Remotes {
 
 	public <T extends RController> Collection<T> getControllers(Class<T> remoteClassController){
 		List<T> controllers = new ArrayList<>();
-		for (RuntimeComponentInfo componentInfo : component.getActiveComponents().getActiveSubSystems()) {
+		for (RuntimeComponentInfo componentInfo : component.getActiveComponents().getActiveComponents()) {
 			if (componentInfo.getClassNameRControllers().contains(remoteClassController.getName())) {
 				//Нашли подсиситему в которой зарегистрирован этот контроллер
-				controllers.add(getFromSSKey(componentInfo.key, remoteClassController));
+				controllers.add(getFromCKey(componentInfo.key, remoteClassController));
 			}
 		}
 		return controllers;

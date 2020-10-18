@@ -39,17 +39,17 @@ public class ActiveComponentsImpl implements ActiveComponents {
 	}
 
 	@Override
-	public Collection<RuntimeComponentInfo> getActiveSubSystems() {
+	public Collection<RuntimeComponentInfo> getActiveComponents() {
 		return componentInfos.values();
 	}
 
 	@Override
-	public Collection<String> getActiveSubSystemKeys(){
+	public Collection<String> getActiveComponentKeys() {
 		return componentInfos.keySet();
 	}
 
 	@Override
-	public Collection<String> getActiveSubSystemUuids() {
+	public Collection<String> getActiveComponentUuids() {
 		HashSet<String> subSystemUuids = new HashSet<>();
 		for(RuntimeComponentInfo subSystemInfo: componentInfos.values()){
 			subSystemUuids.add(subSystemInfo.info.getUuid());
@@ -57,7 +57,8 @@ public class ActiveComponentsImpl implements ActiveComponents {
 		return subSystemUuids;
 	}
 
-	public boolean isActiveSubSystem(String uuid)  {
-		return getActiveSubSystemUuids().contains(uuid);
+	@Override
+	public boolean isActiveComponent(String uuid) {
+		return getActiveComponentUuids().contains(uuid);
 	}
 }

@@ -66,7 +66,7 @@ public abstract class Component {
      * Регистрируемся у менджера подсистем
      */
     protected ActiveComponentsImpl registerComponent() {
-        RControllerManagerComponent rControllerManagerComponent = remote.getFromSSKey(ManagerComponent.KEY, RControllerManagerComponent.class);
+        RControllerManagerComponent rControllerManagerComponent = remote.getFromCKey(ManagerComponent.KEY, RControllerManagerComponent.class);
         ComponentInfos activeComponents = rControllerManagerComponent.register(
                 new RuntimeComponentInfo(key, getInfo(), isSingleton(), getTransport().getExecutor().getClassRControllers())
         );
@@ -77,7 +77,7 @@ public abstract class Component {
      * Снимаем регистрацию у менджера подсистем
      */
     protected void unregisterComponent() {
-        remote.getFromSSKey(ManagerComponent.KEY, RControllerManagerComponent.class).unregister(key);
+        remote.getFromCKey(ManagerComponent.KEY, RControllerManagerComponent.class).unregister(key);
     }
 
     public Transport getTransport(){

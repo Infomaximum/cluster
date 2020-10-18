@@ -13,11 +13,11 @@ public interface ActiveComponents {
 
     Collection<RuntimeComponentInfo> unRegisterActiveRole(String key);
 
-    Collection<RuntimeComponentInfo> getActiveSubSystems();
+    Collection<RuntimeComponentInfo> getActiveComponents();
 
-    Collection<String> getActiveSubSystemKeys();
+    Collection<String> getActiveComponentKeys();
 
-    Collection<String> getActiveSubSystemUuids();
+    Collection<String> getActiveComponentUuids();
 
-    boolean isActiveSubSystem(String uuid);
+    boolean isActiveComponent(String uuid);
 }
