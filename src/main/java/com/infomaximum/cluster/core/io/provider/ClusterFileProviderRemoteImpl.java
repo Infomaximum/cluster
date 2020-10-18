@@ -20,7 +20,7 @@ public class ClusterFileProviderRemoteImpl implements ClusterFileProvider {
 
     public ClusterFileProviderRemoteImpl(Component component, URI uri) {
         this.uri = uri;
-        controllerClusterFile = component.getRemotes().getFromSSKey(URIClusterFile.getPathToComponentKey(uri), RControllerClusterFile.class);
+        controllerClusterFile = component.getRemotes().getFromCKey(URIClusterFile.getPathToComponentKey(uri), RControllerClusterFile.class);
     }
 
     @Override

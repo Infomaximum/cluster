@@ -1,8 +1,8 @@
 package com.infomaximum.cluster.test.custom;
 
+import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.server.custom.CustomComponent;
 import com.infomaximum.cluster.server.custom.remote.exception.RControllerException;
-import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.test.BaseClusterTest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,7 +21,7 @@ public class ExceptionComponentTest extends BaseClusterTest {
     @Test
     public void test() throws Exception {
         ManagerComponent managerComponent = getCluster().getAnyComponent(ManagerComponent.class);
-        RControllerException rController = managerComponent.getRemotes().get(CustomComponent.class, RControllerException.class);
+        RControllerException rController = managerComponent.getRemotes().get(CustomComponent.INFO.getUuid(), RControllerException.class);
 
         try {
             rController.getException("123");

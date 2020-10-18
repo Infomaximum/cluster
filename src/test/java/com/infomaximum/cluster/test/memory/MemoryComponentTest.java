@@ -1,9 +1,9 @@
 package com.infomaximum.cluster.test.memory;
 
-import com.infomaximum.cluster.test.BaseClusterTest;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.component.memory.MemoryComponent;
 import com.infomaximum.cluster.component.memory.remote.RControllerMemory;
+import com.infomaximum.cluster.test.BaseClusterTest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ public class MemoryComponentTest extends BaseClusterTest {
     @Test
     public void test1() throws Exception {
         ManagerComponent managerComponent = getCluster().getAnyComponent(ManagerComponent.class);
-        RControllerMemory rControllerMemory = managerComponent.getRemotes().get(MemoryComponent.class, RControllerMemory.class);
+        RControllerMemory rControllerMemory = managerComponent.getRemotes().get(MemoryComponent.INFO.getUuid(), RControllerMemory.class);
 
         String key = "ping";
         String value = "pong";
@@ -35,7 +35,7 @@ public class MemoryComponentTest extends BaseClusterTest {
     @Test
     public void test() throws Exception {
         ManagerComponent managerComponent = getCluster().getAnyComponent(ManagerComponent.class);
-        RControllerMemory rControllerMemory = managerComponent.getRemotes().get(MemoryComponent.class, RControllerMemory.class);
+        RControllerMemory rControllerMemory = managerComponent.getRemotes().get(MemoryComponent.INFO.getUuid(), RControllerMemory.class);
 
         rControllerMemory.sets(new HashMap<String, Serializable>() {{
             put("key1", "value1");
