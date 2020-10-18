@@ -21,7 +21,7 @@ public class ExceptionComponentTest extends BaseClusterTest {
     @Test
     public void test() throws Exception {
         ManagerComponent managerComponent = getCluster().getAnyComponent(ManagerComponent.class);
-        RControllerException rController = managerComponent.getRemotes().get(CustomComponent.INFO.getUuid(), RControllerException.class);
+        RControllerException rController = managerComponent.getRemotes().get(CustomComponent.class, RControllerException.class);
 
         try {
             rController.getException("123");
