@@ -29,12 +29,16 @@ public class Cluster implements AutoCloseable {
     private final Map<Class<? extends Component>, List<Component>> components;
     private final List<Component> dependencyOrderedComponents;
 
-    private Cluster(NetworkTransit networkTransit, TransportManager transportManager) {
+    private final Object context;
+
+    private Cluster(NetworkTransit networkTransit, TransportManager transportManager, Object context) {
         this.networkTransit = networkTransit;
         this.transportManager = transportManager;
 
         this.components = new HashMap<>();
         this.dependencyOrderedComponents = new ArrayList<>();
+
+        this.context = context;
 
         log.info("Cluster created.");
     }
@@ -61,6 +65,10 @@ public class Cluster implements AutoCloseable {
             return null;
         }
         return (T) components.get(RandomUtil.random.nextInt(components.size()));
+    }
+
+    public <T> T getContext() {
+        return (T) context;
     }
 
     public Component getAnyComponent(String uuidComponent) {
@@ -128,6 +136,8 @@ public class Cluster implements AutoCloseable {
 
         private List<ComponentBuilder> componentBuilders = new ArrayList<>();
 
+        private Object context;
+
         public Builder() {
             this.remotePackers = new ArrayList<>();
             this.remotePackers.add(new RemotePackerRemoteObject());
@@ -162,12 +172,17 @@ public class Cluster implements AutoCloseable {
             return this;
         }
 
+        public Builder withContext(Object context) {
+            this.context = context;
+            return this;
+        }
+
         public Cluster build() throws ClusterException {
             Cluster cluster = null;
             try {
                 TransportManager transportManager = new TransportManager(remotePackers);
 
-                cluster = new Cluster(networkTransit, transportManager);
+                cluster = new Cluster(networkTransit, transportManager, context);
 
                 List<Component> components = new ArrayList<>(componentBuilders.size() + 1);
 
