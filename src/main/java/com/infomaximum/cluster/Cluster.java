@@ -31,7 +31,9 @@ public class Cluster implements AutoCloseable {
 
     private final Object context;
 
-    private Cluster(NetworkTransit networkTransit, TransportManager transportManager, Object context) {
+    private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
+
+    private Cluster(NetworkTransit networkTransit, TransportManager transportManager, Object context, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
         this.networkTransit = networkTransit;
         this.transportManager = transportManager;
 
@@ -39,6 +41,7 @@ public class Cluster implements AutoCloseable {
         this.dependencyOrderedComponents = new ArrayList<>();
 
         this.context = context;
+        this.uncaughtExceptionHandler = uncaughtExceptionHandler;
 
         log.info("Cluster created.");
     }
@@ -69,6 +72,10 @@ public class Cluster implements AutoCloseable {
 
     public <T> T getContext() {
         return (T) context;
+    }
+
+    public Thread.UncaughtExceptionHandler getUncaughtExceptionHandler() {
+        return uncaughtExceptionHandler;
     }
 
     public Component getAnyComponent(String uuidComponent) {
@@ -138,6 +145,8 @@ public class Cluster implements AutoCloseable {
 
         private Object context;
 
+        private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
+
         public Builder() {
             this.remotePackers = new ArrayList<>();
             this.remotePackers.add(new RemotePackerRemoteObject());
@@ -177,12 +186,17 @@ public class Cluster implements AutoCloseable {
             return this;
         }
 
+        public Builder withUncaughtExceptionHandler(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+            this.uncaughtExceptionHandler = uncaughtExceptionHandler;
+            return this;
+        }
+
         public Cluster build() throws ClusterException {
             Cluster cluster = null;
             try {
                 TransportManager transportManager = new TransportManager(remotePackers);
 
-                cluster = new Cluster(networkTransit, transportManager, context);
+                cluster = new Cluster(networkTransit, transportManager, context, uncaughtExceptionHandler);
 
                 List<Component> components = new ArrayList<>(componentBuilders.size() + 1);
 
