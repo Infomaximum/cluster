@@ -1,9 +1,9 @@
 package com.infomaximum.cluster.component.manager;
 
 import com.infomaximum.cluster.Cluster;
-import com.infomaximum.cluster.component.manager.core.RegisterComponent;
+import com.infomaximum.cluster.component.manager.core.ManagerRegisterComponents;
 import com.infomaximum.cluster.core.component.active.ActiveComponents;
-import com.infomaximum.cluster.core.component.active.ActiveComponentsImpl;
+import com.infomaximum.cluster.core.component.environment.EnvironmentComponents;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.exception.ClusterException;
@@ -19,9 +19,9 @@ public class ManagerComponent extends Component {
 			.withComponentClass(ManagerComponent.class)
 			.build();
 
-	public static final String KEY = INFO.getUuid() + ":" + "00000000-0000-0000-0000-000000000000";
+	public static final int MANAGER_UNIQUE_ID = 0;
 
-	private RegisterComponent registerComponent;
+	private ManagerRegisterComponents registerComponent;
 
 	public ManagerComponent(Cluster cluster) {
 		super(cluster);
@@ -30,12 +30,10 @@ public class ManagerComponent extends Component {
 	@Override
 	public void init(TransportManager transportManager) throws ClusterException {
 		super.init(transportManager);
-		registerComponent = new RegisterComponent(this);
-	}
+		registerComponent = new ManagerRegisterComponents(this);
 
-	@Override
-	protected String generateKey() {
-		return KEY;
+		//Регистрируем себя
+		transportManager.registerTransport(getTransport());
 	}
 
 	@Override
@@ -45,7 +43,7 @@ public class ManagerComponent extends Component {
 
 	//Логика регистрации у менеджера подсистем не стандартная
 	@Override
-	protected ActiveComponentsImpl registerComponent() {
+	protected ActiveComponents registerComponent() {
 		return null;
 	}
 
@@ -59,7 +57,7 @@ public class ManagerComponent extends Component {
 	}
 
 	@Override
-	public ActiveComponents getActiveComponents() {
+	public EnvironmentComponents getEnvironmentComponents() {
 		return registerComponent;
 	}
 
@@ -68,7 +66,7 @@ public class ManagerComponent extends Component {
 		// do nothing
 	}
 
-	public RegisterComponent getRegisterComponent() {
+	public ManagerRegisterComponents getRegisterComponent() {
 		return registerComponent;
 	}
 }

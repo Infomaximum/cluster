@@ -13,23 +13,45 @@ import java.util.HashSet;
  */
 public class RuntimeComponentInfo implements RemoteObject {
 
-    public final String key;
+    public final int uniqueId;
     public final Info info;
     public final boolean isSingleton;
-    private HashSet<String> classNameRControllers;
+    private final HashSet<String> classNameRControllers;
 
-    public RuntimeComponentInfo(String key, Info info, boolean isSingleton, HashSet<Class<? extends RController>> classRControllers) {
-        this.key = key;
+    public RuntimeComponentInfo(int uniqueId, Info info, boolean isSingleton, HashSet<Class<? extends RController>> classRControllers) {
+        this.uniqueId = uniqueId;
         this.info = info;
         this.isSingleton = isSingleton;
 
-        this.classNameRControllers=new HashSet<>();
-        for (Class<? extends RController> classRController: classRControllers){
+        this.classNameRControllers = new HashSet<>();
+        for (Class<? extends RController> classRController : classRControllers) {
+            this.classNameRControllers.add(classRController.getName());
+        }
+    }
+
+    public RuntimeComponentInfo(Info info, boolean isSingleton, HashSet<Class<? extends RController>> classRControllers) {
+        this.uniqueId = -1;
+        this.info = info;
+        this.isSingleton = isSingleton;
+
+        this.classNameRControllers = new HashSet<>();
+        for (Class<? extends RController> classRController : classRControllers) {
             this.classNameRControllers.add(classRController.getName());
         }
     }
 
     public Collection<String> getClassNameRControllers() {
         return Collections.unmodifiableCollection(classNameRControllers);
+    }
+
+    public static RuntimeComponentInfo upgrade(int uniqueId, RuntimeComponentInfo source) {
+        RuntimeComponentInfo result = new RuntimeComponentInfo(
+                uniqueId,
+                source.info,
+                source.isSingleton,
+                new HashSet<>()
+        );
+        result.classNameRControllers.addAll(source.classNameRControllers);
+        return result;
     }
 }

@@ -5,7 +5,7 @@ import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.component.manager.remote.managersubsystem.RControllerManagerComponent;
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.component.active.ActiveComponents;
-import com.infomaximum.cluster.core.component.active.ActiveComponentsImpl;
+import com.infomaximum.cluster.core.component.environment.EnvironmentComponents;
 import com.infomaximum.cluster.core.remote.Remotes;
 import com.infomaximum.cluster.core.service.transport.Transport;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
@@ -13,8 +13,6 @@ import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport
 import com.infomaximum.cluster.exception.ClusterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.UUID;
 
 /**
  * Created by kris on 15.06.17.
@@ -25,7 +23,7 @@ public abstract class Component {
 
     protected final Cluster cluster;
     private TransportManager transportManager;
-    private String key;
+    private int uniqueId;
     private Transport transport;
     private Remotes remote;
     private ActiveComponents activeComponents;
@@ -36,8 +34,7 @@ public abstract class Component {
 
     public void init(TransportManager transportManager) throws ClusterException {
         this.transportManager = transportManager;
-        this.key = generateKey();
-        this.transport = transportManager.createTransport(getInfo().getUuid(), key);
+        this.transport = transportManager.createTransport(this);
         this.remote = new Remotes(cluster, this);
 
         try {
@@ -48,8 +45,8 @@ public abstract class Component {
         }
 
         //Регистрируемся у менеджера подсистем
-        log.info("Register {}", getInfo().getUuid());
         this.activeComponents = registerComponent();
+        log.info("Register {} ({})", getInfo().getUuid(), getUniqueId());
     }
 
     public abstract Info getInfo();
@@ -58,36 +55,32 @@ public abstract class Component {
 
     public abstract void destroying() throws ClusterException;
 
-    protected String generateKey() {
-        return new StringBuilder()
-                .append(getInfo().getUuid()).append(':').append(UUID.randomUUID().toString())
-                .toString();
-    }
-
     /**
      * Регистрируемся у менджера подсистем
      */
-    protected ActiveComponentsImpl registerComponent() {
-        RControllerManagerComponent rControllerManagerComponent = remote.getFromCKey(ManagerComponent.KEY, RControllerManagerComponent.class);
-        ComponentInfos activeComponents = rControllerManagerComponent.register(
-                new RuntimeComponentInfo(key, getInfo(), isSingleton(), getTransport().getExecutor().getClassRControllers())
+    protected ActiveComponents registerComponent() {
+        RControllerManagerComponent rControllerManagerComponent = remote.getFromCKey(ManagerComponent.MANAGER_UNIQUE_ID, RControllerManagerComponent.class);
+        RegistrationState registrationState = rControllerManagerComponent.register(
+                new RuntimeComponentInfo(getInfo(), isSingleton(), getTransport().getExecutor().getClassRControllers())
         );
-        return new ActiveComponentsImpl(this, activeComponents.getItems());
+        uniqueId = registrationState.uniqueId;
+        transportManager.registerTransport(transport);
+        return new ActiveComponents(this, registrationState.getItems());
     }
 
     /**
      * Снимаем регистрацию у менджера подсистем
      */
     protected void unregisterComponent() {
-        remote.getFromCKey(ManagerComponent.KEY, RControllerManagerComponent.class).unregister(key);
+        remote.getFromCKey(ManagerComponent.MANAGER_UNIQUE_ID, RControllerManagerComponent.class).unregister(uniqueId);
     }
 
     public Transport getTransport() {
         return transport;
     }
 
-    public String getKey() {
-        return key;
+    public int getUniqueId() {
+        return uniqueId;
     }
 
     public boolean isSingleton() {
@@ -98,7 +91,7 @@ public abstract class Component {
         return remote;
     }
 
-    public ActiveComponents getActiveComponents() {
+    public EnvironmentComponents getEnvironmentComponents() {
         return activeComponents;
     }
 
