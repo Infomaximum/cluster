@@ -36,26 +36,23 @@ public class Remotes {
         return remotePackerObjects;
     }
 
-    public <T extends RController> T getFromCKey(String componentKey, Class<T> remoteControllerClazz) {
-        //Валидируем ключ подсистемы
-        if (componentKey.indexOf(':') == -1) throw new RuntimeException("Not valid componentKey: " + componentKey);
-
+    public <T extends RController> T getFromCKey(int componentUniqueId, Class<T> remoteControllerClazz) {
         //Кешировать proxy remoteController нельзя т.к. Proxy.newProxyInstance может вернуться переиспользуемый объект в котором _properties уже заполнен и мы иего перезатрем
         RController remoteController = (RController) Proxy.newProxyInstance(
                 remoteControllerClazz.getClassLoader(), new Class[]{remoteControllerClazz},
-                new RemoteControllerInvocationHandler(component, componentKey, remoteControllerClazz)
+                new RemoteControllerInvocationHandler(component, componentUniqueId, remoteControllerClazz)
         );
 
         return (T) remoteController;
     }
 
     public <T extends RController> T get(String uuid, Class<T> remoteControllerClazz) {
-        List<String> pretendents = new ArrayList<>();
-        for (RuntimeComponentInfo componentInfo : component.getActiveComponents().getActiveComponents()) {
-            String componentKey = componentInfo.key;
+        List<Integer> pretendents = new ArrayList<>();
+        for (RuntimeComponentInfo componentInfo : component.getEnvironmentComponents().getActiveComponents()) {
+            int componentUniqueId = componentInfo.uniqueId;
             String componentUuid = componentInfo.info.getUuid();
 
-            if (componentUuid.equals(uuid)) pretendents.add(componentKey);
+            if (componentUuid.equals(uuid)) pretendents.add(componentUniqueId);
         }
         if (pretendents.isEmpty()) throw new RuntimeException("Not found remote component: " + uuid);
         return getFromCKey(pretendents.get(RandomUtil.random.nextInt(pretendents.size())), remoteControllerClazz);
@@ -76,10 +73,10 @@ public class Remotes {
 
     public <T extends RController> Collection<T> getControllers(Class<T> remoteClassController) {
         List<T> controllers = new ArrayList<>();
-        for (RuntimeComponentInfo componentInfo : component.getActiveComponents().getActiveComponents()) {
+        for (RuntimeComponentInfo componentInfo : component.getEnvironmentComponents().getActiveComponents()) {
             if (componentInfo.getClassNameRControllers().contains(remoteClassController.getName())) {
                 //Нашли подсиситему в которой зарегистрирован этот контроллер
-                controllers.add(getFromCKey(componentInfo.key, remoteClassController));
+                controllers.add(getFromCKey(componentInfo.uniqueId, remoteClassController));
             }
         }
         return controllers;

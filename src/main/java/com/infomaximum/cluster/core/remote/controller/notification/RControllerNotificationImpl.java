@@ -1,6 +1,8 @@
 package com.infomaximum.cluster.core.remote.controller.notification;
 
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
+import com.infomaximum.cluster.core.component.active.ActiveComponents;
+import com.infomaximum.cluster.core.component.environment.EnvironmentComponents;
 import com.infomaximum.cluster.core.remote.AbstractRController;
 import com.infomaximum.cluster.struct.Component;
 
@@ -15,12 +17,20 @@ public class RControllerNotificationImpl extends AbstractRController<Component> 
 
 	@Override
 	public void notificationRegisterComponent(RuntimeComponentInfo componentInfo) {
-		component.getActiveComponents().registerActiveRole(componentInfo);
+        EnvironmentComponents environmentComponents = component.getEnvironmentComponents();
+        if (environmentComponents instanceof ActiveComponents) {
+            ActiveComponents activeComponents = (ActiveComponents) environmentComponents;
+            activeComponents.registerActiveRole(componentInfo);
+        }
 	}
 
 	@Override
-	public void notificationUnRegisterComponent(RuntimeComponentInfo componentInfo) {
-		component.getActiveComponents().unRegisterActiveRole(componentInfo.key);
+    public void notificationUnRegisterComponent(int uniqueId) {
+        EnvironmentComponents environmentComponents = component.getEnvironmentComponents();
+        if (environmentComponents instanceof ActiveComponents) {
+            ActiveComponents activeComponents = (ActiveComponents) environmentComponents;
+            activeComponents.unRegisterActiveRole(uniqueId);
+        }
 	}
 }
 

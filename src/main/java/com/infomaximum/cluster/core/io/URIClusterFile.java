@@ -11,22 +11,22 @@ public class URIClusterFile {
 
     public static String SCHEME_CLUSTER_FILE = "cfile";
 
-    public static String createSURI(String componentKey, String filePathUUID) {
-        return new StringBuilder().append(SCHEME_CLUSTER_FILE).append(':').append(componentKey).append('/').append(filePathUUID).toString();
+    public static String createSURI(int uniqueId, String filePathUUID) {
+        return new StringBuilder().append(SCHEME_CLUSTER_FILE).append(':').append(uniqueId).append('/').append(filePathUUID).toString();
     }
 
-    public static URI createURI(String componentKey, String fileUUID) {
+    public static URI createURI(int uniqueId, String fileUUID) {
         try {
-            return new URI(createSURI(componentKey, fileUUID));
+            return new URI(createSURI(uniqueId, fileUUID));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static String getPathToComponentKey(URI uri) {
+    public static int getPathToComponentUniqueId(URI uri) {
         if (!URIClusterFile.SCHEME_CLUSTER_FILE.equals(uri.getScheme()))
             throw new RuntimeException("Not support scheme");
-        return uri.getSchemeSpecificPart().split("/")[0];
+        return Integer.parseInt(uri.getSchemeSpecificPart().split("/")[0]);
     }
 
     public static String getPathToFileUUID(URI uri) {

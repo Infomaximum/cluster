@@ -8,11 +8,13 @@ import java.util.ArrayList;
 /**
  * Created by kris on 29.12.16.
  */
-public class ComponentInfos implements RemoteObject {
+public class RegistrationState implements RemoteObject {
 
+    public final int uniqueId;
     private ArrayList<RuntimeComponentInfo> items;
 
-    public ComponentInfos(ArrayList<RuntimeComponentInfo> items) {
+    public RegistrationState(int uniqueId, ArrayList<RuntimeComponentInfo> items) {
+        this.uniqueId = uniqueId;
         this.items = items;
     }
 

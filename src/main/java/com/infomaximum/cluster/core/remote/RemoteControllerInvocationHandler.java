@@ -13,19 +13,19 @@ public class RemoteControllerInvocationHandler implements InvocationHandler {
 
     private final Component component;
 
-    private final String targetRoleKey;
+    private final int targetComponentUniqueId;
     private final Class<? extends RController> rControllerClass;
 
-    public RemoteControllerInvocationHandler(Component component, String targetRoleKey, Class<? extends RController> rControllerClass) {
+    public RemoteControllerInvocationHandler(Component component, int targetComponentUniqueId, Class<? extends RController> rControllerClass) {
         this.component = component;
 
-        this.targetRoleKey = targetRoleKey;
-        this.rControllerClass=rControllerClass;
+        this.targetComponentUniqueId = targetComponentUniqueId;
+        this.rControllerClass = rControllerClass;
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        return component.getTransport().request(targetRoleKey, rControllerClass, method, args);
+        return component.getTransport().request(targetComponentUniqueId, rControllerClass, method, args);
     }
 
 }
