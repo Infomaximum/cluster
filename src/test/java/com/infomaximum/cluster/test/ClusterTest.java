@@ -4,9 +4,7 @@ import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.ComponentBuilder;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.component.memory.MemoryComponent;
-import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.exception.ClusterDependencyException;
-import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.exception.clusterDependencyCycleException;
 import com.infomaximum.cluster.server.custom.CustomComponent;
 import com.infomaximum.cluster.struct.Component;
@@ -156,14 +154,6 @@ public class ClusterTest {
             super(cluster);
         }
 
-        @Override
-        public ExecutorTransportImpl initExecutorTransport() throws ClusterException {
-            return new ExecutorTransportImpl.Builder(this).build();
-        }
-
-        @Override
-        public void destroying() throws ClusterException {
-        }
     }
 
     public static class Component1 extends BaseComponent {
@@ -245,18 +235,10 @@ public class ClusterTest {
         }
 
         @Override
-        public ExecutorTransportImpl initExecutorTransport() throws ClusterException {
-            return new ExecutorTransportImpl.Builder(this).build();
-        }
-
-        @Override
         public Info getInfo() {
             return INFO;
         }
 
-        @Override
-        public void destroying() throws ClusterException {
-        }
     }
 
     public static class CyclicComponent2 extends Component {
@@ -271,17 +253,9 @@ public class ClusterTest {
         }
 
         @Override
-        public ExecutorTransportImpl initExecutorTransport() throws ClusterException {
-            return new ExecutorTransportImpl.Builder(this).build();
-        }
-
-        @Override
         public Info getInfo() {
             return INFO;
         }
 
-        @Override
-        public void destroying() throws ClusterException {
-        }
     }
 }

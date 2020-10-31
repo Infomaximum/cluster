@@ -2,8 +2,6 @@ package com.infomaximum.cluster.component.memory;
 
 import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.component.memory.core.MemoryEngine;
-import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
-import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
 
@@ -24,21 +22,11 @@ public class MemoryComponent extends Component {
     }
 
     @Override
-    public ExecutorTransportImpl initExecutorTransport() throws ClusterException {
-        return new ExecutorTransportImpl.Builder(this).build();
-    }
-
-    @Override
     public Info getInfo() {
         return INFO;
     }
 
     public MemoryEngine getMemoryEngine() {
         return memoryEngine;
-    }
-
-    @Override
-    public void destroying() throws ClusterException {
-        // do nothing
     }
 }

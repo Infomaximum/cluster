@@ -8,7 +8,7 @@ import com.infomaximum.cluster.core.component.environment.EnvironmentComponents;
 import com.infomaximum.cluster.core.remote.Remotes;
 import com.infomaximum.cluster.core.service.transport.Transport;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
-import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
+import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.exception.ClusterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public abstract class Component {
         this.remote = new Remotes(cluster, this);
 
         try {
-            transport.setExecutor(initExecutorTransport());
+            transport.setExecutor(getExecutorTransportBuilder().build());
         } catch (ClusterException e) {
             transportManager.destroyTransport(transport);
             throw e;
@@ -58,9 +58,9 @@ public abstract class Component {
 
     public abstract Info getInfo();
 
-    public abstract ExecutorTransport initExecutorTransport() throws ClusterException;
-
-    public abstract void destroying() throws ClusterException;
+    protected ExecutorTransportImpl.Builder getExecutorTransportBuilder() {
+        return new ExecutorTransportImpl.Builder(this);
+    }
 
     /**
      * Регистрируемся у менджера подсистем
@@ -102,10 +102,9 @@ public abstract class Component {
         return activeComponents;
     }
 
-    public final void destroy() {
-        log.info("{} destroying...", getInfo().getUuid());
+    public void destroy() {
+        log.info("{} destroy...", getInfo().getUuid());
         try {
-            destroying();
             unregisterComponent();
             log.info("{} destroyed. completed", getInfo().getUuid());
         } catch (Exception e) {
