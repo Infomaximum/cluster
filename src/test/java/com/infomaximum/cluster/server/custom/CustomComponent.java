@@ -1,8 +1,6 @@
 package com.infomaximum.cluster.server.custom;
 
 import com.infomaximum.cluster.Cluster;
-import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
-import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
 
@@ -20,16 +18,8 @@ public class CustomComponent extends Component {
     }
 
     @Override
-    public ExecutorTransportImpl initExecutorTransport() throws ClusterException {
-        return new ExecutorTransportImpl.Builder(this).build();
-    }
-
-    @Override
     public Info getInfo() {
         return INFO;
     }
 
-    @Override
-    public void destroying() throws ClusterException {
-    }
 }
