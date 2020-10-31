@@ -1,7 +1,6 @@
 package com.infomaximum.cluster.struct;
 
 import com.infomaximum.cluster.Cluster;
-import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.component.manager.remote.managersubsystem.RControllerManagerComponent;
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.component.active.ActiveComponents;
@@ -21,15 +20,23 @@ public abstract class Component {
 
     private final static Logger log = LoggerFactory.getLogger(Component.class);
 
+    protected static final int COMPONENT_UNIQUE_ID_NOT_INIT = -1;
+    protected static final int COMPONENT_UNIQUE_ID_MANAGER = 0;
+
     protected final Cluster cluster;
     private TransportManager transportManager;
-    private int uniqueId;
+    private int uniqueId = COMPONENT_UNIQUE_ID_NOT_INIT;
     private Transport transport;
     private Remotes remote;
     private ActiveComponents activeComponents;
 
     public Component(Cluster cluster) {
         this.cluster = cluster;
+    }
+
+    protected Component(Cluster cluster, int uniqueId) {
+        this.cluster = cluster;
+        this.uniqueId = uniqueId;
     }
 
     public void init(TransportManager transportManager) throws ClusterException {
@@ -59,7 +66,7 @@ public abstract class Component {
      * Регистрируемся у менджера подсистем
      */
     protected ActiveComponents registerComponent() {
-        RControllerManagerComponent rControllerManagerComponent = remote.getFromCKey(ManagerComponent.MANAGER_UNIQUE_ID, RControllerManagerComponent.class);
+        RControllerManagerComponent rControllerManagerComponent = remote.getFromCKey(Component.COMPONENT_UNIQUE_ID_MANAGER, RControllerManagerComponent.class);
         RegistrationState registrationState = rControllerManagerComponent.register(
                 new RuntimeComponentInfo(getInfo(), isSingleton(), getTransport().getExecutor().getClassRControllers())
         );
@@ -72,7 +79,7 @@ public abstract class Component {
      * Снимаем регистрацию у менджера подсистем
      */
     protected void unregisterComponent() {
-        remote.getFromCKey(ManagerComponent.MANAGER_UNIQUE_ID, RControllerManagerComponent.class).unregister(uniqueId);
+        remote.getFromCKey(Component.COMPONENT_UNIQUE_ID_MANAGER, RControllerManagerComponent.class).unregister(uniqueId);
     }
 
     public Transport getTransport() {
