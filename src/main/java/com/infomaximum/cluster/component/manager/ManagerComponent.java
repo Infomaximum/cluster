@@ -19,12 +19,10 @@ public class ManagerComponent extends Component {
 			.withComponentClass(ManagerComponent.class)
 			.build();
 
-	public static final int MANAGER_UNIQUE_ID = 0;
-
 	private ManagerRegisterComponents registerComponent;
 
 	public ManagerComponent(Cluster cluster) {
-		super(cluster);
+		super(cluster, COMPONENT_UNIQUE_ID_MANAGER);
 	}
 
 	@Override
