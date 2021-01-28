@@ -18,7 +18,7 @@ public abstract class BaseClusterTest {
     private static Cluster cluster;
 
     @BeforeClass
-    public static void init() throws Exception {
+    public static void init() {
         cluster = new Cluster.Builder()
                 .withComponentIfNotExist(new ComponentBuilder(MemoryComponent.class))
                 .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))

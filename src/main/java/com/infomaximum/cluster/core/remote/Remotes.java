@@ -3,7 +3,6 @@ package com.infomaximum.cluster.core.remote;
 import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.struct.RController;
-import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.RandomUtil;
 import org.slf4j.Logger;
@@ -58,7 +57,7 @@ public class Remotes {
         return getFromCKey(pretendents.get(RandomUtil.random.nextInt(pretendents.size())), remoteControllerClazz);
     }
 
-    public <T extends RController> T get(Class<? extends Component> classComponent, Class<T> remoteControllerClazz) throws ClusterException {
+    public <T extends RController> T get(Class<? extends Component> classComponent, Class<T> remoteControllerClazz) {
         String uuid = cluster.getAnyComponent(classComponent).getInfo().getUuid();
         return get(uuid, remoteControllerClazz);
     }
