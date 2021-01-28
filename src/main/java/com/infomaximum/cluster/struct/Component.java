@@ -39,7 +39,7 @@ public abstract class Component {
         this.uniqueId = uniqueId;
     }
 
-    public void init(TransportManager transportManager) throws ClusterException {
+    public void init(TransportManager transportManager) {
         this.transportManager = transportManager;
         this.transport = transportManager.createTransport(this);
         this.remote = new Remotes(cluster, this);

@@ -27,7 +27,7 @@ public class ExecutorTransportImpl implements ExecutorTransport {
     protected final Component component;
     private final Map<String, RController> hashRemoteController;
 
-    private ExecutorTransportImpl(Component component, Map<String, RController> hashRemoteController) throws ClusterException {
+    private ExecutorTransportImpl(Component component, Map<String, RController> hashRemoteController) {
         this.component = component;
         this.hashRemoteController = hashRemoteController;
     }
@@ -83,7 +83,7 @@ public class ExecutorTransportImpl implements ExecutorTransport {
         private final Component component;
         private final Map<String, RController> hashRemoteController;
 
-        public Builder(Component component) throws ClusterException {
+        public Builder(Component component) {
             this.component = component;
             this.hashRemoteController = new HashMap<>();
         }
@@ -95,7 +95,7 @@ public class ExecutorTransportImpl implements ExecutorTransport {
             return this;
         }
 
-        public ExecutorTransportImpl build() throws ClusterException {
+        public ExecutorTransportImpl build() {
 
             //Добавляем обработчик нотификаций
             withRemoteController(new RControllerNotificationImpl(component));

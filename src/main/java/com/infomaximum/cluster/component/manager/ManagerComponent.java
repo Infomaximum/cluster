@@ -5,7 +5,6 @@ import com.infomaximum.cluster.component.manager.core.ManagerRegisterComponents;
 import com.infomaximum.cluster.core.component.active.ActiveComponents;
 import com.infomaximum.cluster.core.component.environment.EnvironmentComponents;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
-import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.Info;
 
@@ -25,7 +24,7 @@ public class ManagerComponent extends Component {
 	}
 
 	@Override
-	public void init(TransportManager transportManager) throws ClusterException {
+	public void init(TransportManager transportManager) {
 		super.init(transportManager);
 		registerComponent = new ManagerRegisterComponents(this);
 
