@@ -46,16 +46,28 @@ public class Remotes {
     }
 
     public <T extends RController> T get(String uuid, Class<T> remoteControllerClazz) {
-        List<Integer> pretendents = new ArrayList<>();
+        List<Integer> componentUniqueIds = new ArrayList<>();
         for (RuntimeComponentInfo componentInfo : component.getEnvironmentComponents().getActiveComponents()) {
-            int componentUniqueId = componentInfo.uniqueId;
-            String componentUuid = componentInfo.info.getUuid();
+            int iComponentUniqueId = componentInfo.uniqueId;
+            String iComponentUuid = componentInfo.info.getUuid();
 
-            if (componentUuid.equals(uuid)) pretendents.add(componentUniqueId);
+            if (iComponentUuid.equals(uuid)) componentUniqueIds.add(iComponentUniqueId);
         }
-        if (pretendents.isEmpty()) throw new RuntimeException("Not found remote component: " + uuid);
-        return getFromCKey(pretendents.get(RandomUtil.random.nextInt(pretendents.size())), remoteControllerClazz);
+        if (componentUniqueIds.isEmpty()) throw new RuntimeException("Not found remote component: " + uuid);
+        return getFromCKey(componentUniqueIds.get(RandomUtil.random.nextInt(componentUniqueIds.size())), remoteControllerClazz);
     }
+
+    public <T extends RController> boolean isController(String uuid, Class<T> remoteControllerClazz) {
+        RuntimeComponentInfo remoteRuntimeComponentInfo = component.getEnvironmentComponents()
+                .getActiveComponents().stream()
+                .filter(iInfo -> iInfo.info.getUuid().equals(uuid))
+                .findFirst().orElse(null);
+        if (remoteRuntimeComponentInfo == null) {
+            throw new RuntimeException("Not found remote component: " + uuid);
+        }
+        return remoteRuntimeComponentInfo.getClassNameRControllers().contains(remoteControllerClazz.getName());
+    }
+
 
     public <T extends RController> T get(Class<? extends Component> classComponent, Class<T> remoteControllerClazz) {
         String uuid = cluster.getAnyComponent(classComponent).getInfo().getUuid();
