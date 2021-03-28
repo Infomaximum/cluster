@@ -13,20 +13,17 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
-    maven { url "http://maven.office.infomaximum.com/content/repositories/releases/" }
 }
 
 dependencies {
 
-    compile 'org.reflections:reflections:0.9.11'
-    compile 'com.google.guava:guava:29.0-jre'
+    compile 'org.reflections:reflections:0.9.12'
+    compile 'com.google.guava:guava:30.1.1-jre'
 
     compile 'org.slf4j:slf4j-api:1.7.30'
 
-    testCompile 'junit:junit:4.12'
+    testCompile 'junit:junit:4.13.2'
 
     testCompile 'ch.qos.logback:logback-core:1.2.3'
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
-
-    testCompile 'commons-io:commons-io:2.6'
 }

@@ -9,42 +9,10 @@
         </encoder>
     </appender>
 
-    <appender name="logfile" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs${file.separator}main.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- daily rollover -->
-            <fileNamePattern>logs${file.separator}main.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>25MB</maxFileSize><!-- Режем файлы по 25MB -->
-            </timeBasedFileNamingAndTriggeringPolicy>
-
-            <maxHistory>30</maxHistory><!-- Историю храним максимум 30 дней -->
-            <totalSizeCap>100MB</totalSizeCap><!-- Общий размер логов не более 100MB -->
-        </rollingPolicy>
-        <encoder>
-            <charset>UTF-8</charset>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%tid] %-5level %class{36}:%line - %msg%n</pattern>
-        </encoder>
-    </appender>
-
-
     <logger name="com.infomaximum" level="trace" additivity="false">
         <appender-ref ref="console" />
         <appender-ref ref="logfile" />
     </logger>
-
-    <logger name="me.mobin" level="trace" additivity="false">
-        <appender-ref ref="console" />
-        <appender-ref ref="logfile" />
-    </logger>
-
-    <logger name="org.hibernate" level="warn" additivity="false">
-        <appender-ref ref="console" />
-        <appender-ref ref="logfile" />
-    </logger>
-
-    <!--<logger name="org.springframework" level="trace" />-->
 
     <root level="warn">
         <appender-ref ref="console" />

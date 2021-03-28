@@ -1,10 +1,6 @@
 /.gradle/
 /build/
-/.idea/libraries/
-/.idea/artifacts/
-/.idea/inspectionProfiles
-/.idea/.name
-/.idea/workspace.xml
+/.idea/
 /out/
 
 # ---> Java
@@ -21,5 +17,3 @@
 hs_err_pid*
 
 publish.gradle
-
-/logs/
