@@ -2,9 +2,8 @@ group 'com.infomaximum'
 version '0.0.81'
 
 apply plugin: 'java'
-apply plugin: 'maven'
 
-if (file('publish.gradle').exists()) {
+if (project.hasProperty('ossrhUsername')) {
     apply from: 'publish.gradle'
 }
 
