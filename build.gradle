@@ -1,5 +1,5 @@
 group 'com.infomaximum'
-version '1.0.1'
+version '1.0.1p1'
 
 apply plugin: 'java'
 
