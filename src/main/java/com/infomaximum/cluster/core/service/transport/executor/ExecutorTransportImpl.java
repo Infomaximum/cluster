@@ -1,7 +1,6 @@
 package com.infomaximum.cluster.core.service.transport.executor;
 
 import com.infomaximum.cluster.core.remote.AbstractRController;
-import com.infomaximum.cluster.core.remote.controller.notification.RControllerNotificationImpl;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
@@ -96,11 +95,6 @@ public class ExecutorTransportImpl implements ExecutorTransport {
         }
 
         public ExecutorTransportImpl build() {
-
-            //Добавляем обработчик нотификаций
-            withRemoteController(new RControllerNotificationImpl(component));
-
-            //Ищем автоматически
             Reflections reflections = new Reflections(component.getInfo().getUuid());
             for (Class<? extends AbstractRController> classRemoteController : reflections.getSubTypesOf(AbstractRController.class)) {
                 AbstractRController rController;

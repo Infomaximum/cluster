@@ -20,7 +20,7 @@ public class ExceptionComponentTest extends BaseClusterTest {
 
     @Test
     public void test() throws Exception {
-        ManagerComponent managerComponent = getCluster().getAnyComponent(ManagerComponent.class);
+        ManagerComponent managerComponent = getCluster().getAnyLocalComponent(ManagerComponent.class);
         RControllerException rController = managerComponent.getRemotes().get(CustomComponent.class, RControllerException.class);
 
         try {

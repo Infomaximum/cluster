@@ -2,8 +2,10 @@ package com.infomaximum.cluster;
 
 import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.core.remote.packer.*;
+import com.infomaximum.cluster.core.service.componentuuid.ComponentUuidManager;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.network.NetworkTransit;
+import com.infomaximum.cluster.core.service.transport.network.local.LocalNetworkTransit;
 import com.infomaximum.cluster.exception.ClusterDependencyException;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.exception.clusterDependencyCycleException;
@@ -22,9 +24,10 @@ public class Cluster implements AutoCloseable {
 
     private final static Logger log = LoggerFactory.getLogger(Cluster.class);
 
-    private final NetworkTransit networkTransit;
+    public final byte node;
 
     private final TransportManager transportManager;
+    private final ComponentUuidManager componentUuidManager;
 
     private final Map<Class<? extends Component>, List<Component>> components;
     private final List<Component> dependencyOrderedComponents;
@@ -33,9 +36,12 @@ public class Cluster implements AutoCloseable {
 
     private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
-    private Cluster(NetworkTransit networkTransit, TransportManager transportManager, Object context, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
-        this.networkTransit = networkTransit;
+    private Cluster(TransportManager transportManager, Object context, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+        this.node = transportManager.networkTransit.getNode();
+
         this.transportManager = transportManager;
+
+        this.componentUuidManager = new ComponentUuidManager();
 
         this.components = new HashMap<>();
         this.dependencyOrderedComponents = new ArrayList<>();
@@ -62,12 +68,25 @@ public class Cluster implements AutoCloseable {
         dependencyOrderedComponents.add(component);
     }
 
-    public <T extends Component> T getAnyComponent(Class<T> classComponent) {
+    public <T extends Component> T getAnyLocalComponent(Class<T> classComponent) {
         List<Component> components = this.components.get(classComponent);
         if (components == null) {
             return null;
         }
         return (T) components.get(RandomUtil.random.nextInt(components.size()));
+    }
+
+    //Не предпологаются частые вызовы - если будем дергать часто - необходимо переписать на итератор
+    public Collection<Component> getLocalComponents() {
+        List<Component> result = new ArrayList<>();
+        for (Map.Entry<Class<? extends Component>, List<Component>> entry : this.components.entrySet()) {
+            result.addAll(entry.getValue());
+        }
+        return result;
+    }
+
+    public String getUuid(Class<? extends Component> classComponent) {
+        return componentUuidManager.getUuid(classComponent);
     }
 
     public <T> T getContext() {
@@ -78,7 +97,7 @@ public class Cluster implements AutoCloseable {
         return uncaughtExceptionHandler;
     }
 
-    public Component getAnyComponent(String uuidComponent) {
+    public Component getAnyLocalComponent(String uuidComponent) {
         for (Map.Entry<Class<? extends Component>, List<Component>> entry : this.components.entrySet()) {
             List<Component> components = entry.getValue();
             if (components.isEmpty()) continue;
@@ -118,9 +137,6 @@ public class Cluster implements AutoCloseable {
         }
 
         transportManager.destroy();
-        if (networkTransit != null) {
-            networkTransit.close();
-        }
     }
 
     private void closeComponent(Component component) {
@@ -139,7 +155,7 @@ public class Cluster implements AutoCloseable {
 
         private final List<RemotePacker> remotePackers;
 
-        private NetworkTransit networkTransit;
+        private NetworkTransit.Builder builderNetworkTransit;
 
         private List<ComponentBuilder> componentBuilders = new ArrayList<>();
 
@@ -154,10 +170,12 @@ public class Cluster implements AutoCloseable {
             this.remotePackers.add(new RemotePackerFuture());
             this.remotePackers.add(new RemotePackerOptional());
             this.remotePackers.add(new RemotePackerClasterInputStream());
+
+            this.builderNetworkTransit = new LocalNetworkTransit.Builder();
         }
 
-        public Builder withNetworkTransport(NetworkTransit networkTransit) {
-            this.networkTransit = networkTransit;
+        public Builder withNetworkTransport(NetworkTransit.Builder builderNetworkTransit) {
+            this.builderNetworkTransit = builderNetworkTransit;
             return this;
         }
 
@@ -194,9 +212,9 @@ public class Cluster implements AutoCloseable {
         public Cluster build() throws ClusterException {
             Cluster cluster = null;
             try {
-                TransportManager transportManager = new TransportManager(remotePackers);
+                TransportManager transportManager = new TransportManager(builderNetworkTransit, remotePackers);
 
-                cluster = new Cluster(networkTransit, transportManager, context, uncaughtExceptionHandler);
+                cluster = new Cluster(transportManager, context, uncaughtExceptionHandler);
 
                 List<Component> components = new ArrayList<>(componentBuilders.size() + 1);
 
@@ -215,7 +233,7 @@ public class Cluster implements AutoCloseable {
                         Cluster finalCluster = cluster;
                         Component component = components.get(componentIndex);
                         boolean isSuccessDependencies = Arrays.stream(component.getInfo().getDependencies())
-                                .noneMatch(aClass -> finalCluster.getAnyComponent(aClass) == null);
+                                .noneMatch(aClass -> finalCluster.getAnyLocalComponent(aClass) == null);
                         if (isSuccessDependencies) {
                             nextComponent = component;
                             break;

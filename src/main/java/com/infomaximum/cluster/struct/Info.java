@@ -1,14 +1,20 @@
 package com.infomaximum.cluster.struct;
 
 import com.infomaximum.cluster.core.remote.struct.RemoteObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by kris on 20.06.17.
  */
 public class Info implements RemoteObject {
+
+    private transient final static Logger log = LoggerFactory.getLogger(Info.class);
 
     private final String uuid;
     private final Class componentClass;
@@ -50,8 +56,24 @@ public class Info implements RemoteObject {
 
         private Set<Class<? extends Component>> dependencies = new HashSet<>();
 
+        @Deprecated
         public Builder(String uuid) {
             this.uuid = uuid;
+        }
+
+        public Builder(Class<? extends Component> componentClass) {
+            com.infomaximum.cluster.anotation.Info aComponent = componentClass.getAnnotation(com.infomaximum.cluster.anotation.Info.class);
+            if (aComponent == null) {
+                //TODO Ulitin V. Как только все модули перейдут на анотацию - заменить предупреждение на exception
+                log.warn("Annotation 'Component' not found in: " + componentClass);
+                this.uuid = componentClass.getPackage().getName();
+                this.componentClass = componentClass;
+                return;
+            }
+
+            this.uuid = aComponent.uuid();
+            this.componentClass = componentClass;
+            dependencies = Arrays.stream(aComponent.dependencies()).collect(Collectors.toSet());
         }
 
         public T withComponentClass(Class<? extends Component> componentClass) {
@@ -64,7 +86,7 @@ public class Info implements RemoteObject {
             return (T) this;
         }
 
-        public Info build(){
+        public Info build() {
             return new Info(this);
         }
     }

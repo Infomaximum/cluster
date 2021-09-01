@@ -2,39 +2,39 @@ package com.infomaximum.cluster.component.manager.core;
 
 import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
-import com.infomaximum.cluster.core.component.environment.EnvironmentComponents;
 import com.infomaximum.cluster.core.remote.controller.notification.RControllerNotification;
+import com.infomaximum.cluster.core.remote.struct.RController;
+import com.infomaximum.cluster.core.service.transport.network.ManagerRuntimeComponent;
 import com.infomaximum.cluster.struct.RegistrationState;
+import com.infomaximum.cluster.utils.GlobalUniqueIdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 /**
  * Created by kris on 23.09.16.
  */
-public class ManagerRegisterComponents implements EnvironmentComponents {
+public class ManagerRegisterComponents {
 
     private final static Logger log = LoggerFactory.getLogger(ManagerRegisterComponents.class);
 
     private final ManagerComponent managerComponent;
 
-    private final Map<Integer, RuntimeComponentInfo> components;
+    private final ManagerRuntimeComponent managerRuntimeComponent;
 
     private final AtomicInteger uniqueIds;
 
     public ManagerRegisterComponents(ManagerComponent managerComponent) {
         this.managerComponent = managerComponent;
-        this.components = new ConcurrentHashMap<>();
+        this.managerRuntimeComponent = managerComponent.getTransport().getNetworkTransit().getManagerRuntimeComponent();
         this.uniqueIds = new AtomicInteger(0);
 
         //Регистрируем себя
-        registerActiveRole(
-                managerComponent.getUniqueId(),
+        _registerActiveComponent(
                 new RuntimeComponentInfo(
+                        managerComponent.getRemotes().cluster.node,
                         managerComponent.getUniqueId(),
                         managerComponent.getInfo(),
                         managerComponent.isSingleton(),
@@ -42,81 +42,43 @@ public class ManagerRegisterComponents implements EnvironmentComponents {
                 ));
     }
 
-    public RegistrationState registerActiveRole(RuntimeComponentInfo value) {
-        int uniqueId = uniqueIds.incrementAndGet();
+    public RegistrationState registerActiveComponent(RuntimeComponentInfo value) {
+        int uniqueId = GlobalUniqueIdUtils.getGlobalUniqueId(
+                managerComponent.getRemotes().cluster.node,
+                uniqueIds.incrementAndGet()
+        );
         RuntimeComponentInfo runtimeComponentInfo = RuntimeComponentInfo.upgrade(uniqueId, value);
-        ArrayList<RuntimeComponentInfo> items = registerActiveRole(uniqueId, runtimeComponentInfo);
-        return new RegistrationState(uniqueId, items);
+        _registerActiveComponent(runtimeComponentInfo);
+        return new RegistrationState(uniqueId);
     }
 
-    private ArrayList<RuntimeComponentInfo> registerActiveRole(int uniqueId, RuntimeComponentInfo subSystemInfo) {
+    private void _registerActiveComponent(RuntimeComponentInfo subSystemInfo) {
         String uuid = subSystemInfo.info.getUuid();
-        boolean isSingleton = subSystemInfo.isSingleton;
 
-        if (components.containsKey(uniqueId)) {
-            throw new RuntimeException();
-        }
+        managerRuntimeComponent.registerComponent(subSystemInfo);
 
-        Map<Integer, RuntimeComponentInfo> activeSubSystems;
-        synchronized (components) {
-            //Первым делом проверем на уникальность.
-            if (isSingleton && getActiveComponentUUIDs().contains(uuid)) {
-                throw new RuntimeException("Component: " + uuid + " does not support clustering");
+        //Оповещаем все подсистемы о новом модуле - кроме ситуации, когда регистрируется менеджер
+        if (!uuid.equals(ManagerComponent.UUID)) {
+            for (RControllerNotification rControllerNotification : managerComponent.getRemotes().getControllers(RControllerNotification.class)) {
+                rControllerNotification.notificationRegisterComponent(subSystemInfo);
             }
-
-            //Сохраняем список подсистем которые необходимо оповестить
-            activeSubSystems = new HashMap<>(components);
-
-            //Регистрируем
-            components.put(uniqueId, subSystemInfo);
         }
+    }
 
-        //Оповещаем все подсистемы о новом модуле
-        for (int iUniqueId : activeSubSystems.keySet()) {
-            managerComponent.getRemotes().getFromCKey(iUniqueId, RControllerNotification.class).notificationRegisterComponent(subSystemInfo);
+    public void unRegisterActiveComponent(int uniqueId) {
+        if (managerRuntimeComponent.unRegisterComponent(uniqueId)) {
+            //Oповещаем все подсистемы
+            for (RControllerNotification rControllerNotification : managerComponent.getRemotes().getControllers(RControllerNotification.class)) {
+                rControllerNotification.notificationUnRegisterComponent(uniqueId);
+            }
         }
-
-        return new ArrayList<>(components.values());
     }
 
-    public Collection<RuntimeComponentInfo> unRegisterActiveRole(int uniqueId) {
-        if (!components.containsKey(uniqueId)) return components.values();
-
-        synchronized (components) {
-            components.remove(uniqueId);
-        }
-
-        //Oповещаем все подсистемы
-        for (Integer iUniqueId : components.keySet()) {
-            managerComponent.getRemotes().getFromCKey(iUniqueId, RControllerNotification.class).notificationUnRegisterComponent(uniqueId);
-        }
-
-        return components.values();
+    public RuntimeComponentInfo find(String uuid, Class<? extends RController> remoteControllerClazz) {
+        return managerRuntimeComponent.find(uuid, remoteControllerClazz);
     }
 
-    public Collection<RuntimeComponentInfo> getActiveComponents() {
-        return components.values();
-    }
-
-    public Collection<Integer> getActiveComponentUniqueIds() {
-        return new HashSet<Integer>(components.keySet());
-    }
-
-    public Collection<String> getActiveComponentUUIDs() {
-        return components.values().stream()
-                .map(runtimeComponentInfo -> runtimeComponentInfo.info.getUuid())
-                .collect(Collectors.toSet());
-    }
-
-    public Collection<String> getActiveComponentUuids() {
-        HashSet<String> subSystemUuids = new HashSet<String>();
-        for (RuntimeComponentInfo subSystemInfo : components.values()) {
-            subSystemUuids.add(subSystemInfo.info.getUuid());
-        }
-        return subSystemUuids;
-    }
-
-    public boolean isActiveComponent(String uuid) {
-        return getActiveComponentUuids().contains(uuid);
+    public Collection<RuntimeComponentInfo> find(Class<? extends RController> remoteControllerClazz) {
+        return managerRuntimeComponent.find(remoteControllerClazz);
     }
 }

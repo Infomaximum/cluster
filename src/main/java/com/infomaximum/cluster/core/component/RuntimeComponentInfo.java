@@ -13,12 +13,19 @@ import java.util.HashSet;
  */
 public class RuntimeComponentInfo implements RemoteObject {
 
+    public final byte node;
     public final int uniqueId;
     public final Info info;
     public final boolean isSingleton;
     private final HashSet<String> classNameRControllers;
 
-    public RuntimeComponentInfo(int uniqueId, Info info, boolean isSingleton, HashSet<Class<? extends RController>> classRControllers) {
+    public RuntimeComponentInfo(
+            byte node,
+            int uniqueId, Info info, boolean isSingleton,
+            HashSet<Class<? extends RController>> classRControllers
+    ) {
+        this.node = node;
+
         this.uniqueId = uniqueId;
         this.info = info;
         this.isSingleton = isSingleton;
@@ -29,7 +36,13 @@ public class RuntimeComponentInfo implements RemoteObject {
         }
     }
 
-    public RuntimeComponentInfo(Info info, boolean isSingleton, HashSet<Class<? extends RController>> classRControllers) {
+    public RuntimeComponentInfo(
+            byte node,
+            Info info, boolean isSingleton,
+            HashSet<Class<? extends RController>> classRControllers
+    ) {
+        this.node = node;
+
         this.uniqueId = -1;
         this.info = info;
         this.isSingleton = isSingleton;
@@ -46,6 +59,7 @@ public class RuntimeComponentInfo implements RemoteObject {
 
     public static RuntimeComponentInfo upgrade(int uniqueId, RuntimeComponentInfo source) {
         RuntimeComponentInfo result = new RuntimeComponentInfo(
+                source.node,
                 uniqueId,
                 source.info,
                 source.isSingleton,

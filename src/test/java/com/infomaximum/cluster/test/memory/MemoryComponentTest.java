@@ -21,7 +21,7 @@ public class MemoryComponentTest extends BaseClusterTest {
 
     @Test
     public void test1() throws Exception {
-        ManagerComponent managerComponent = getCluster().getAnyComponent(ManagerComponent.class);
+        ManagerComponent managerComponent = getCluster().getAnyLocalComponent(ManagerComponent.class);
         RControllerMemory rControllerMemory = managerComponent.getRemotes().get(MemoryComponent.class, RControllerMemory.class);
 
         String key = "ping";
@@ -34,7 +34,7 @@ public class MemoryComponentTest extends BaseClusterTest {
 
     @Test
     public void test() throws Exception {
-        ManagerComponent managerComponent = getCluster().getAnyComponent(ManagerComponent.class);
+        ManagerComponent managerComponent = getCluster().getAnyLocalComponent(ManagerComponent.class);
         RControllerMemory rControllerMemory = managerComponent.getRemotes().get(MemoryComponent.class, RControllerMemory.class);
 
         rControllerMemory.sets(new HashMap<String, Serializable>() {{

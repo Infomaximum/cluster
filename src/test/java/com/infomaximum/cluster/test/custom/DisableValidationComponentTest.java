@@ -18,7 +18,7 @@ public class DisableValidationComponentTest extends BaseClusterTest {
 
     @Test
     public void test() throws Exception {
-        ManagerComponent managerComponent = getCluster().getAnyComponent(ManagerComponent.class);
+        ManagerComponent managerComponent = getCluster().getAnyLocalComponent(ManagerComponent.class);
         RControllerDisableValidation rController = managerComponent.getRemotes().get(CustomComponent.class, RControllerDisableValidation.class);
 
         String value = "123";
