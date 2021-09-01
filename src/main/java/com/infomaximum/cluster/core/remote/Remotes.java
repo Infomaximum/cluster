@@ -1,17 +1,16 @@
 package com.infomaximum.cluster.core.remote;
 
 import com.infomaximum.cluster.Cluster;
+import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.struct.Component;
-import com.infomaximum.cluster.utils.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by kris on 28.10.16.
@@ -23,11 +22,14 @@ public class Remotes {
     public final Cluster cluster;
     public final Component component;
 
+    private final ManagerComponent managerComponent;
     private final RemotePackerObjects remotePackerObjects;
 
     public Remotes(Cluster cluster, Component component) {
         this.cluster = cluster;
         this.component = component;
+
+        this.managerComponent = (component instanceof ManagerComponent) ? (ManagerComponent) component : cluster.getAnyLocalComponent(ManagerComponent.class);
         this.remotePackerObjects = new RemotePackerObjects(this);
     }
 
@@ -46,31 +48,24 @@ public class Remotes {
     }
 
     public <T extends RController> T get(String uuid, Class<T> remoteControllerClazz) {
-        List<Integer> componentUniqueIds = new ArrayList<>();
-        for (RuntimeComponentInfo componentInfo : component.getEnvironmentComponents().getActiveComponents()) {
-            int iComponentUniqueId = componentInfo.uniqueId;
-            String iComponentUuid = componentInfo.info.getUuid();
-
-            if (iComponentUuid.equals(uuid)) componentUniqueIds.add(iComponentUniqueId);
+        RuntimeComponentInfo runtimeComponentInfo = managerComponent.getRegisterComponent().find(uuid, remoteControllerClazz);
+        if (runtimeComponentInfo == null) {
+            throw new RuntimeException("Not found: " + remoteControllerClazz.getName() + " in " + uuid);
         }
-        if (componentUniqueIds.isEmpty()) throw new RuntimeException("Not found remote component: " + uuid);
-        return getFromCKey(componentUniqueIds.get(RandomUtil.random.nextInt(componentUniqueIds.size())), remoteControllerClazz);
+        return getFromCKey(runtimeComponentInfo.uniqueId, remoteControllerClazz);
     }
 
     public <T extends RController> boolean isController(String uuid, Class<T> remoteControllerClazz) {
-        RuntimeComponentInfo remoteRuntimeComponentInfo = component.getEnvironmentComponents()
-                .getActiveComponents().stream()
-                .filter(iInfo -> iInfo.info.getUuid().equals(uuid))
-                .findFirst().orElse(null);
-        if (remoteRuntimeComponentInfo == null) {
+        RuntimeComponentInfo runtimeComponentInfo = managerComponent.getRegisterComponent().find(uuid, remoteControllerClazz);
+        if (runtimeComponentInfo == null) {
             throw new RuntimeException("Not found remote component: " + uuid);
         }
-        return remoteRuntimeComponentInfo.getClassNameRControllers().contains(remoteControllerClazz.getName());
+        return runtimeComponentInfo.getClassNameRControllers().contains(remoteControllerClazz.getName());
     }
 
 
     public <T extends RController> T get(Class<? extends Component> classComponent, Class<T> remoteControllerClazz) {
-        String uuid = cluster.getAnyComponent(classComponent).getInfo().getUuid();
+        String uuid = cluster.getUuid(classComponent);
         return get(uuid, remoteControllerClazz);
     }
 
@@ -83,13 +78,8 @@ public class Remotes {
     }
 
     public <T extends RController> Collection<T> getControllers(Class<T> remoteClassController) {
-        List<T> controllers = new ArrayList<>();
-        for (RuntimeComponentInfo componentInfo : component.getEnvironmentComponents().getActiveComponents()) {
-            if (componentInfo.getClassNameRControllers().contains(remoteClassController.getName())) {
-                //Нашли подсиситему в которой зарегистрирован этот контроллер
-                controllers.add(getFromCKey(componentInfo.uniqueId, remoteClassController));
-            }
-        }
-        return controllers;
+        return managerComponent.getRegisterComponent().find(remoteClassController).stream()
+                .map(runtimeComponentInfo -> getFromCKey(runtimeComponentInfo.uniqueId, remoteClassController))
+                .collect(Collectors.toList());
     }
 }

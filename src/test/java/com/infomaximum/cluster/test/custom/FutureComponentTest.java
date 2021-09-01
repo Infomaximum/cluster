@@ -21,7 +21,7 @@ public class FutureComponentTest extends BaseClusterTest {
 
     @Test
     public void testGet() throws Exception {
-        ManagerComponent managerComponent = getCluster().getAnyComponent(ManagerComponent.class);
+        ManagerComponent managerComponent = getCluster().getAnyLocalComponent(ManagerComponent.class);
         RControllerFuture rControllerFuture = managerComponent.getRemotes().get(CustomComponent.class, RControllerFuture.class);
 
         Future<String> future1 = rControllerFuture.get("123", 0);
@@ -34,7 +34,7 @@ public class FutureComponentTest extends BaseClusterTest {
 
     @Test
     public void testErrorGet() throws Exception {
-        ManagerComponent managerComponent = getCluster().getAnyComponent(ManagerComponent.class);
+        ManagerComponent managerComponent = getCluster().getAnyLocalComponent(ManagerComponent.class);
         RControllerFuture rControllerFuture = managerComponent.getRemotes().get(CustomComponent.class, RControllerFuture.class);
 
         Future<String> future1 = rControllerFuture.getError("123", 0);

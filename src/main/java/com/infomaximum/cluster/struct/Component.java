@@ -1,12 +1,11 @@
 package com.infomaximum.cluster.struct;
 
 import com.infomaximum.cluster.Cluster;
+import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.component.manager.remote.managersubsystem.RControllerManagerComponent;
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
-import com.infomaximum.cluster.core.component.active.ActiveComponents;
-import com.infomaximum.cluster.core.component.environment.EnvironmentComponents;
 import com.infomaximum.cluster.core.remote.Remotes;
-import com.infomaximum.cluster.core.service.transport.Transport;
+import com.infomaximum.cluster.core.service.transport.LocalTransport;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.exception.ClusterException;
@@ -21,20 +20,21 @@ public abstract class Component {
     private final static Logger log = LoggerFactory.getLogger(Component.class);
 
     protected static final int COMPONENT_UNIQUE_ID_NOT_INIT = -1;
-    protected static final int COMPONENT_UNIQUE_ID_MANAGER = 0;
 
+    private final Info info;
     protected final Cluster cluster;
     private TransportManager transportManager;
     private int uniqueId = COMPONENT_UNIQUE_ID_NOT_INIT;
-    private Transport transport;
+    private LocalTransport transport;
     private Remotes remote;
-    private ActiveComponents activeComponents;
 
     public Component(Cluster cluster) {
+        this.info = createInfoBuilder().build();
         this.cluster = cluster;
     }
 
     protected Component(Cluster cluster, int uniqueId) {
+        this.info = createInfoBuilder().build();
         this.cluster = cluster;
         this.uniqueId = uniqueId;
     }
@@ -52,37 +52,46 @@ public abstract class Component {
         }
 
         //Регистрируемся у менеджера подсистем
-        this.activeComponents = registerComponent();
+        registerComponent();
         log.info("Register {} ({})", getInfo().getUuid(), getUniqueId());
     }
 
-    public abstract Info getInfo();
+    //Точка переопределения билдера info
+    protected Info.Builder createInfoBuilder() {
+        return new Info.Builder(this.getClass());
+    }
+
+    public Info getInfo() {
+        return info;
+    }
 
     protected ExecutorTransportImpl.Builder getExecutorTransportBuilder() {
         return new ExecutorTransportImpl.Builder(this);
     }
 
-    /**
-     * Регистрируемся у менджера подсистем
-     */
-    protected ActiveComponents registerComponent() {
-        RControllerManagerComponent rControllerManagerComponent = remote.getFromCKey(Component.COMPONENT_UNIQUE_ID_MANAGER, RControllerManagerComponent.class);
+    //Регистрируемся у менджера подсистем
+    protected void registerComponent() {
+        RControllerManagerComponent rControllerManagerComponent = remote.getFromCKey(
+                ManagerComponent.getComponentUniqueIdManager(cluster.node),
+                RControllerManagerComponent.class
+        );
         RegistrationState registrationState = rControllerManagerComponent.register(
-                new RuntimeComponentInfo(getInfo(), isSingleton(), getTransport().getExecutor().getClassRControllers())
+                new RuntimeComponentInfo(
+                        cluster.node,
+                        getInfo(), isSingleton(),
+                        getTransport().getExecutor().getClassRControllers()
+                )
         );
         uniqueId = registrationState.uniqueId;
         transportManager.registerTransport(transport);
-        return new ActiveComponents(this, registrationState.getItems());
     }
 
-    /**
-     * Снимаем регистрацию у менджера подсистем
-     */
+    //Снимаем регистрацию у менджера подсистем
     protected void unregisterComponent() {
-        remote.getFromCKey(Component.COMPONENT_UNIQUE_ID_MANAGER, RControllerManagerComponent.class).unregister(uniqueId);
+        remote.getFromCKey(ManagerComponent.getComponentUniqueIdManager(cluster.node), RControllerManagerComponent.class).unregister(uniqueId);
     }
 
-    public Transport getTransport() {
+    public LocalTransport getTransport() {
         return transport;
     }
 
@@ -96,10 +105,6 @@ public abstract class Component {
 
     public Remotes getRemotes() {
         return remote;
-    }
-
-    public EnvironmentComponents getEnvironmentComponents() {
-        return activeComponents;
     }
 
     public void destroy() {

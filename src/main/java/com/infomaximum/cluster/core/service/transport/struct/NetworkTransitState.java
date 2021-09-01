@@ -4,6 +4,6 @@ public enum NetworkTransitState {
 
     STARTED,
 
-    STOPPED,
+    STOPPED
 
 }

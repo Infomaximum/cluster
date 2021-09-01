@@ -3,6 +3,7 @@ package com.infomaximum.cluster.core.service.transport;
 import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
+import com.infomaximum.cluster.core.service.transport.network.NetworkTransit;
 import com.infomaximum.cluster.struct.Component;
 
 import java.lang.reflect.Method;
@@ -11,16 +12,20 @@ import java.util.List;
 /**
  * Created by kris on 14.09.16.
  */
-public class Transport {
+public class LocalTransport {
 
 	private final TransportManager transportManager;
 
 	private final Component component;
 	private ExecutorTransport executorTransport;
 
-	public Transport(TransportManager transportManager, Component component) {
+	public LocalTransport(TransportManager transportManager, Component component) {
 		this.transportManager = transportManager;
 		this.component = component;
+	}
+
+	public NetworkTransit getNetworkTransit() {
+		return transportManager.networkTransit;
 	}
 
 	public Component getComponent() {
@@ -40,6 +45,6 @@ public class Transport {
 	}
 
 	public Object request(int targetComponentUniqueId, Class<? extends RController> rControllerClass, Method method, Object[] args) throws Exception {
-		return transportManager.transitRequest(targetComponentUniqueId, rControllerClass.getName(), method.getName(), args);
+		return transportManager.request(targetComponentUniqueId, rControllerClass.getName(), method.getName(), args);
 	}
 }

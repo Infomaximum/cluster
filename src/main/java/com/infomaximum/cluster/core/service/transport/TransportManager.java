@@ -2,7 +2,9 @@ package com.infomaximum.cluster.core.service.transport;
 
 import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
+import com.infomaximum.cluster.core.service.transport.network.NetworkTransit;
 import com.infomaximum.cluster.struct.Component;
+import com.infomaximum.cluster.utils.GlobalUniqueIdUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,39 +17,53 @@ import java.util.concurrent.TimeoutException;
  */
 public class TransportManager {
 
-    private final Map<Integer, Transport> componentUniqueIdTransports;
-
+    public final NetworkTransit networkTransit;
     private final List<RemotePacker> remotePackers;
 
-    public TransportManager(List<RemotePacker> remotePackers) {
-        this.componentUniqueIdTransports = new ConcurrentHashMap<Integer, Transport>();
+    private final Map<Integer, LocalTransport> localComponentUniqueIdTransports;
+
+    public TransportManager(NetworkTransit.Builder builderNetworkTransit, List<RemotePacker> remotePackers) {
+        this.networkTransit = builderNetworkTransit.build(this);
         this.remotePackers = Collections.unmodifiableList(remotePackers);
+
+        this.localComponentUniqueIdTransports = new ConcurrentHashMap<Integer, LocalTransport>();
     }
 
     public List<RemotePacker> getRemotePackers() {
         return remotePackers;
     }
 
-    public Transport createTransport(Component component) {
-        return new Transport(this, component);
+    public LocalTransport createTransport(Component component) {
+        return new LocalTransport(this, component);
     }
 
-    public synchronized void registerTransport(Transport transport) {
+    public synchronized void registerTransport(LocalTransport transport) {
         int uniqueId = transport.getComponent().getUniqueId();
         if (uniqueId < 0) {
             throw new RuntimeException("Internal error: Error in logic");
         }
-        if (componentUniqueIdTransports.put(uniqueId, transport) != null) {
+        if (localComponentUniqueIdTransports.put(uniqueId, transport) != null) {
             throw new RuntimeException("Internal error: Error in logic");
         }
     }
 
-    public synchronized void destroyTransport(Transport transport) {
-        componentUniqueIdTransports.remove(transport.getComponent().getUniqueId());
+    public synchronized void destroyTransport(LocalTransport transport) {
+        localComponentUniqueIdTransports.remove(transport.getComponent().getUniqueId());
     }
 
-    public Object transitRequest(int targetComponentUniqueId, String rControllerClassName, String methodName, Object[] args) throws Exception {
-        Transport targetTransport = componentUniqueIdTransports.get(targetComponentUniqueId);
+    public Object request(int targetComponentUniqueId, String rControllerClassName, String methodName, Object[] args) throws Exception {
+        byte targetNode = GlobalUniqueIdUtils.getNode(targetComponentUniqueId);
+        if (targetNode == networkTransit.getNode()) {
+            //локальный запрос
+            return localRequest(targetComponentUniqueId, rControllerClassName, methodName, args);
+        } else {
+            //сетевой запрос
+            return networkTransit.getRemoteControllerRequest().request(targetComponentUniqueId, rControllerClassName, methodName, args);
+        }
+    }
+
+    public Object localRequest(int targetComponentUniqueId, String rControllerClassName, String methodName, Object[] args) throws Exception {
+        LocalTransport targetTransport = localComponentUniqueIdTransports.get(targetComponentUniqueId);
         if (targetTransport == null) {
             throw new TimeoutException("Not found target component: " + targetComponentUniqueId);
         }
@@ -57,7 +73,6 @@ public class TransportManager {
     }
 
     public void destroy() {
-
+        networkTransit.close();
     }
-
 }

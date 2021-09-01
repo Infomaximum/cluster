@@ -1,5 +1,6 @@
 package com.infomaximum.cluster.core.service.transport.network;
 
+import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.event.ListenerNetworkTransitStateUpdate;
 import com.infomaximum.cluster.core.service.transport.struct.NetworkTransitState;
 
@@ -15,6 +16,12 @@ public abstract class NetworkTransit {
         state = NetworkTransitState.STOPPED;
         this.listeners = new CopyOnWriteArrayList<>();
     }
+
+    public abstract byte getNode();
+
+    public abstract ManagerRuntimeComponent getManagerRuntimeComponent();
+
+    public abstract RemoteControllerRequest getRemoteControllerRequest();
 
     public NetworkTransitState getState() {
         return state;
@@ -37,4 +44,8 @@ public abstract class NetworkTransit {
     }
 
     public abstract void close();
+
+    public static abstract class Builder {
+        public abstract NetworkTransit build(TransportManager transportManager);
+    }
 }

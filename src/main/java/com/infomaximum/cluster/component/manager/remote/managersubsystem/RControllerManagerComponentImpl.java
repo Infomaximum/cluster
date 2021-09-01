@@ -18,12 +18,12 @@ public class RControllerManagerComponentImpl extends AbstractRController<Manager
 	@Override
     public RegistrationState register(RuntimeComponentInfo componentInfo) {
         ManagerRegisterComponents registerComponent = component.getRegisterComponent();
-        return registerComponent.registerActiveRole(componentInfo);
+        return registerComponent.registerActiveComponent(componentInfo);
 	}
 
 	@Override
     public void unregister(int uniqueId) {
         ManagerRegisterComponents registerComponent = component.getRegisterComponent();
-        registerComponent.unRegisterActiveRole(uniqueId);
+        registerComponent.unRegisterActiveComponent(uniqueId);
 	}
 }
