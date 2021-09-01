@@ -95,7 +95,10 @@ public class ExecutorTransportImpl implements ExecutorTransport {
         }
 
         public ExecutorTransportImpl build() {
-            Reflections reflections = new Reflections(component.getInfo().getUuid());
+            Reflections reflections;
+            synchronized (Reflections.class) {
+                reflections = new Reflections(component.getInfo().getUuid());
+            }
             for (Class<? extends AbstractRController> classRemoteController : reflections.getSubTypesOf(AbstractRController.class)) {
                 AbstractRController rController;
                 try {
