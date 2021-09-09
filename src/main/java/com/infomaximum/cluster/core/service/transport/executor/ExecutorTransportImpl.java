@@ -102,7 +102,7 @@ public class ExecutorTransportImpl implements ExecutorTransport {
             for (Class<? extends AbstractRController> classRemoteController : reflections.getSubTypesOf(AbstractRController.class)) {
                 AbstractRController rController;
                 try {
-                    Constructor constructor = classRemoteController.getConstructor(component.getClass());
+                    Constructor constructor = classRemoteController.getDeclaredConstructor(component.getClass());
                     constructor.setAccessible(true);
                     rController = (AbstractRController) constructor.newInstance(component);
                 } catch (ReflectiveOperationException e) {
