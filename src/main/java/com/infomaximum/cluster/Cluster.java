@@ -76,6 +76,20 @@ public class Cluster implements AutoCloseable {
         return (T) components.get(RandomUtil.random.nextInt(components.size()));
     }
 
+    //TODO Delete 01.01.2022
+
+    /**
+     * Use: getAnyLocalComponent
+     *
+     * @param classComponent
+     * @param <T>
+     * @return
+     */
+    @Deprecated
+    public <T extends Component> T getAnyComponent(Class<T> classComponent) {
+        return getAnyLocalComponent(classComponent);
+    }
+
     //Не предпологаются частые вызовы - если будем дергать часто - необходимо переписать на итератор
     public Collection<Component> getLocalComponents() {
         List<Component> result = new ArrayList<>();
