@@ -81,4 +81,8 @@ public class ManagerRegisterComponents {
     public Collection<RuntimeComponentInfo> find(Class<? extends RController> remoteControllerClazz) {
         return managerRuntimeComponent.find(remoteControllerClazz);
     }
+
+    public Collection<RuntimeComponentInfo> getComponents() {
+        return managerRuntimeComponent.getComponents();
+    }
 }
