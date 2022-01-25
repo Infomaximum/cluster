@@ -51,7 +51,7 @@ public class RemoteObjectValidator {
 
                 Type iType = iField.getGenericType();
 
-                if (type == iType) continue;//Попытка уйти в рекурсию
+                if (type == iType) continue;//Рекурсия - не стоит проверять самого себя
 
                 ResultValidator iResultValidator = validationWorker(iType, new ArrayList<String>(trace) {{
                     add(type.getTypeName());
@@ -62,6 +62,9 @@ public class RemoteObjectValidator {
                 //Валидируем его дженерики
                 if (iType instanceof ParameterizedType) {
                     for (Type iiType : ((ParameterizedType) iType).getActualTypeArguments()) {
+
+                        if (type == iiType) continue;//Рекурсия - не стоит проверять самого себя
+
                         ResultValidator gResultValidator = validationWorker(iiType, new ArrayList<String>(trace) {{
                             add(type.getTypeName());
                             add(iType.getTypeName());
