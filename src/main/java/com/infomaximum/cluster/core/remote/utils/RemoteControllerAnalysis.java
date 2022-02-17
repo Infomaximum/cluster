@@ -4,12 +4,11 @@ import com.infomaximum.cluster.anotation.DisableValidationRemoteMethod;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.struct.Component;
 
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 public class RemoteControllerAnalysis {
 
@@ -20,7 +19,7 @@ public class RemoteControllerAnalysis {
             throw new IllegalArgumentException("Class: " + interfaceClazz + " is not interface.");
 
         this.methods = new HashMap<>();
-        for (Method method : interfaceClazz.getDeclaredMethods()) {
+        for (Method method : interfaceClazz.getMethods()) {
 
             //Проверяем, что результат и аргументы сериализуемы
             if (!method.isAnnotationPresent(DisableValidationRemoteMethod.class)) {
