@@ -3,6 +3,7 @@ package com.infomaximum.cluster.core.service.transport;
 import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
 import com.infomaximum.cluster.core.service.transport.network.NetworkTransit;
+import com.infomaximum.cluster.exception.ExceptionBuilder;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.GlobalUniqueIdUtils;
 
@@ -22,11 +23,15 @@ public class TransportManager {
 
     private final Map<Integer, LocalTransport> localComponentUniqueIdTransports;
 
-    public TransportManager(NetworkTransit.Builder builderNetworkTransit, List<RemotePacker> remotePackers) {
+    private final ExceptionBuilder exceptionBuilder;
+
+    public TransportManager(NetworkTransit.Builder builderNetworkTransit, List<RemotePacker> remotePackers, ExceptionBuilder exceptionBuilder) {
         this.networkTransit = builderNetworkTransit.build(this);
         this.remotePackers = Collections.unmodifiableList(remotePackers);
 
         this.localComponentUniqueIdTransports = new ConcurrentHashMap<Integer, LocalTransport>();
+
+        this.exceptionBuilder = exceptionBuilder;
     }
 
     public List<RemotePacker> getRemotePackers() {
@@ -35,6 +40,10 @@ public class TransportManager {
 
     public LocalTransport createTransport(Component component) {
         return new LocalTransport(this, component);
+    }
+
+    public ExceptionBuilder getExceptionBuilder() {
+        return exceptionBuilder;
     }
 
     public synchronized void registerTransport(LocalTransport transport) {

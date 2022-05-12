@@ -8,6 +8,7 @@ import com.infomaximum.cluster.core.service.transport.network.NetworkTransit;
 import com.infomaximum.cluster.core.service.transport.network.local.LocalNetworkTransit;
 import com.infomaximum.cluster.exception.ClusterDependencyException;
 import com.infomaximum.cluster.exception.ClusterException;
+import com.infomaximum.cluster.exception.ExceptionBuilder;
 import com.infomaximum.cluster.exception.clusterDependencyCycleException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.RandomUtil;
@@ -34,20 +35,23 @@ public class Cluster implements AutoCloseable {
 
     private final Object context;
 
+    private final ExceptionBuilder exceptionBuilder;
     private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
-    private Cluster(TransportManager transportManager, Object context, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
-        this.node = transportManager.networkTransit.getNode();
+    private Cluster(Builder builder) {
+        this.transportManager = new TransportManager(builder.builderNetworkTransit, builder.remotePackers, builder.exceptionBuilder);
 
-        this.transportManager = transportManager;
+        this.node = transportManager.networkTransit.getNode();
 
         this.componentUuidManager = new ComponentUuidManager();
 
         this.components = new HashMap<>();
         this.dependencyOrderedComponents = new ArrayList<>();
 
-        this.context = context;
-        this.uncaughtExceptionHandler = uncaughtExceptionHandler;
+        this.context = builder.context;
+
+        this.exceptionBuilder = builder.exceptionBuilder;
+        this.uncaughtExceptionHandler = builder.uncaughtExceptionHandler;
 
         log.info("Cluster created.");
     }
@@ -175,6 +179,7 @@ public class Cluster implements AutoCloseable {
 
         private Object context;
 
+        private ExceptionBuilder exceptionBuilder;
         private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
         public Builder() {
@@ -186,6 +191,8 @@ public class Cluster implements AutoCloseable {
             this.remotePackers.add(new RemotePackerClasterInputStream());
 
             this.builderNetworkTransit = new LocalNetworkTransit.Builder();
+
+            this.exceptionBuilder = new ExceptionBuilder();
         }
 
         public Builder withNetworkTransport(NetworkTransit.Builder builderNetworkTransit) {
@@ -218,6 +225,12 @@ public class Cluster implements AutoCloseable {
             return this;
         }
 
+
+        public Builder withExceptionBuilder(ExceptionBuilder exceptionBuilder) {
+            this.exceptionBuilder = exceptionBuilder;
+            return this;
+        }
+
         public Builder withUncaughtExceptionHandler(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
             this.uncaughtExceptionHandler = uncaughtExceptionHandler;
             return this;
@@ -226,9 +239,7 @@ public class Cluster implements AutoCloseable {
         public Cluster build() throws ClusterException {
             Cluster cluster = null;
             try {
-                TransportManager transportManager = new TransportManager(builderNetworkTransit, remotePackers);
-
-                cluster = new Cluster(transportManager, context, uncaughtExceptionHandler);
+                cluster = new Cluster(this);
 
                 List<Component> components = new ArrayList<>(componentBuilders.size() + 1);
 
