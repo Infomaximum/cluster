@@ -2,7 +2,6 @@ package com.infomaximum.cluster.core.component;
 
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.core.remote.struct.RemoteObject;
-import com.infomaximum.cluster.struct.Info;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -15,19 +14,19 @@ public class RuntimeComponentInfo implements RemoteObject {
 
     public final byte node;
     public final int uniqueId;
-    public final Info info;
+    public final String uuid;
     public final boolean isSingleton;
     private final HashSet<String> classNameRControllers;
 
     public RuntimeComponentInfo(
             byte node,
-            int uniqueId, Info info, boolean isSingleton,
+            int uniqueId, String uuid, boolean isSingleton,
             HashSet<Class<? extends RController>> classRControllers
     ) {
         this.node = node;
 
         this.uniqueId = uniqueId;
-        this.info = info;
+        this.uuid = uuid;
         this.isSingleton = isSingleton;
 
         this.classNameRControllers = new HashSet<>();
@@ -38,13 +37,13 @@ public class RuntimeComponentInfo implements RemoteObject {
 
     public RuntimeComponentInfo(
             byte node,
-            Info info, boolean isSingleton,
+            String uuid, boolean isSingleton,
             HashSet<Class<? extends RController>> classRControllers
     ) {
         this.node = node;
 
         this.uniqueId = -1;
-        this.info = info;
+        this.uuid = uuid;
         this.isSingleton = isSingleton;
 
         this.classNameRControllers = new HashSet<>();
@@ -61,7 +60,7 @@ public class RuntimeComponentInfo implements RemoteObject {
         RuntimeComponentInfo result = new RuntimeComponentInfo(
                 source.node,
                 uniqueId,
-                source.info,
+                source.uuid,
                 source.isSingleton,
                 new HashSet<>()
         );
