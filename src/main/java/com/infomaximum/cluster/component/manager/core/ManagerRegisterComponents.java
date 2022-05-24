@@ -36,7 +36,7 @@ public class ManagerRegisterComponents {
                 new RuntimeComponentInfo(
                         managerComponent.getRemotes().cluster.node,
                         managerComponent.getUniqueId(),
-                        managerComponent.getInfo(),
+                        managerComponent.getInfo().getUuid(),
                         managerComponent.isSingleton(),
                         managerComponent.getTransport().getExecutor().getClassRControllers()
                 ));
@@ -53,7 +53,7 @@ public class ManagerRegisterComponents {
     }
 
     private void _registerActiveComponent(RuntimeComponentInfo subSystemInfo) {
-        String uuid = subSystemInfo.info.getUuid();
+        String uuid = subSystemInfo.uuid;
 
         managerRuntimeComponent.registerComponent(subSystemInfo);
 
