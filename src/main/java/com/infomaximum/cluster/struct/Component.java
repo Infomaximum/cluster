@@ -78,7 +78,7 @@ public abstract class Component {
         RegistrationState registrationState = rControllerManagerComponent.register(
                 new RuntimeComponentInfo(
                         cluster.node,
-                        getInfo(), isSingleton(),
+                        getInfo().getUuid(), isSingleton(),
                         getTransport().getExecutor().getClassRControllers()
                 )
         );

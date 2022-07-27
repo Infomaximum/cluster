@@ -27,7 +27,7 @@ public class LocalManagerRuntimeComponent implements ManagerRuntimeComponent {
     @Override
     public void registerComponent(RuntimeComponentInfo subSystemInfo) {
         int uniqueId = subSystemInfo.uniqueId;
-        String uuid = subSystemInfo.info.getUuid();
+        String uuid = subSystemInfo.uuid;
         boolean isSingleton = subSystemInfo.isSingleton;
 
         if (components.containsKey(uniqueId)) {
@@ -87,7 +87,7 @@ public class LocalManagerRuntimeComponent implements ManagerRuntimeComponent {
         List<RuntimeComponentInfo> items = new ArrayList<>();
         for (Map.Entry<Integer, RuntimeComponentInfo> entry : components.entrySet()) {
             RuntimeComponentInfo runtimeComponentInfo = entry.getValue();
-            String runtimeComponentUuid = runtimeComponentInfo.info.getUuid();
+            String runtimeComponentUuid = runtimeComponentInfo.uuid;
             if (runtimeComponentUuid.equals(uuid)) {
                 items.add(runtimeComponentInfo);
             }
