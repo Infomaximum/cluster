@@ -17,4 +17,14 @@ module com.infomaximum.cluster {
     exports com.infomaximum.cluster.core.io;
     exports com.infomaximum.cluster.struct.storage;
     exports com.infomaximum.cluster.core.remote.packer;
+    exports com.infomaximum.cluster.core.service.transport;
+    exports com.infomaximum.cluster.core.component;
+    exports com.infomaximum.cluster.core.service.transport.network.local;
+    exports com.infomaximum.cluster.core.service.transport.network.local.event;
+    exports com.infomaximum.cluster.core.service.transport.network;
+    exports com.infomaximum.cluster.core.service.transport.struct;
+    exports com.infomaximum.cluster.core.service.componentuuid;
+    exports com.infomaximum.cluster.component.manager;
+    exports com.infomaximum.cluster.component.memory;
+    exports com.infomaximum.cluster.component.manager.core;
 }
