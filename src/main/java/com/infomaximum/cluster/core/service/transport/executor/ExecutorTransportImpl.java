@@ -11,10 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by kris on 14.09.16.
@@ -97,7 +94,7 @@ public class ExecutorTransportImpl implements ExecutorTransport {
         public ExecutorTransportImpl build() {
             Reflections reflections;
             synchronized (Reflections.class) {
-                reflections = new Reflections(component.getInfo().getUuid());
+                reflections = new Reflections(component.getInfo().getUuid(), new Scanner[0]);
             }
             for (Class<? extends AbstractRController> classRemoteController : reflections.getSubTypesOf(AbstractRController.class)) {
                 AbstractRController rController;
