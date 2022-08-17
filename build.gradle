@@ -3,14 +3,15 @@ plugins {
     id 'maven-publish'
     id 'signing'
     id("de.jjohannes.extra-java-module-info") version "0.15"
+    id "org.checkerframework" version "0.6.15" //https://github.com/kelloggm/checkerframework-gradle-plugin
 }
-apply from: 'https://raw.githubusercontent.com/Infomaximum/platform-java-module-info/main/com.infomaximum.platform-java-module-info.gradle'
+apply from: 'https://raw.githubusercontent.com/Infomaximum/platform-java-module-info/0.0.2/com.infomaximum.platform-java-module-info.gradle'
 if (project.hasProperty('ossrhUsername')) {
     apply from: 'publish.gradle'
 }
 
 group 'com.infomaximum'
-version '1.1.4'
+version '1.1.4f1'
 
 ext.moduleName = 'com.infomaximum.cluster'
 
@@ -19,6 +20,13 @@ java {
         languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
+
+//checkerFramework {
+//    checkers = [
+//            'org.checkerframework.checker.nullness.NullnessChecker',
+//            'org.checkerframework.checker.units.UnitsChecker'
+//    ]
+//}
 
 compileJava {
     doFirst {
@@ -34,12 +42,15 @@ repositories {
 }
 
 dependencies {
-    implementation('org.reflections:reflections:0.10.2')
+    implementation('org.reflections:reflections:0.10.2') {
+        exclude group: 'com.google.code.findbugs', module: 'jsr305'
+    }
 
     implementation('com.google.guava:guava:31.1-jre') {
         exclude group: 'com.google.guava', module: 'failureaccess'
         exclude group: 'com.google.guava', module: 'listenablefuture'
         exclude group: 'com.google.j2objc', module: 'j2objc-annotations'
+        exclude group: 'com.google.code.findbugs', module: 'jsr305'
     }
 
     implementation 'org.slf4j:slf4j-api:1.7.30'
