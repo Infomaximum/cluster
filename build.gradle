@@ -5,13 +5,13 @@ plugins {
     id("de.jjohannes.extra-java-module-info") version "0.15"
     id "org.checkerframework" version "0.6.15" //https://github.com/kelloggm/checkerframework-gradle-plugin
 }
-apply from: 'https://raw.githubusercontent.com/Infomaximum/platform-java-module-info/0.0.2/com.infomaximum.platform-java-module-info.gradle'
+apply from: 'https://raw.githubusercontent.com/Infomaximum/platform-java-module-info/0.0.5/com.infomaximum.platform-java-module-info.gradle'
 if (project.hasProperty('ossrhUsername')) {
     apply from: 'publish.gradle'
 }
 
 group 'com.infomaximum'
-version '1.1.4f1'
+version '1.1.4f2'
 
 ext.moduleName = 'com.infomaximum.cluster'
 
@@ -53,10 +53,10 @@ dependencies {
         exclude group: 'com.google.code.findbugs', module: 'jsr305'
     }
 
-    implementation 'org.slf4j:slf4j-api:1.7.30'
+    implementation 'org.slf4j:slf4j-api:2.0.0-beta1'
 
     testImplementation 'junit:junit:4.13.2'
 
-    testImplementation 'ch.qos.logback:logback-core:1.2.3'
-    testImplementation 'ch.qos.logback:logback-classic:1.2.3'
+    testImplementation 'ch.qos.logback:logback-core:1.3.0-beta0'
+    testImplementation 'ch.qos.logback:logback-classic:1.3.0-beta0'
 }
