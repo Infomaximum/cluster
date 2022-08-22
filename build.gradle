@@ -5,7 +5,7 @@ plugins {
     id("de.jjohannes.extra-java-module-info") version "0.15"
     id "org.checkerframework" version "0.6.15" //https://github.com/kelloggm/checkerframework-gradle-plugin
 }
-apply from: 'https://raw.githubusercontent.com/Infomaximum/platform-java-module-info/0.0.5/com.infomaximum.platform-java-module-info.gradle'
+apply from: 'https://raw.githubusercontent.com/Infomaximum/platform-java-module-info/0.0.8/com.infomaximum.platform-java-module-info.gradle'
 if (project.hasProperty('ossrhUsername')) {
     apply from: 'publish.gradle'
 }
