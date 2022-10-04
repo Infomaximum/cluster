@@ -9,8 +9,8 @@ import com.infomaximum.cluster.exception.ClusterDependencyException;
 import com.infomaximum.cluster.exception.clusterDependencyCycleException;
 import com.infomaximum.cluster.server.custom.CustomComponent;
 import com.infomaximum.cluster.struct.Component;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -34,11 +34,11 @@ public class ClusterTest {
 
             List<Component> components = cluster.getDependencyOrderedComponentsOf(Component.class);
 
-            Assert.assertEquals(ManagerComponent.class, components.remove(0).getClass());
-            Assert.assertEquals(MemoryComponent.class, components.remove(0).getClass());
-            Assert.assertEquals(Component3.class, components.remove(0).getClass());
+            Assertions.assertEquals(ManagerComponent.class, components.remove(0).getClass());
+            Assertions.assertEquals(MemoryComponent.class, components.remove(0).getClass());
+            Assertions.assertEquals(Component3.class, components.remove(0).getClass());
 
-            Assert.assertEquals(0, components.size());
+            Assertions.assertEquals(0, components.size());
         }
     }
 
@@ -52,12 +52,12 @@ public class ClusterTest {
 
         } catch (RuntimeException ex) {
             if (ex.getMessage().contains(MemoryComponent.class.getName())) {
-                Assert.assertTrue(true);
+                Assertions.assertTrue(true);
                 return;
             }
         }
 
-        Assert.fail();
+        Assertions.fail();
     }
 
     @Test
@@ -66,17 +66,17 @@ public class ClusterTest {
                 .withComponent(new ComponentBuilder(CyclicComponent1.class))
                 .withComponent(new ComponentBuilder(CyclicComponent2.class))
                 .build()) {
-            Assert.fail();
+            Assertions.fail();
         } catch (clusterDependencyCycleException ex) {
-            Assert.assertTrue(true);
+            Assertions.assertTrue(true);
         }
 
         try (Cluster cluster = new Cluster.Builder()
                 .withComponent(new ComponentBuilder(CyclicComponent1.class))
                 .build()) {
-            Assert.fail();
+            Assertions.fail();
         } catch (clusterDependencyCycleException ex) {
-            Assert.assertTrue(true);
+            Assertions.assertTrue(true);
         }
     }
 
@@ -92,14 +92,14 @@ public class ClusterTest {
 
             List<Component> components = cluster.getDependencyOrderedComponentsOf(Component.class);
 
-            Assert.assertEquals(ManagerComponent.class, components.remove(0).getClass());
-            Assert.assertEquals(CustomComponent.class, components.remove(0).getClass());
-            Assert.assertEquals(MemoryComponent.class, components.remove(0).getClass());
-            Assert.assertEquals(Component3.class, components.remove(0).getClass());
-            Assert.assertEquals(Component2.class, components.remove(0).getClass());
-            Assert.assertEquals(Component1.class, components.remove(0).getClass());
+            Assertions.assertEquals(ManagerComponent.class, components.remove(0).getClass());
+            Assertions.assertEquals(CustomComponent.class, components.remove(0).getClass());
+            Assertions.assertEquals(MemoryComponent.class, components.remove(0).getClass());
+            Assertions.assertEquals(Component3.class, components.remove(0).getClass());
+            Assertions.assertEquals(Component2.class, components.remove(0).getClass());
+            Assertions.assertEquals(Component1.class, components.remove(0).getClass());
 
-            Assert.assertEquals(0, components.size());
+            Assertions.assertEquals(0, components.size());
         }
     }
 
@@ -115,11 +115,11 @@ public class ClusterTest {
 
             List<BaseComponent> components = cluster.getDependencyOrderedComponentsOf(BaseComponent.class);
 
-            Assert.assertEquals(Component3.class, components.remove(0).getClass());
-            Assert.assertEquals(Component2.class, components.remove(0).getClass());
-            Assert.assertEquals(Component1.class, components.remove(0).getClass());
+            Assertions.assertEquals(Component3.class, components.remove(0).getClass());
+            Assertions.assertEquals(Component2.class, components.remove(0).getClass());
+            Assertions.assertEquals(Component1.class, components.remove(0).getClass());
 
-            Assert.assertEquals(0, components.size());
+            Assertions.assertEquals(0, components.size());
         }
     }
 
@@ -135,16 +135,16 @@ public class ClusterTest {
 
             try {
                 cluster.removeComponent(cluster.getAnyLocalComponent(Component2.class));
-                Assert.fail();
+                Assertions.fail();
             } catch (ClusterDependencyException e) {
-                Assert.assertTrue(true);
+                Assertions.assertTrue(true);
             }
 
             cluster.removeComponent(cluster.getAnyLocalComponent(Component1.class));
             List<BaseComponent> components = cluster.getDependencyOrderedComponentsOf(BaseComponent.class);
-            Assert.assertEquals(Component3.class, components.remove(0).getClass());
-            Assert.assertEquals(Component2.class, components.remove(0).getClass());
-            Assert.assertEquals(0, components.size());
+            Assertions.assertEquals(Component3.class, components.remove(0).getClass());
+            Assertions.assertEquals(Component2.class, components.remove(0).getClass());
+            Assertions.assertEquals(0, components.size());
         }
     }
 

@@ -1,7 +1,8 @@
 package com.infomaximum.cluster.utils;
 
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class GlobalUniqueIdUtilsTest {
 
@@ -11,8 +12,8 @@ public class GlobalUniqueIdUtilsTest {
             for (int localId = 0; localId < 8388607; localId++) {
                 int globalUniqueId = GlobalUniqueIdUtils.getGlobalUniqueId(node, localId);
 
-                Assert.assertEquals(node, GlobalUniqueIdUtils.getNode(globalUniqueId));
-                Assert.assertEquals(localId, GlobalUniqueIdUtils.getLocalId(globalUniqueId));
+                Assertions.assertEquals(node, GlobalUniqueIdUtils.getNode(globalUniqueId));
+                Assertions.assertEquals(localId, GlobalUniqueIdUtils.getLocalId(globalUniqueId));
 
 //                System.out.println(globalUniqueId);
             }

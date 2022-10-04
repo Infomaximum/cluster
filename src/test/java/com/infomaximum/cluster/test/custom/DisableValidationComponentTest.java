@@ -4,8 +4,8 @@ import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.server.custom.CustomComponent;
 import com.infomaximum.cluster.server.custom.remote.disablevalidation.RControllerDisableValidation;
 import com.infomaximum.cluster.test.BaseClusterTest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +22,7 @@ public class DisableValidationComponentTest extends BaseClusterTest {
         RControllerDisableValidation rController = managerComponent.getRemotes().get(CustomComponent.class, RControllerDisableValidation.class);
 
         String value = "123";
-        Assert.assertEquals(value, rController.get(value));
+        Assertions.assertEquals(value, rController.get(value));
     }
 
 }

@@ -2,12 +2,10 @@ package com.infomaximum.remoteobject.test;
 
 import com.infomaximum.cluster.core.remote.packer.RemotePackerRemoteObject;
 import com.infomaximum.remoteobject.struct.valide.RemoteObject1;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Iterator;
 
 public class RemoteObject1Test {
 
@@ -23,7 +21,7 @@ public class RemoteObject1Test {
 
         RemoteObject1 remoteObject12 = (RemoteObject1) remotePackerRemoteObject.deserialize(null, null, bytes);
 
-        Assert.assertEquals(remoteObject11.getK(), remoteObject12.getK());
-        Assert.assertEquals(remoteObject11.getL1(), remoteObject12.getL1());
+        Assertions.assertEquals(remoteObject11.getK(), remoteObject12.getK());
+        Assertions.assertEquals(remoteObject11.getL1(), remoteObject12.getL1());
     }
 }

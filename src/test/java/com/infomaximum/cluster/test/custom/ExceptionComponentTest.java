@@ -4,8 +4,8 @@ import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.server.custom.CustomComponent;
 import com.infomaximum.cluster.server.custom.remote.exception.RControllerException;
 import com.infomaximum.cluster.test.BaseClusterTest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,9 +25,9 @@ public class ExceptionComponentTest extends BaseClusterTest {
 
         try {
             rController.getException("123");
-            Assert.fail();
+            Assertions.fail();
         } catch (Exception e) {
-            Assert.assertEquals(NotLinkException.class, e.getClass());
+            Assertions.assertEquals(NotLinkException.class, e.getClass());
         }
     }
 

@@ -6,8 +6,8 @@ import com.infomaximum.cluster.core.service.componentuuid.ComponentUuidManager;
 import com.infomaximum.cluster.server.custom.CustomComponent;
 import com.infomaximum.cluster.server.custom.remote.disablevalidation.RControllerDisableValidation;
 import com.infomaximum.cluster.test.BaseClusterTest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,13 +20,13 @@ public class ControllerComponentTest extends BaseClusterTest {
         ComponentUuidManager componentUuidManager = new ComponentUuidManager();
 
         Remotes remotes = getCluster().getAnyLocalComponent(ManagerComponent.class).getRemotes();
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 remotes.isController(
                         componentUuidManager.getUuid(CustomComponent.class),
                         RControllerDisableValidation.class
                 )
         );
-        Assert.assertFalse(
+        Assertions.assertFalse(
                 remotes.isController(
                         ManagerComponent.UUID,
                         RControllerDisableValidation.class

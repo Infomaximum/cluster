@@ -4,8 +4,8 @@ import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.server.custom.CustomComponent;
 import com.infomaximum.cluster.server.custom.remote.future.RControllerFuture;
 import com.infomaximum.cluster.test.BaseClusterTest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,10 +25,10 @@ public class FutureComponentTest extends BaseClusterTest {
         RControllerFuture rControllerFuture = managerComponent.getRemotes().get(CustomComponent.class, RControllerFuture.class);
 
         Future<String> future1 = rControllerFuture.get("123", 0);
-        Assert.assertEquals("123", future1.get());
+        Assertions.assertEquals("123", future1.get());
 
         Future<String> future2 = rControllerFuture.get("123", 100);
-        Assert.assertEquals("123", future2.get());
+        Assertions.assertEquals("123", future2.get());
 
     }
 
@@ -39,19 +39,19 @@ public class FutureComponentTest extends BaseClusterTest {
 
         Future<String> future1 = rControllerFuture.getError("123", 0);
         try {
-            Assert.assertEquals("123", future1.get());
-            Assert.fail();
+            Assertions.assertEquals("123", future1.get());
+            Assertions.fail();
         } catch (Exception e) {
-            Assert.assertEquals(NotLinkException.class, e.getCause().getClass());
+            Assertions.assertEquals(NotLinkException.class, e.getCause().getClass());
         }
 
 
         Future<String> future2 = rControllerFuture.getError("123", 100);
         try {
-            Assert.assertEquals("123", future2.get());
-            Assert.fail();
+            Assertions.assertEquals("123", future2.get());
+            Assertions.fail();
         } catch (Exception e) {
-            Assert.assertEquals(NotLinkException.class, e.getCause().getClass());
+            Assertions.assertEquals(NotLinkException.class, e.getCause().getClass());
         }
     }
 

@@ -1,8 +1,7 @@
 module com.infomaximum.cluster {
     requires java.base;
     requires org.slf4j;
-    requires org.reflections.reflections;
-    requires com.google.guava.guava;
+    requires org.reflections;
     requires org.checkerframework.checker.qual;
 
     exports com.infomaximum.cluster.struct;

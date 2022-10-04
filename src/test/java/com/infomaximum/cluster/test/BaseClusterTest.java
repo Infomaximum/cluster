@@ -4,8 +4,8 @@ import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.ComponentBuilder;
 import com.infomaximum.cluster.component.memory.MemoryComponent;
 import com.infomaximum.cluster.server.custom.CustomComponent;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 
 import java.io.IOException;
 
@@ -17,7 +17,7 @@ public abstract class BaseClusterTest {
 
     private static Cluster cluster;
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         cluster = new Cluster.Builder()
                 .withComponentIfNotExist(new ComponentBuilder(MemoryComponent.class))
@@ -29,7 +29,7 @@ public abstract class BaseClusterTest {
         return cluster;
     }
 
-    @AfterClass
+    @AfterAll
     public static void destroy() throws IOException {
         cluster.close();
     }
