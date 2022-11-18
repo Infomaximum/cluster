@@ -4,7 +4,6 @@ import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.core.remote.packer.*;
 import com.infomaximum.cluster.core.service.componentuuid.ComponentUuidManager;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
-import com.infomaximum.cluster.core.service.transport.network.NetworkTransit;
 import com.infomaximum.cluster.core.service.transport.network.local.LocalNetworkTransit;
 import com.infomaximum.cluster.exception.ClusterDependencyException;
 import com.infomaximum.cluster.exception.ClusterException;

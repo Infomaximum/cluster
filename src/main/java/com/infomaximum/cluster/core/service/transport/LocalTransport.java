@@ -1,9 +1,9 @@
 package com.infomaximum.cluster.core.service.transport;
 
+import com.infomaximum.cluster.NetworkTransit;
 import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
-import com.infomaximum.cluster.core.service.transport.network.NetworkTransit;
 import com.infomaximum.cluster.struct.Component;
 
 import java.lang.reflect.Method;
