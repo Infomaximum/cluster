@@ -1,18 +1,13 @@
 package com.infomaximum.cluster.core.remote;
 
-import com.infomaximum.cluster.anotation.DisableValidationRemoteMethod;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.core.remote.utils.RemoteControllerAnalysis;
-import com.infomaximum.cluster.core.remote.utils.RemoteControllerUtils;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.EqualsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +23,11 @@ public abstract class AbstractRController<TComponent extends Component> implemen
 
     private final Map<Class<? extends RController>, Map<String, List<Method>>> hashControllersRemoteMethods;//Хеш методов
 
-    protected AbstractRController(TComponent component) {
+    public AbstractRController(TComponent component) {
         this.component = component;
 
         hashControllersRemoteMethods = new HashMap<Class<? extends RController>, Map<String, List<Method>>>();
-        for (Class interfaceClazz: this.getClass().getInterfaces()){
+        for (Class interfaceClazz : this.getClass().getInterfaces()) {
             if (!RController.class.isAssignableFrom(interfaceClazz)) continue;
 
             RemoteControllerAnalysis remoteControllerAnalysis = new RemoteControllerAnalysis(component, interfaceClazz);
