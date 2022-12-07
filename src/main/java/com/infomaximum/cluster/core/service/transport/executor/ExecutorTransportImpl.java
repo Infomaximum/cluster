@@ -62,8 +62,9 @@ public class ExecutorTransportImpl implements ExecutorTransport {
             throw new RuntimeException("Not found remote method, subsystem: " + component + ", controller: " + rControllerClassName + ", method: " + methodName);
         }
 
+        Object result;
         try {
-            return method.invoke(remoteController, (Object[]) args);
+            result = method.invoke(remoteController, (Object[]) args);
         } catch (InvocationTargetException e) {
             Throwable targetException = e.getTargetException();
             if (targetException instanceof Exception) {
@@ -72,6 +73,13 @@ public class ExecutorTransportImpl implements ExecutorTransport {
                 throw new RuntimeException("Not support target exception", targetException);
             }
         }
+
+        //Валидируем ответ - он не должен быть анонимным
+        if (result != null && result.getClass().isAnonymousClass()) {
+            throw new ClusterException("RemoteController: " + remoteController.getClass() + " return is anonymous class, method: " + method.getName());
+        }
+
+        return result;
     }
 
     public static class Builder {

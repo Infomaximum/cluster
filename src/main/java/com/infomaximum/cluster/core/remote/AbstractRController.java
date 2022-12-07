@@ -35,6 +35,16 @@ public abstract class AbstractRController<TComponent extends Component> implemen
         }
     }
 
+    @Override
+    public final byte getNode() {
+        return component.getRemotes().cluster.node;
+    }
+
+    @Override
+    public final String getComponentUuid() {
+        return component.getInfo().getUuid();
+    }
+
     public Method getRemoteMethod(Class<? extends RController> remoteControllerClazz, String name, Class<?>[] parameterTypes) {
         Map<String, List<Method>> hashControllerRemoteMethods = hashControllersRemoteMethods.get(remoteControllerClazz);
         if (hashControllerRemoteMethods == null) return null;

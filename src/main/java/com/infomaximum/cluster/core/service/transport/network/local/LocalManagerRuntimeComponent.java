@@ -83,6 +83,11 @@ public class LocalManagerRuntimeComponent implements ManagerRuntimeComponent {
     }
 
     @Override
+    public RuntimeComponentInfo get(int uniqueId) {
+        return components.get(uniqueId);
+    }
+
+    @Override
     public RuntimeComponentInfo find(String uuid, Class<? extends RController> remoteControllerClazz) {
         List<RuntimeComponentInfo> items = new ArrayList<>();
         for (Map.Entry<Integer, RuntimeComponentInfo> entry : components.entrySet()) {

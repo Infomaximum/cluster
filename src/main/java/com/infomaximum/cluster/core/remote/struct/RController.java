@@ -5,5 +5,7 @@ package com.infomaximum.cluster.core.remote.struct;
  */
 public interface RController {
 
-	final static long DEFAULT_TIMEOUT = 5L * 60L * 1000L;
+    byte getNode();
+
+    String getComponentUuid();
 }
