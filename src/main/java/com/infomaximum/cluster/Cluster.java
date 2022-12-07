@@ -59,6 +59,10 @@ public class Cluster implements AutoCloseable {
         return transportManager;
     }
 
+    public ExceptionBuilder getExceptionBuilder() {
+        return exceptionBuilder;
+    }
+
     private void appendComponent(Component component) throws ClusterException {
         component.init(transportManager);
 

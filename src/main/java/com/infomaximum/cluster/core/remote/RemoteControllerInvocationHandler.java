@@ -1,6 +1,7 @@
 package com.infomaximum.cluster.core.remote;
 
 import com.infomaximum.cluster.component.manager.ManagerComponent;
+import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
@@ -9,9 +10,6 @@ import com.infomaximum.cluster.utils.GlobalUniqueIdUtils;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-/**
- * Created by kris on 29.12.16.
- */
 public class RemoteControllerInvocationHandler implements InvocationHandler {
 
     private final Component component;
@@ -43,10 +41,15 @@ public class RemoteControllerInvocationHandler implements InvocationHandler {
             return GlobalUniqueIdUtils.getNode(targetComponentUniqueId);
         } else if ("getComponentUuid".equals(method.getName()) && method.getParameters().length == 0) {
             ManagerComponent managerComponent = component.getRemotes().cluster.getAnyLocalComponent(ManagerComponent.class);
-            return managerComponent.getRegisterComponent().get(targetComponentUniqueId).uuid;
+            RuntimeComponentInfo runtimeComponentInfo = managerComponent.getRegisterComponent().get(targetComponentUniqueId);
+            if (runtimeComponentInfo != null) {
+                return runtimeComponentInfo.uuid;
+            } else {
+                int node = GlobalUniqueIdUtils.getNode(targetComponentUniqueId);
+                throw component.getRemotes().cluster.getExceptionBuilder().buildRemoteComponentUnavailableException(node, targetComponentUniqueId, null, null, null);
+            }
         } else {
             return component.getTransport().request(targetComponentUniqueId, rControllerClass, method, args);
         }
     }
-
 }
