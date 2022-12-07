@@ -30,7 +30,7 @@ public class RemoteControllerInvocationHandler implements InvocationHandler {
         if (args != null) {
             for (int i = 0; i < args.length; i++) {
                 Object arg = args[i];
-                if (arg.getClass().isAnonymousClass()) {
+                if (arg != null && arg.getClass().isAnonymousClass()) {
                     throw new ClusterException("Is anonymous class: rController: " + rControllerClass.getName()
                             + ", method: " + method.getName() + ", arg(index): " + i);
                 }
