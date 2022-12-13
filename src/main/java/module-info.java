@@ -26,5 +26,6 @@ module com.infomaximum.cluster {
     exports com.infomaximum.cluster.core.service.componentuuid;
     exports com.infomaximum.cluster.component.manager;
     exports com.infomaximum.cluster.component.memory;
+    exports com.infomaximum.cluster.component.memory.struct;
     exports com.infomaximum.cluster.component.manager.core;
 }
