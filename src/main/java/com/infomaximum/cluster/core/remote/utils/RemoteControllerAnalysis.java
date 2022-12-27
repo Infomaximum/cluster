@@ -15,13 +15,14 @@ public class RemoteControllerAnalysis {
     private final Map<String, List<Method>> methods;
 
     public RemoteControllerAnalysis(Component component, Class<? extends RController> interfaceClazz) {
-        if (!interfaceClazz.isInterface())
+        if (!interfaceClazz.isInterface()) {
             throw new IllegalArgumentException("Class: " + interfaceClazz + " is not interface.");
+        }
 
         this.methods = new HashMap<>();
         for (Method method : interfaceClazz.getMethods()) {
 
-            //Проверяем, что результат и аргументы сериализуемы
+            //Валидируем метод
             if (!method.isAnnotationPresent(DisableValidationRemoteMethod.class)) {
                 RemoteControllerUtils.validationRemoteMethod(component, interfaceClazz, method);
             }

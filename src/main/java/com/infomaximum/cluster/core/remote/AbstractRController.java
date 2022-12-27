@@ -48,9 +48,11 @@ public abstract class AbstractRController<TComponent extends Component> implemen
     public Method getRemoteMethod(Class<? extends RController> remoteControllerClazz, String name, Class<?>[] parameterTypes) {
         Map<String, List<Method>> hashControllerRemoteMethods = hashControllersRemoteMethods.get(remoteControllerClazz);
         if (hashControllerRemoteMethods == null) return null;
+        List<Method> methods = hashControllerRemoteMethods.get(name);
+        if (methods == null || methods.isEmpty()) return null;
 
         Method method = null;
-        for (Method iMethod : hashControllerRemoteMethods.get(name)) {
+        for (Method iMethod : methods) {
             if (iMethod.getParameterCount() != parameterTypes.length) continue;
 
             boolean equals = true;

@@ -4,6 +4,7 @@ import com.infomaximum.cluster.core.remote.AbstractRController;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
+import com.infomaximum.cluster.utils.GlobalUniqueIdUtils;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +45,12 @@ public class ExecutorTransportImpl implements ExecutorTransport {
     @Override
     public Object execute(String rControllerClassName, String methodName, Object[] args) throws Exception {
         RController remoteController = hashRemoteController.get(rControllerClassName);
-        if (remoteController == null)
-            throw new RuntimeException("Not found remote controller, component: " + component + ", controller: " + rControllerClassName + ", method: " + methodName);
+        if (remoteController == null) {
+            throw component.getRemotes().cluster.getExceptionBuilder().buildMismatchRemoteApiNotFoundControllerException(
+                    GlobalUniqueIdUtils.getNode(component.getUniqueId()), component.getUniqueId(),
+                    rControllerClassName, methodName
+            );
+        }
 
         Class<?>[] parameterTypes;
         if (args == null) {
@@ -59,7 +64,10 @@ public class ExecutorTransportImpl implements ExecutorTransport {
 
         Method method = ((AbstractRController) remoteController).getRemoteMethod(remoteController.getClass().getInterfaces()[0], methodName, parameterTypes);
         if (method == null) {
-            throw new RuntimeException("Not found remote method, subsystem: " + component + ", controller: " + rControllerClassName + ", method: " + methodName);
+            throw component.getRemotes().cluster.getExceptionBuilder().buildMismatchRemoteApiNotFoundMethodException(
+                    GlobalUniqueIdUtils.getNode(component.getUniqueId()), component.getUniqueId(),
+                    rControllerClassName, methodName
+            );
         }
 
         Object result;

@@ -12,6 +12,9 @@ import java.lang.reflect.Method;
 
 public class RemoteControllerInvocationHandler implements InvocationHandler {
 
+    private final static String METHOD_GET_NODE = "getNode";
+    private final static String METHOD_GET_COMPONENT_UUID = "getComponentUuid";
+
     private final Component component;
 
     private final int targetComponentUniqueId;
@@ -37,17 +40,15 @@ public class RemoteControllerInvocationHandler implements InvocationHandler {
             }
         }
 
-        if ("getNode".equals(method.getName()) && method.getParameters().length == 0) {
+        if (METHOD_GET_NODE.equals(method.getName()) && method.getParameters().length == 0) {
             return GlobalUniqueIdUtils.getNode(targetComponentUniqueId);
-        } else if ("getComponentUuid".equals(method.getName()) && method.getParameters().length == 0) {
+        } else if (METHOD_GET_COMPONENT_UUID.equals(method.getName()) && method.getParameters().length == 0) {
             ManagerComponent managerComponent = component.getRemotes().cluster.getAnyLocalComponent(ManagerComponent.class);
             RuntimeComponentInfo runtimeComponentInfo = managerComponent.getRegisterComponent().get(targetComponentUniqueId);
-            if (runtimeComponentInfo != null) {
-                return runtimeComponentInfo.uuid;
-            } else {
-                int node = GlobalUniqueIdUtils.getNode(targetComponentUniqueId);
-                throw component.getRemotes().cluster.getExceptionBuilder().buildRemoteComponentUnavailableException(node, targetComponentUniqueId, null, null, null);
+            if (runtimeComponentInfo == null) {
+                throw component.getRemotes().cluster.getExceptionBuilder().buildRemoteComponentUnavailableException(GlobalUniqueIdUtils.getNode(targetComponentUniqueId), targetComponentUniqueId, null, null, null);
             }
+            return runtimeComponentInfo.uuid;
         } else {
             return component.getTransport().request(targetComponentUniqueId, rControllerClass, method, args);
         }
