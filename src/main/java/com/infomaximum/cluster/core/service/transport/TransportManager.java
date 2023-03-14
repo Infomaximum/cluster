@@ -2,12 +2,13 @@ package com.infomaximum.cluster.core.service.transport;
 
 import com.infomaximum.cluster.NetworkTransit;
 import com.infomaximum.cluster.core.remote.packer.RemotePacker;
+import com.infomaximum.cluster.core.remote.packer.RemotePackerObject;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
 import com.infomaximum.cluster.exception.ExceptionBuilder;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.GlobalUniqueIdUtils;
 
-import java.util.Collections;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,24 +19,25 @@ import java.util.concurrent.TimeoutException;
  */
 public class TransportManager {
 
+    private final RemotePackerObject remotePackerObject;
+
     public final NetworkTransit networkTransit;
-    private final List<RemotePacker> remotePackers;
 
     private final Map<Integer, LocalTransport> localComponentUniqueIdTransports;
 
     private final ExceptionBuilder exceptionBuilder;
 
-    public TransportManager(NetworkTransit.Builder builderNetworkTransit, List<RemotePacker> remotePackers, ExceptionBuilder exceptionBuilder) {
+    public TransportManager(NetworkTransit.Builder builderNetworkTransit, List<RemotePacker> remotePackers, ExceptionBuilder exceptionBuilder, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+        this.remotePackerObject = new RemotePackerObject(remotePackers, uncaughtExceptionHandler);
         this.networkTransit = builderNetworkTransit.build(this);
-        this.remotePackers = Collections.unmodifiableList(remotePackers);
 
         this.localComponentUniqueIdTransports = new ConcurrentHashMap<Integer, LocalTransport>();
 
         this.exceptionBuilder = exceptionBuilder;
     }
 
-    public List<RemotePacker> getRemotePackers() {
-        return remotePackers;
+    public RemotePackerObject getRemotePackerObject() {
+        return remotePackerObject;
     }
 
     public LocalTransport createTransport(Component component) {
@@ -60,14 +62,14 @@ public class TransportManager {
         localComponentUniqueIdTransports.remove(transport.getComponent().getUniqueId());
     }
 
-    public Object request(int targetComponentUniqueId, String rControllerClassName, String methodName, Object[] args) throws Exception {
+    public Object request(Component sourceComponent, int targetComponentUniqueId, String rControllerClassName, Method method, Object[] args) throws Exception {
         byte targetNode = GlobalUniqueIdUtils.getNode(targetComponentUniqueId);
         if (targetNode == networkTransit.getNode()) {
             //локальный запрос
-            return localRequest(targetComponentUniqueId, rControllerClassName, methodName, args);
+            return localRequest(targetComponentUniqueId, rControllerClassName, method.getName(), args);
         } else {
             //сетевой запрос
-            return networkTransit.getRemoteControllerRequest().request(targetComponentUniqueId, rControllerClassName, methodName, args);
+            return networkTransit.getRemoteControllerRequest().request(sourceComponent, targetComponentUniqueId, rControllerClassName, method, args);
         }
     }
 

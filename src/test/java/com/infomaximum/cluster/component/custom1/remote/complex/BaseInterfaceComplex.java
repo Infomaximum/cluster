@@ -1,4 +1,4 @@
-package com.infomaximum.cluster.component.custom.remote.complex;
+package com.infomaximum.cluster.component.custom1.remote.complex;
 
 public interface BaseInterfaceComplex {
 

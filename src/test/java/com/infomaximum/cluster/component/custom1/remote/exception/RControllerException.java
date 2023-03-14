@@ -1,4 +1,4 @@
-package com.infomaximum.cluster.component.custom.remote.exception;
+package com.infomaximum.cluster.component.custom1.remote.exception;
 
 import com.infomaximum.cluster.core.remote.struct.RController;
 

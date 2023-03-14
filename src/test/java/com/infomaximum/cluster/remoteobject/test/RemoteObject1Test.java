@@ -1,6 +1,6 @@
 package com.infomaximum.cluster.remoteobject.test;
 
-import com.infomaximum.cluster.core.remote.packer.RemotePackerRemoteObject;
+import com.infomaximum.cluster.core.remote.packer.impl.RemotePackerRemoteObject;
 import com.infomaximum.cluster.remoteobject.struct.valide.RemoteObject1;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

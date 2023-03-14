@@ -1,4 +1,4 @@
-package com.infomaximum.cluster.component.custom.remote.complex;
+package com.infomaximum.cluster.component.custom1.remote.complex;
 
 import com.infomaximum.cluster.core.remote.struct.RController;
 

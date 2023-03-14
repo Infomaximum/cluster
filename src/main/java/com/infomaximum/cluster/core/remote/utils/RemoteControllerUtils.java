@@ -1,6 +1,6 @@
 package com.infomaximum.cluster.core.remote.utils;
 
-import com.infomaximum.cluster.core.remote.RemotePackerObjects;
+import com.infomaximum.cluster.core.remote.ComponentRemotePacker;
 import com.infomaximum.cluster.struct.Component;
 
 import java.lang.reflect.*;
@@ -50,8 +50,8 @@ public class RemoteControllerUtils {
         }
 
         //Валидируем raw class
-        RemotePackerObjects remotePackerObjects = component.getRemotes().getRemotePackerObjects();
-        boolean isValidation = remotePackerObjects.isSupportAndValidationType(type);
+        ComponentRemotePacker componentRemotePacker = component.getRemotes().getRemotePackerObjects();
+        boolean isValidation = componentRemotePacker.isSupportAndValidationType(type);
         if (!isValidation) return false;
 
         //Валидируем если надо его дженерики

@@ -1,13 +1,13 @@
-package com.infomaximum.cluster.component.custom.remote.doublebraceinitialization;
+package com.infomaximum.cluster.component.custom1.remote.doublebraceinitialization;
 
-import com.infomaximum.cluster.component.custom.CustomComponent;
+import com.infomaximum.cluster.component.custom1.Custom1Component;
 import com.infomaximum.cluster.core.remote.AbstractRController;
 
 import java.util.HashMap;
 
-public class RDoubleBraceInitializationImpl extends AbstractRController<CustomComponent> implements RDoubleBraceInitialization {
+public class RDoubleBraceInitializationImpl extends AbstractRController<Custom1Component> implements RDoubleBraceInitialization {
 
-    public RDoubleBraceInitializationImpl(CustomComponent component) {
+    public RDoubleBraceInitializationImpl(Custom1Component component) {
         super(component);
     }
 

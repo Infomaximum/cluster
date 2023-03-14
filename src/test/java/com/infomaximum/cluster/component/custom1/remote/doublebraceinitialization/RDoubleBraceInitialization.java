@@ -1,4 +1,4 @@
-package com.infomaximum.cluster.component.custom.remote.doublebraceinitialization;
+package com.infomaximum.cluster.component.custom1.remote.doublebraceinitialization;
 
 import com.infomaximum.cluster.core.remote.struct.RController;
 

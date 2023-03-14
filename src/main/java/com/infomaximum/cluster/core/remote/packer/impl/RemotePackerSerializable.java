@@ -1,5 +1,6 @@
-package com.infomaximum.cluster.core.remote.packer;
+package com.infomaximum.cluster.core.remote.packer.impl;
 
+import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.exception.ClusterRemotePackerException;
 import com.infomaximum.cluster.struct.Component;
 

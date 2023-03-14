@@ -1,7 +1,8 @@
 package com.infomaximum.cluster;
 
 import com.infomaximum.cluster.component.manager.ManagerComponent;
-import com.infomaximum.cluster.core.remote.packer.*;
+import com.infomaximum.cluster.core.remote.packer.RemotePacker;
+import com.infomaximum.cluster.core.remote.packer.impl.*;
 import com.infomaximum.cluster.core.service.componentuuid.ComponentUuidManager;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.network.local.LocalNetworkTransit;
@@ -38,7 +39,7 @@ public class Cluster implements AutoCloseable {
     private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
     private Cluster(Builder builder) {
-        this.transportManager = new TransportManager(builder.builderNetworkTransit, builder.remotePackers, builder.exceptionBuilder);
+        this.transportManager = new TransportManager(builder.builderNetworkTransit, builder.remotePackers, builder.exceptionBuilder, builder.uncaughtExceptionHandler);
 
         this.node = transportManager.networkTransit.getNode();
 
@@ -191,7 +192,7 @@ public class Cluster implements AutoCloseable {
             this.remotePackers.add(new RemotePackerSerializable());
             this.remotePackers.add(new RemotePackerFuture());
             this.remotePackers.add(new RemotePackerOptional());
-            this.remotePackers.add(new RemotePackerClasterInputStream());
+            this.remotePackers.add(new RemotePackerClusterInputStream());
 
             this.builderNetworkTransit = new LocalNetworkTransit.Builder();
 

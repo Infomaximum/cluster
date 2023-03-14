@@ -3,7 +3,7 @@ package com.infomaximum.tests.items;
 import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.ComponentBuilder;
 import com.infomaximum.cluster.anotation.Info;
-import com.infomaximum.cluster.component.custom.CustomComponent;
+import com.infomaximum.cluster.component.custom1.Custom1Component;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.component.memory.MemoryComponent;
 import com.infomaximum.cluster.exception.ClusterDependencyException;
@@ -20,8 +20,8 @@ public class ClusterTest {
     public void createValidCluster() throws Exception {
         try (Cluster cluster = new Cluster.Builder()
                 .withComponentIfNotExist(new ComponentBuilder(MemoryComponent.class))
-                .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
-                .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
+                .withComponentIfNotExist(new ComponentBuilder(Custom1Component.class))
+                .withComponentIfNotExist(new ComponentBuilder(Custom1Component.class))
                 .build()) {
         }
     }
@@ -46,7 +46,7 @@ public class ClusterTest {
     public void componentAlreadyExists() throws Exception {
         try (Cluster cluster = new Cluster.Builder()
                 .withComponent(new ComponentBuilder(MemoryComponent.class))
-                .withComponent(new ComponentBuilder(CustomComponent.class))
+                .withComponent(new ComponentBuilder(Custom1Component.class))
                 .withComponent(new ComponentBuilder(MemoryComponent.class))
                 .build()) {
 
@@ -83,7 +83,7 @@ public class ClusterTest {
     @Test
     public void dependenceOrdered1() throws Exception {
         try (Cluster cluster = new Cluster.Builder()
-                .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
+                .withComponentIfNotExist(new ComponentBuilder(Custom1Component.class))
                 .withComponent(new ComponentBuilder(Component2.class))
                 .withComponent(new ComponentBuilder(Component1.class))
                 .withComponent(new ComponentBuilder(Component3.class))
@@ -93,7 +93,7 @@ public class ClusterTest {
             List<Component> components = cluster.getDependencyOrderedComponentsOf(Component.class);
 
             Assertions.assertEquals(ManagerComponent.class, components.remove(0).getClass());
-            Assertions.assertEquals(CustomComponent.class, components.remove(0).getClass());
+            Assertions.assertEquals(Custom1Component.class, components.remove(0).getClass());
             Assertions.assertEquals(MemoryComponent.class, components.remove(0).getClass());
             Assertions.assertEquals(Component3.class, components.remove(0).getClass());
             Assertions.assertEquals(Component2.class, components.remove(0).getClass());
@@ -106,7 +106,7 @@ public class ClusterTest {
     @Test
     public void dependenceOrdered2() throws Exception {
         try (Cluster cluster = new Cluster.Builder()
-                .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
+                .withComponentIfNotExist(new ComponentBuilder(Custom1Component.class))
                 .withComponent(new ComponentBuilder(Component2.class))
                 .withComponent(new ComponentBuilder(Component1.class))
                 .withComponent(new ComponentBuilder(Component3.class))
@@ -126,7 +126,7 @@ public class ClusterTest {
     @Test
     public void removeComponent() throws Exception {
         try (Cluster cluster = new Cluster.Builder()
-                .withComponentIfNotExist(new ComponentBuilder(CustomComponent.class))
+                .withComponentIfNotExist(new ComponentBuilder(Custom1Component.class))
                 .withComponent(new ComponentBuilder(Component2.class))
                 .withComponent(new ComponentBuilder(Component1.class))
                 .withComponent(new ComponentBuilder(Component3.class))
@@ -208,7 +208,7 @@ public class ClusterTest {
 
     @Info(
             uuid = "com.infomaximum.tests.items",
-            dependencies = {CustomComponent.class, CyclicComponent1.class}
+            dependencies = {Custom1Component.class, CyclicComponent1.class}
     )
     public static class CyclicComponent1 extends Component {
 

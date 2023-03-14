@@ -1,6 +1,6 @@
-package com.infomaximum.cluster.component.custom.remote.future;
+package com.infomaximum.cluster.component.custom1.remote.future;
 
-import com.infomaximum.cluster.component.custom.CustomComponent;
+import com.infomaximum.cluster.component.custom1.Custom1Component;
 import com.infomaximum.cluster.component.utils.ExecutorUtils;
 import com.infomaximum.cluster.core.remote.AbstractRController;
 import org.slf4j.Logger;
@@ -12,11 +12,11 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Created by kris on 28.10.16.
  */
-public class RControllerFutureImpl extends AbstractRController<CustomComponent> implements RControllerFuture {
+public class RControllerFutureImpl extends AbstractRController<Custom1Component> implements RControllerFuture {
 
     private final static Logger log = LoggerFactory.getLogger(RControllerFutureImpl.class);
 
-    public RControllerFutureImpl(CustomComponent component) {
+    public RControllerFutureImpl(Custom1Component component) {
         super(component);
     }
 

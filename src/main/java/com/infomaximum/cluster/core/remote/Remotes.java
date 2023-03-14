@@ -23,18 +23,18 @@ public class Remotes {
     public final Component component;
 
     private final ManagerComponent managerComponent;
-    private final RemotePackerObjects remotePackerObjects;
+    private final ComponentRemotePacker componentRemotePacker;
 
     public Remotes(Cluster cluster, Component component) {
         this.cluster = cluster;
         this.component = component;
 
         this.managerComponent = (component instanceof ManagerComponent) ? (ManagerComponent) component : cluster.getAnyLocalComponent(ManagerComponent.class);
-        this.remotePackerObjects = new RemotePackerObjects(this);
+        this.componentRemotePacker = new ComponentRemotePacker(this);
     }
 
-    public RemotePackerObjects getRemotePackerObjects() {
-        return remotePackerObjects;
+    public ComponentRemotePacker getRemotePackerObjects() {
+        return componentRemotePacker;
     }
 
     public <T extends RController> T getFromCKey(int componentUniqueId, Class<T> remoteControllerClazz) {
