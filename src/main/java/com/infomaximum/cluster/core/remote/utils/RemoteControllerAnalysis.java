@@ -6,20 +6,18 @@ import com.infomaximum.cluster.struct.Component;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class RemoteControllerAnalysis {
 
-    private final Map<String, List<Method>> methods;
+    private final List<Method> methods;
 
     public RemoteControllerAnalysis(Component component, Class<? extends RController> interfaceClazz) {
         if (!interfaceClazz.isInterface()) {
             throw new IllegalArgumentException("Class: " + interfaceClazz + " is not interface.");
         }
 
-        this.methods = new HashMap<>();
+        this.methods = new ArrayList<>();
         for (Method method : interfaceClazz.getMethods()) {
 
             //Валидируем метод
@@ -30,16 +28,18 @@ public class RemoteControllerAnalysis {
             //Игнорируем права доступа
             method.setAccessible(true);
 
-            List<Method> itemMethods = methods.get(method.getName());
-            if (itemMethods == null) {
-                itemMethods = new ArrayList<>();
-                methods.put(method.getName(), itemMethods);
+            //Проверяем ограничение, у методов с одинаковыми именами, обязательно должно быть разное кол-во аргументов
+            for (Method iMethod : methods) {
+                if (iMethod.getName().equals(method.getName()) && iMethod.getParameterCount() == method.getParameterCount()) {
+                    throw new RuntimeException("Non-unique method: " + method.getName() + " with the same number of arguments in the class: " + interfaceClazz.getName());
+                }
             }
-            itemMethods.add(method);
+
+            methods.add(method);
         }
     }
 
-    public Map<String, List<Method>> getMethods() {
+    public List<Method> getMethods() {
         return methods;
     }
 }

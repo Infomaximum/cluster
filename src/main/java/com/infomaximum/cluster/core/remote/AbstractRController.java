@@ -3,13 +3,11 @@ package com.infomaximum.cluster.core.remote;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.core.remote.utils.RemoteControllerAnalysis;
 import com.infomaximum.cluster.struct.Component;
-import com.infomaximum.cluster.utils.EqualsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,17 +19,20 @@ public abstract class AbstractRController<TComponent extends Component> implemen
 
     protected final TComponent component;
 
-    private final Map<Class<? extends RController>, Map<String, List<Method>>> hashControllersRemoteMethods;//Хеш методов
+    private final Map<String, Method> cacheMethods;//Кеш методов
 
     public AbstractRController(TComponent component) {
         this.component = component;
 
-        hashControllersRemoteMethods = new HashMap<Class<? extends RController>, Map<String, List<Method>>>();
+        cacheMethods = new HashMap<>();
         for (Class interfaceClazz : this.getClass().getInterfaces()) {
             if (!RController.class.isAssignableFrom(interfaceClazz)) continue;
 
             RemoteControllerAnalysis remoteControllerAnalysis = new RemoteControllerAnalysis(component, interfaceClazz);
-            hashControllersRemoteMethods.put(interfaceClazz, remoteControllerAnalysis.getMethods());
+            for (Method method : remoteControllerAnalysis.getMethods()) {
+                String methodKey = getMethodKey(interfaceClazz, method.getName(), method.getParameterCount());
+                cacheMethods.put(methodKey, method);
+            }
         }
     }
 
@@ -45,40 +46,16 @@ public abstract class AbstractRController<TComponent extends Component> implemen
         return component.getInfo().getUuid();
     }
 
-    public Method getRemoteMethod(Class<? extends RController> remoteControllerClazz, String name, Class<?>[] parameterTypes) {
-        Map<String, List<Method>> hashControllerRemoteMethods = hashControllersRemoteMethods.get(remoteControllerClazz);
-        if (hashControllerRemoteMethods == null) return null;
-        List<Method> methods = hashControllerRemoteMethods.get(name);
-        if (methods == null || methods.isEmpty()) return null;
-
-        Method method = null;
-        for (Method iMethod : methods) {
-            if (iMethod.getParameterCount() != parameterTypes.length) continue;
-
-            boolean equals = true;
-            for (int iArg = 0; iArg < parameterTypes.length; iArg++) {
-                Class<?> iMethodArg = iMethod.getParameterTypes()[iArg];
-                Class<?> methodArg = parameterTypes[iArg];
-
-                //Если null, значит нет возможности сопоставить типы - идем дальше
-                if (methodArg == null) continue;
-
-                if (!(EqualsUtils.equalsType(iMethodArg, methodArg) || iMethodArg.isAssignableFrom(methodArg))) {
-                    equals = false;
-                    break;
-                }
-            }
-
-            if (equals) {
-                method = iMethod;
-                break;
-            }
-        }
-        return method;
+    public Method getRemoteMethod(Class<? extends RController> remoteControllerClazz, String methodName, int methodParameterCount) {
+        String methodKey = getMethodKey(remoteControllerClazz, methodName, methodParameterCount);
+        return cacheMethods.get(methodKey);
     }
 
     public Remotes getRemotes() {
         return component.getRemotes();
     }
 
+    private static String getMethodKey(Class<? extends RController> remoteControllerClazz, String methodName, int methodParameterCount) {
+        return new StringBuilder().append(remoteControllerClazz.getName()).append(methodName).append(methodParameterCount).toString();
+    }
 }

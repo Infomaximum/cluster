@@ -7,7 +7,7 @@ import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.Remotes;
 import com.infomaximum.cluster.core.service.transport.LocalTransport;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
-import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
+import com.infomaximum.cluster.core.service.transport.executor.ComponentExecutorTransportImpl;
 import com.infomaximum.cluster.exception.ClusterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,8 +65,8 @@ public abstract class Component {
         return info;
     }
 
-    protected ExecutorTransportImpl.Builder getExecutorTransportBuilder() {
-        return new ExecutorTransportImpl.Builder(this);
+    protected ComponentExecutorTransportImpl.Builder getExecutorTransportBuilder() {
+        return new ComponentExecutorTransportImpl.Builder(this);
     }
 
     //Регистрируемся у менджера подсистем

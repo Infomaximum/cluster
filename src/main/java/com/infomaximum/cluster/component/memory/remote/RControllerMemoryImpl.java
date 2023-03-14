@@ -6,7 +6,6 @@ import com.infomaximum.cluster.core.remote.AbstractRController;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -52,8 +51,8 @@ public class RControllerMemoryImpl extends AbstractRController<MemoryComponent> 
 	}
 
 	@Override
-    public void clear(ArrayList<String> keys) {
-        for (String key: keys) {
+	public void clears(ArrayList<String> keys) {
+		for (String key : keys) {
 			component.getMemoryEngine().set(key, null);
 		}
 	}

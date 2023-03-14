@@ -1,9 +1,10 @@
 package com.infomaximum.cluster.core.service.transport;
 
+import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.NetworkTransit;
 import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.core.remote.packer.RemotePackerObject;
-import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
+import com.infomaximum.cluster.core.service.transport.executor.ComponentExecutorTransport;
 import com.infomaximum.cluster.exception.ExceptionBuilder;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.GlobalUniqueIdUtils;
@@ -12,12 +13,13 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by kris on 12.09.16.
  */
 public class TransportManager {
+
+    private final Cluster cluster;
 
     private final RemotePackerObject remotePackerObject;
 
@@ -27,7 +29,8 @@ public class TransportManager {
 
     private final ExceptionBuilder exceptionBuilder;
 
-    public TransportManager(NetworkTransit.Builder builderNetworkTransit, List<RemotePacker> remotePackers, ExceptionBuilder exceptionBuilder, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+    public TransportManager(Cluster cluster, NetworkTransit.Builder builderNetworkTransit, List<RemotePacker> remotePackers, ExceptionBuilder exceptionBuilder, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+        this.cluster = cluster;
         this.remotePackerObject = new RemotePackerObject(remotePackers, uncaughtExceptionHandler);
         this.networkTransit = builderNetworkTransit.build(this);
 
@@ -73,14 +76,25 @@ public class TransportManager {
         }
     }
 
+    public ComponentExecutorTransport.Result localRequest(int targetComponentUniqueId, String rControllerClassName, String methodName, byte[][] byteArgs) throws Exception {
+        ComponentExecutorTransport targetComponentExecutorTransport = getLocalExecutorTransport(targetComponentUniqueId);
+        return targetComponentExecutorTransport.execute(rControllerClassName, methodName, byteArgs);
+    }
+
     public Object localRequest(int targetComponentUniqueId, String rControllerClassName, String methodName, Object[] args) throws Exception {
+        ComponentExecutorTransport targetComponentExecutorTransport = getLocalExecutorTransport(targetComponentUniqueId);
+        return targetComponentExecutorTransport.execute(rControllerClassName, methodName, args);
+    }
+
+    private ComponentExecutorTransport getLocalExecutorTransport(int targetComponentUniqueId) throws Exception {
         LocalTransport targetTransport = localComponentUniqueIdTransports.get(targetComponentUniqueId);
         if (targetTransport == null) {
-            throw new TimeoutException("Not found target component: " + targetComponentUniqueId);
+            throw cluster.getExceptionBuilder().buildRemoteComponentNotFoundException(
+                    GlobalUniqueIdUtils.getNode(targetComponentUniqueId), targetComponentUniqueId
+            );
+        } else {
+            return targetTransport.getExecutor();
         }
-
-        ExecutorTransport targetExecutorTransport = targetTransport.getExecutor();
-        return targetExecutorTransport.execute(rControllerClassName, methodName, args);
     }
 
     public void destroy() {

@@ -1,6 +1,7 @@
 package com.infomaximum.cluster.core.service.transport.executor;
 
 import com.infomaximum.cluster.core.remote.AbstractRController;
+import com.infomaximum.cluster.core.remote.ComponentRemotePacker;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
@@ -17,16 +18,19 @@ import java.util.*;
 /**
  * Created by kris on 14.09.16.
  */
-public class ExecutorTransportImpl implements ExecutorTransport {
+public class ComponentExecutorTransportImpl implements ComponentExecutorTransport {
 
-    private final static Logger log = LoggerFactory.getLogger(ExecutorTransportImpl.class);
+    private final static Logger log = LoggerFactory.getLogger(ComponentExecutorTransportImpl.class);
 
     protected final Component component;
+    private final ComponentRemotePacker componentRemotePacker;
+
     private final Map<String, RController> hashRemoteController;
 
-    private ExecutorTransportImpl(Component component, Map<String, RController> hashRemoteController) {
+    private ComponentExecutorTransportImpl(Component component, Map<String, RController> hashRemoteController) {
         this.component = component;
         this.hashRemoteController = hashRemoteController;
+        this.componentRemotePacker = component.getRemotes().getRemotePackerObjects();
     }
 
     @Override
@@ -44,32 +48,56 @@ public class ExecutorTransportImpl implements ExecutorTransport {
 
     @Override
     public Object execute(String rControllerClassName, String methodName, Object[] args) throws Exception {
+        RController remoteController = getRemoteController(rControllerClassName);
+        Method method = getMethod(remoteController, methodName, (args != null) ? args.length : 0);
+        return execute(remoteController, method, args);
+    }
+
+    @Override
+    public Result execute(String rControllerClassName, String methodName, byte[][] byteArgs) throws Exception {
+        RController remoteController = getRemoteController(rControllerClassName);
+        Method method = getMethod(remoteController, methodName, byteArgs.length);
+
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        Object[] args = new Object[byteArgs.length];
+        for (int i = 0; i < byteArgs.length; i++) {
+            Object arg = componentRemotePacker.deserialize(parameterTypes[i], byteArgs[i]);
+            args[i] = arg;
+        }
+
+        try {
+            Object result = execute(remoteController, method, args);
+
+            return new Result(componentRemotePacker.serialize(result), null);
+        } catch (Exception e) {
+            return new Result(null, componentRemotePacker.serialize(e));
+        }
+    }
+
+    private RController getRemoteController(String rControllerClassName) throws Exception {
         RController remoteController = hashRemoteController.get(rControllerClassName);
         if (remoteController == null) {
             throw component.getRemotes().cluster.getExceptionBuilder().buildMismatchRemoteApiNotFoundControllerException(
                     GlobalUniqueIdUtils.getNode(component.getUniqueId()), component.getUniqueId(),
-                    rControllerClassName, methodName
+                    rControllerClassName
             );
-        }
-
-        Class<?>[] parameterTypes;
-        if (args == null) {
-            parameterTypes = new Class<?>[0];
         } else {
-            parameterTypes = new Class<?>[args.length];
-            for (int iArgs = 0; iArgs < args.length; iArgs++) {
-                parameterTypes[iArgs] = (args[iArgs] != null) ? args[iArgs].getClass() : null;
-            }
+            return remoteController;
         }
+    }
 
-        Method method = ((AbstractRController) remoteController).getRemoteMethod(remoteController.getClass().getInterfaces()[0], methodName, parameterTypes);
+    private Method getMethod(RController remoteController, String methodName, int methodParameterCount) throws Exception {
+        Method method = ((AbstractRController) remoteController).getRemoteMethod(remoteController.getClass().getInterfaces()[0], methodName, methodParameterCount);
         if (method == null) {
             throw component.getRemotes().cluster.getExceptionBuilder().buildMismatchRemoteApiNotFoundMethodException(
                     GlobalUniqueIdUtils.getNode(component.getUniqueId()), component.getUniqueId(),
-                    rControllerClassName, methodName
+                    remoteController.getClass().getName(), methodName
             );
         }
+        return method;
+    }
 
+    private Object execute(RController remoteController, Method method, Object[] args) throws Exception {
         Object result;
         try {
             result = method.invoke(remoteController, (Object[]) args);
@@ -107,7 +135,7 @@ public class ExecutorTransportImpl implements ExecutorTransport {
             return this;
         }
 
-        public ExecutorTransportImpl build() {
+        public ComponentExecutorTransportImpl build() {
             Reflections reflections;
             synchronized (Reflections.class) {
                 reflections = new Reflections(component.getInfo().getUuid(), new Scanner[0]);
@@ -127,7 +155,7 @@ public class ExecutorTransportImpl implements ExecutorTransport {
                 }
             }
 
-            return new ExecutorTransportImpl(component, hashRemoteController);
+            return new ComponentExecutorTransportImpl(component, hashRemoteController);
         }
 
 

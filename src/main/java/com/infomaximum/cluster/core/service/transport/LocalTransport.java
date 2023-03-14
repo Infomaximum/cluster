@@ -3,7 +3,7 @@ package com.infomaximum.cluster.core.service.transport;
 import com.infomaximum.cluster.NetworkTransit;
 import com.infomaximum.cluster.core.remote.packer.RemotePackerObject;
 import com.infomaximum.cluster.core.remote.struct.RController;
-import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
+import com.infomaximum.cluster.core.service.transport.executor.ComponentExecutorTransport;
 import com.infomaximum.cluster.struct.Component;
 
 import java.lang.reflect.Method;
@@ -13,37 +13,37 @@ import java.lang.reflect.Method;
  */
 public class LocalTransport {
 
-	private final TransportManager transportManager;
+    private final TransportManager transportManager;
 
-	private final Component component;
-	private ExecutorTransport executorTransport;
+    private final Component component;
+    private ComponentExecutorTransport componentExecutorTransport;
 
-	public LocalTransport(TransportManager transportManager, Component component) {
-		this.transportManager = transportManager;
-		this.component = component;
-	}
+    public LocalTransport(TransportManager transportManager, Component component) {
+        this.transportManager = transportManager;
+        this.component = component;
+    }
 
-	public NetworkTransit getNetworkTransit() {
-		return transportManager.networkTransit;
-	}
+    public NetworkTransit getNetworkTransit() {
+        return transportManager.networkTransit;
+    }
 
-	public Component getComponent() {
-		return component;
-	}
+    public Component getComponent() {
+        return component;
+    }
 
-	public void setExecutor(ExecutorTransport executorTransport) {
-		this.executorTransport = executorTransport;
-	}
+    public void setExecutor(ComponentExecutorTransport componentExecutorTransport) {
+        this.componentExecutorTransport = componentExecutorTransport;
+    }
 
-	public ExecutorTransport getExecutor() {
-		return executorTransport;
-	}
+    public ComponentExecutorTransport getExecutor() {
+        return componentExecutorTransport;
+    }
 
-	public RemotePackerObject getRemotePackerObject() {
-		return transportManager.getRemotePackerObject();
-	}
+    public RemotePackerObject getRemotePackerObject() {
+        return transportManager.getRemotePackerObject();
+    }
 
-	public Object request(int targetComponentUniqueId, Class<? extends RController> rControllerClass, Method method, Object[] args) throws Exception {
-		return transportManager.request(component, targetComponentUniqueId, rControllerClass.getName(), method, args);
-	}
+    public Object request(int targetComponentUniqueId, Class<? extends RController> rControllerClass, Method method, Object[] args) throws Exception {
+        return transportManager.request(component, targetComponentUniqueId, rControllerClass.getName(), method, args);
+    }
 }

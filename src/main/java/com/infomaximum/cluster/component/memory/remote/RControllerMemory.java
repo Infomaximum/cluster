@@ -5,8 +5,6 @@ import com.infomaximum.cluster.core.remote.struct.RController;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by kris on 28.10.16.
@@ -24,5 +22,5 @@ public interface RControllerMemory extends RController {
 
     void sets(HashMap<String, Serializable> values);
 
-    void clear(ArrayList<String> keys);
+    void clears(ArrayList<String> keys);
 }

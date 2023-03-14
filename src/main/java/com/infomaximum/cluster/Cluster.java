@@ -39,7 +39,7 @@ public class Cluster implements AutoCloseable {
     private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
     private Cluster(Builder builder) {
-        this.transportManager = new TransportManager(builder.builderNetworkTransit, builder.remotePackers, builder.exceptionBuilder, builder.uncaughtExceptionHandler);
+        this.transportManager = new TransportManager(this, builder.builderNetworkTransit, builder.remotePackers, builder.exceptionBuilder, builder.uncaughtExceptionHandler);
 
         this.node = transportManager.networkTransit.getNode();
 
@@ -82,20 +82,6 @@ public class Cluster implements AutoCloseable {
             return null;
         }
         return (T) components.get(RandomUtil.random.nextInt(components.size()));
-    }
-
-    //TODO Delete 01.01.2022
-
-    /**
-     * Use: getAnyLocalComponent
-     *
-     * @param classComponent
-     * @param <T>
-     * @return
-     */
-    @Deprecated
-    public <T extends Component> T getAnyComponent(Class<T> classComponent) {
-        return getAnyLocalComponent(classComponent);
     }
 
     //Не предпологаются частые вызовы - если будем дергать часто - необходимо переписать на итератор

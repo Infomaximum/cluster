@@ -16,10 +16,15 @@ public class ExceptionBuilder {
         );
     }
 
-    public Exception buildMismatchRemoteApiNotFoundControllerException(int node, int componentUniqueId, String rControllerClassName, String methodName) {
+    public Exception buildRemoteComponentNotFoundException(int node, int componentUniqueId) {
+        return new ClusterException("RemoteComponentUnavailableException, node: " + node + ", componentUniqueId: "
+                + componentUniqueId
+        );
+    }
+
+    public Exception buildMismatchRemoteApiNotFoundControllerException(int node, int componentUniqueId, String rControllerClassName) {
         return new ClusterException("Mismatch api (not found controller), node: " + node + ", componentUniqueId: "
                 + componentUniqueId + ", rControllerClassName: " + rControllerClassName
-                + ", methodName: " + methodName
         );
     }
 
