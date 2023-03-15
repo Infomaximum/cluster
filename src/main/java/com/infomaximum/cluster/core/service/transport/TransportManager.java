@@ -29,9 +29,9 @@ public class TransportManager {
 
     private final ExceptionBuilder exceptionBuilder;
 
-    public TransportManager(Cluster cluster, NetworkTransit.Builder builderNetworkTransit, List<RemotePacker> remotePackers, ExceptionBuilder exceptionBuilder, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+    public TransportManager(Cluster cluster, NetworkTransit.Builder builderNetworkTransit, List<RemotePacker> remotePackers, ExceptionBuilder exceptionBuilder) {
         this.cluster = cluster;
-        this.remotePackerObject = new RemotePackerObject(remotePackers, uncaughtExceptionHandler);
+        this.remotePackerObject = new RemotePackerObject(remotePackers);
         this.networkTransit = builderNetworkTransit.build(this);
 
         this.localComponentUniqueIdTransports = new ConcurrentHashMap<Integer, LocalTransport>();

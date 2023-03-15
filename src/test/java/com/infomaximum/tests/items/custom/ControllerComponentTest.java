@@ -1,7 +1,7 @@
 package com.infomaximum.tests.items.custom;
 
 import com.infomaximum.cluster.Cluster;
-import com.infomaximum.cluster.TestCluster;
+import com.infomaximum.cluster.Clusters;
 import com.infomaximum.cluster.component.custom1.Custom1Component;
 import com.infomaximum.cluster.component.custom1.remote.disablevalidation.RControllerDisableValidation;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
@@ -18,11 +18,12 @@ public class ControllerComponentTest {
 
     @Test
     public void test() {
-        try (Cluster cluster = TestCluster.build()) {
+        try (Clusters clusters = new Clusters.Builder().build()) {
+            Cluster cluster1 = clusters.getCluster1();
 
             ComponentUuidManager componentUuidManager = new ComponentUuidManager();
 
-            Remotes remotes = cluster.getAnyLocalComponent(ManagerComponent.class).getRemotes();
+            Remotes remotes = cluster1.getAnyLocalComponent(ManagerComponent.class).getRemotes();
             Assertions.assertTrue(
                     remotes.isController(
                             componentUuidManager.getUuid(Custom1Component.class),

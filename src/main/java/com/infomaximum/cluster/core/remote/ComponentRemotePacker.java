@@ -17,15 +17,33 @@ public class ComponentRemotePacker {
         this.remotePackers = component.getTransport().getRemotePackerObject();
     }
 
-    public byte[] serialize(Object value) {
-        return remotePackers.serialize(component, value);
+    public byte[] serialize(Class classType, Object value) {
+        return remotePackers.serialize(component, classType, value);
+    }
+
+    public byte[] serialize(Class classType, Object value, Thread.UncaughtExceptionHandler caughtExceptionHandler) {
+        try {
+            return serialize(classType, value);
+        } catch (Throwable e) {
+            caughtExceptionHandler.uncaughtException(Thread.currentThread(), e);
+            return null;
+        }
     }
 
     public Object deserialize(Class classType, byte[] value) {
         return remotePackers.deserialize(component, classType, value);
     }
 
-    public String getClassName(Class classType){
+    public Object deserialize(Class classType, byte[] value, Thread.UncaughtExceptionHandler caughtExceptionHandler) {
+        try {
+            return deserialize(classType, value);
+        } catch (Throwable e) {
+            caughtExceptionHandler.uncaughtException(Thread.currentThread(), e);
+            return null;
+        }
+    }
+
+    public String getClassName(Class classType) {
         return remotePackers.getClassName(classType);
     }
 

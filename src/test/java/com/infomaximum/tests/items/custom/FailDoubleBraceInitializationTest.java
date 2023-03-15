@@ -1,7 +1,7 @@
 package com.infomaximum.tests.items.custom;
 
 import com.infomaximum.cluster.Cluster;
-import com.infomaximum.cluster.TestCluster;
+import com.infomaximum.cluster.Clusters;
 import com.infomaximum.cluster.component.custom1.Custom1Component;
 import com.infomaximum.cluster.component.custom1.remote.doublebraceinitialization.RDoubleBraceInitialization;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
@@ -15,8 +15,10 @@ public class FailDoubleBraceInitializationTest {
 
     @Test
     public void test1() throws Exception {
-        try (Cluster cluster = TestCluster.build()) {
-            ManagerComponent managerComponent = cluster.getAnyLocalComponent(ManagerComponent.class);
+        try (Clusters clusters = new Clusters.Builder().build()) {
+            Cluster cluster1 = clusters.getCluster1();
+
+            ManagerComponent managerComponent = cluster1.getAnyLocalComponent(ManagerComponent.class);
             RDoubleBraceInitialization rDoubleBraceInitialization = managerComponent.getRemotes().get(Custom1Component.class, RDoubleBraceInitialization.class);
 
             Assertions.assertThrows(ClusterException.class, () -> {
@@ -30,8 +32,10 @@ public class FailDoubleBraceInitializationTest {
 
     @Test
     public void test2() throws Exception {
-        try (Cluster cluster = TestCluster.build()) {
-            ManagerComponent managerComponent = cluster.getAnyLocalComponent(ManagerComponent.class);
+        try (Clusters clusters = new Clusters.Builder().build()) {
+            Cluster cluster1 = clusters.getCluster1();
+
+            ManagerComponent managerComponent = cluster1.getAnyLocalComponent(ManagerComponent.class);
             RDoubleBraceInitialization rDoubleBraceInitialization = managerComponent.getRemotes().get(Custom1Component.class, RDoubleBraceInitialization.class);
 
             Assertions.assertThrows(ClusterException.class, () -> {

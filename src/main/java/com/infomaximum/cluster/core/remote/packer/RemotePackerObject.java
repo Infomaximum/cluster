@@ -10,16 +10,13 @@ import java.util.List;
 public class RemotePackerObject {
     private final List<RemotePacker> remotePackers;
 
-    private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
-
-    public RemotePackerObject(List<RemotePacker> remotePackers, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+    public RemotePackerObject(List<RemotePacker> remotePackers) {
         this.remotePackers = remotePackers;
-        this.uncaughtExceptionHandler = uncaughtExceptionHandler;
     }
 
-    public byte[] serialize(Component component, Object value) {
+    public byte[] serialize(Component component, Class classType, Object value) {
         for (RemotePacker remotePacker : remotePackers) {
-            if (remotePacker.isSupport(value.getClass())) {
+            if (remotePacker.isSupport(classType)) {
                 byte[] result = remotePacker.serialize(component, value);
                 assertResultSerialize(result, value);
                 return result;
@@ -56,7 +53,7 @@ public class RemotePackerObject {
 
     private void assertResultSerialize(byte[] result, Object value) {
         if (result.length == 0) {
-            uncaughtExceptionHandler.uncaughtException(Thread.currentThread(), new IllegalArgumentException("Критическая ошибка! Value: " + value));
+            throw new IllegalArgumentException("Критическая ошибка! Value: " + value);
         }
     }
 }

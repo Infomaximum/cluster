@@ -4,6 +4,7 @@ import com.infomaximum.cluster.NetworkTransit;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.network.ManagerRuntimeComponent;
 import com.infomaximum.cluster.core.service.transport.network.RemoteControllerRequest;
+import com.infomaximum.cluster.core.service.transport.network.local.LocalManagerRuntimeComponent;
 
 public class FakeNetworkTransit implements NetworkTransit {
 
@@ -11,11 +12,14 @@ public class FakeNetworkTransit implements NetworkTransit {
 
     private final byte node;
 
+    private final ManagerRuntimeComponent managerRuntimeComponent;
+
     private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
     public FakeNetworkTransit(Builder builder, TransportManager transportManager) {
         this.spaceNetworkTransit = builder.spaceNetworkTransit;
         this.node = builder.node;
+        this.managerRuntimeComponent = new LocalManagerRuntimeComponent();
         this.uncaughtExceptionHandler = builder.uncaughtExceptionHandler;
     }
 
@@ -26,7 +30,7 @@ public class FakeNetworkTransit implements NetworkTransit {
 
     @Override
     public ManagerRuntimeComponent getManagerRuntimeComponent() {
-        return null;
+        return managerRuntimeComponent;
     }
 
     @Override

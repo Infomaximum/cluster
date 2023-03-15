@@ -39,7 +39,7 @@ public class Cluster implements AutoCloseable {
     private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
     private Cluster(Builder builder) {
-        this.transportManager = new TransportManager(this, builder.builderNetworkTransit, builder.remotePackers, builder.exceptionBuilder, builder.uncaughtExceptionHandler);
+        this.transportManager = new TransportManager(this, builder.builderNetworkTransit, builder.remotePackers, builder.exceptionBuilder);
 
         this.node = transportManager.networkTransit.getNode();
 
@@ -170,9 +170,11 @@ public class Cluster implements AutoCloseable {
         private Object context;
 
         private ExceptionBuilder exceptionBuilder;
-        private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
+        private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
-        public Builder() {
+        public Builder(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+            this.uncaughtExceptionHandler = uncaughtExceptionHandler;
+
             this.remotePackers = new ArrayList<>();
             this.remotePackers.add(new RemotePackerRemoteObject());
             this.remotePackers.add(new RemotePackerSerializable());
@@ -218,11 +220,6 @@ public class Cluster implements AutoCloseable {
 
         public Builder withExceptionBuilder(ExceptionBuilder exceptionBuilder) {
             this.exceptionBuilder = exceptionBuilder;
-            return this;
-        }
-
-        public Builder withUncaughtExceptionHandler(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
-            this.uncaughtExceptionHandler = uncaughtExceptionHandler;
             return this;
         }
 

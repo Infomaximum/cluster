@@ -24,13 +24,15 @@ public class ComponentExecutorTransportImpl implements ComponentExecutorTranspor
 
     protected final Component component;
     private final ComponentRemotePacker componentRemotePacker;
-
     private final Map<String, RController> hashRemoteController;
 
-    private ComponentExecutorTransportImpl(Component component, Map<String, RController> hashRemoteController) {
+    private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
+
+    private ComponentExecutorTransportImpl(Component component, Map<String, RController> hashRemoteController, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
         this.component = component;
         this.hashRemoteController = hashRemoteController;
         this.componentRemotePacker = component.getRemotes().getRemotePackerObjects();
+        this.uncaughtExceptionHandler = uncaughtExceptionHandler;
     }
 
     @Override
@@ -61,16 +63,16 @@ public class ComponentExecutorTransportImpl implements ComponentExecutorTranspor
         Class<?>[] parameterTypes = method.getParameterTypes();
         Object[] args = new Object[byteArgs.length];
         for (int i = 0; i < byteArgs.length; i++) {
-            Object arg = componentRemotePacker.deserialize(parameterTypes[i], byteArgs[i]);
+            Object arg = componentRemotePacker.deserialize(parameterTypes[i], byteArgs[i], uncaughtExceptionHandler);
             args[i] = arg;
         }
 
+
         try {
             Object result = execute(remoteController, method, args);
-
-            return new Result(componentRemotePacker.serialize(result), null);
+            return new Result(componentRemotePacker.serialize(method.getReturnType(), result, uncaughtExceptionHandler), null);
         } catch (Exception e) {
-            return new Result(null, componentRemotePacker.serialize(e));
+            return new Result(null, componentRemotePacker.serialize(Throwable.class, e, uncaughtExceptionHandler));
         }
     }
 
@@ -121,10 +123,19 @@ public class ComponentExecutorTransportImpl implements ComponentExecutorTranspor
     public static class Builder {
 
         private final Component component;
+        private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
         private final Map<String, RController> hashRemoteController;
 
-        public Builder(Component component) {
+        public Builder(Component component, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+            if (component == null) {
+                throw new IllegalArgumentException();
+            }
+            if (uncaughtExceptionHandler == null) {
+                throw new IllegalArgumentException();
+            }
+
             this.component = component;
+            this.uncaughtExceptionHandler = uncaughtExceptionHandler;
             this.hashRemoteController = new HashMap<>();
         }
 
@@ -155,7 +166,7 @@ public class ComponentExecutorTransportImpl implements ComponentExecutorTranspor
                 }
             }
 
-            return new ComponentExecutorTransportImpl(component, hashRemoteController);
+            return new ComponentExecutorTransportImpl(component, hashRemoteController, uncaughtExceptionHandler);
         }
 
 

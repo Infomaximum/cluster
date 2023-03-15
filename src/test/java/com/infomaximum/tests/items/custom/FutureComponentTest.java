@@ -1,7 +1,7 @@
 package com.infomaximum.tests.items.custom;
 
 import com.infomaximum.cluster.Cluster;
-import com.infomaximum.cluster.TestCluster;
+import com.infomaximum.cluster.Clusters;
 import com.infomaximum.cluster.component.custom1.Custom1Component;
 import com.infomaximum.cluster.component.custom1.remote.future.RControllerFuture;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
@@ -22,8 +22,10 @@ public class FutureComponentTest {
 
     @Test
     public void testGet() throws Exception {
-        try (Cluster cluster = TestCluster.build()) {
-            ManagerComponent managerComponent = cluster.getAnyLocalComponent(ManagerComponent.class);
+        try (Clusters clusters = new Clusters.Builder().build()) {
+            Cluster cluster1 = clusters.getCluster1();
+
+            ManagerComponent managerComponent = cluster1.getAnyLocalComponent(ManagerComponent.class);
             RControllerFuture rControllerFuture = managerComponent.getRemotes().get(Custom1Component.class, RControllerFuture.class);
 
             Future<String> future1 = rControllerFuture.get("123", 0);
@@ -36,8 +38,10 @@ public class FutureComponentTest {
 
     @Test
     public void testErrorGet() throws Exception {
-        try (Cluster cluster = TestCluster.build()) {
-            ManagerComponent managerComponent = cluster.getAnyLocalComponent(ManagerComponent.class);
+        try (Clusters clusters = new Clusters.Builder().build()) {
+            Cluster cluster1 = clusters.getCluster1();
+
+            ManagerComponent managerComponent = cluster1.getAnyLocalComponent(ManagerComponent.class);
             RControllerFuture rControllerFuture = managerComponent.getRemotes().get(Custom1Component.class, RControllerFuture.class);
 
             Future<String> future1 = rControllerFuture.getError("123", 0);

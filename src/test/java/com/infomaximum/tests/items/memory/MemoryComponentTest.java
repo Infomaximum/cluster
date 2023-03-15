@@ -1,7 +1,7 @@
 package com.infomaximum.tests.items.memory;
 
 import com.infomaximum.cluster.Cluster;
-import com.infomaximum.cluster.TestCluster;
+import com.infomaximum.cluster.Clusters;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.component.memory.MemoryComponent;
 import com.infomaximum.cluster.component.memory.remote.RControllerMemory;
@@ -22,8 +22,10 @@ public class MemoryComponentTest {
 
     @Test
     public void test1() throws Exception {
-        try (Cluster cluster = TestCluster.build()) {
-            ManagerComponent managerComponent = cluster.getAnyLocalComponent(ManagerComponent.class);
+        try (Clusters clusters = new Clusters.Builder().build()) {
+            Cluster cluster1 = clusters.getCluster1();
+
+            ManagerComponent managerComponent = cluster1.getAnyLocalComponent(ManagerComponent.class);
             RControllerMemory rControllerMemory = managerComponent.getRemotes().get(MemoryComponent.class, RControllerMemory.class);
 
             String key = "ping";
@@ -37,8 +39,10 @@ public class MemoryComponentTest {
 
     @Test
     public void test2() throws Exception {
-        try (Cluster cluster = TestCluster.build()) {
-            ManagerComponent managerComponent = cluster.getAnyLocalComponent(ManagerComponent.class);
+        try (Clusters clusters = new Clusters.Builder().build()) {
+            Cluster cluster1 = clusters.getCluster1();
+
+            ManagerComponent managerComponent = cluster1.getAnyLocalComponent(ManagerComponent.class);
             RControllerMemory rControllerMemory = managerComponent.getRemotes().get(MemoryComponent.class, RControllerMemory.class);
 
             HashMap<String, Serializable> values = new HashMap<>();

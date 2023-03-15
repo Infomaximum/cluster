@@ -66,7 +66,7 @@ public abstract class Component {
     }
 
     protected ComponentExecutorTransportImpl.Builder getExecutorTransportBuilder() {
-        return new ComponentExecutorTransportImpl.Builder(this);
+        return new ComponentExecutorTransportImpl.Builder(this, cluster.getUncaughtExceptionHandler());
     }
 
     //Регистрируемся у менджера подсистем
