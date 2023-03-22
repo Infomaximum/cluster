@@ -15,6 +15,8 @@ public class RemoteControllerInvocationHandler implements InvocationHandler {
     private final static String METHOD_GET_NODE = "getNode";
     private final static String METHOD_GET_COMPONENT_UUID = "getComponentUuid";
 
+    private final static String METHOD_TO_STRING = "toString";
+
     private final Component component;
 
     private final int targetComponentUniqueId;
@@ -49,6 +51,8 @@ public class RemoteControllerInvocationHandler implements InvocationHandler {
                 throw component.getRemotes().cluster.getExceptionBuilder().buildRemoteComponentUnavailableException(GlobalUniqueIdUtils.getNode(targetComponentUniqueId), targetComponentUniqueId, null, null, null);
             }
             return runtimeComponentInfo.uuid;
+        } else if (METHOD_TO_STRING.equals(method.getName()) && method.getParameters().length == 0) {
+            return method.toString();
         } else {
             return component.getTransport().request(targetComponentUniqueId, rControllerClass, method, args);
         }

@@ -2,6 +2,7 @@ package com.infomaximum.cluster;
 
 import com.infomaximum.cluster.component.custom1.Custom1Component;
 import com.infomaximum.cluster.component.memory.MemoryComponent;
+import com.infomaximum.cluster.component.service.ServiceComponent;
 import com.infomaximum.cluster.networktransit.FakeNetworkTransit;
 import com.infomaximum.cluster.networktransit.SpaceNetworkTransit;
 import com.infomaximum.cluster.utils.ExecutorUtil;
@@ -15,6 +16,7 @@ public class Clusters implements AutoCloseable {
         ExecutorUtil.executors.execute(() -> {
             cluster1 = new Cluster.Builder(uncaughtExceptionHandler)
                     .withNetworkTransport(builderNetworkTransit1)
+                    .withComponentIfNotExist(new ComponentBuilder(ServiceComponent.class))
                     .withComponentIfNotExist(new ComponentBuilder(MemoryComponent.class))
                     .withComponentIfNotExist(new ComponentBuilder(Custom1Component.class))
                     .build();
@@ -23,6 +25,7 @@ public class Clusters implements AutoCloseable {
         ExecutorUtil.executors.execute(() -> {
             cluster2 = new Cluster.Builder(uncaughtExceptionHandler)
                     .withNetworkTransport(builderNetworkTransit2)
+                    .withComponentIfNotExist(new ComponentBuilder(ServiceComponent.class))
                     .withComponentIfNotExist(new ComponentBuilder(Custom1Component.class))
                     .build();
         });
