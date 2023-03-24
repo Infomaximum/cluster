@@ -19,7 +19,6 @@ public class RemoteControllerAnalysis {
 
         this.methods = new ArrayList<>();
         for (Method method : interfaceClazz.getMethods()) {
-
             //Валидируем метод
             if (!method.isAnnotationPresent(DisableValidationRemoteMethod.class)) {
                 RemoteControllerUtils.validationRemoteMethod(component, interfaceClazz, method);
@@ -27,13 +26,6 @@ public class RemoteControllerAnalysis {
 
             //Игнорируем права доступа
             method.setAccessible(true);
-
-            //Проверяем ограничение, у методов с одинаковыми именами, обязательно должно быть разное кол-во аргументов
-            for (Method iMethod : methods) {
-                if (iMethod.getName().equals(method.getName()) && iMethod.getParameterCount() == method.getParameterCount()) {
-                    throw new RuntimeException("Non-unique method: " + method.getName() + " with the same number of arguments in the class: " + interfaceClazz.getName());
-                }
-            }
 
             methods.add(method);
         }
