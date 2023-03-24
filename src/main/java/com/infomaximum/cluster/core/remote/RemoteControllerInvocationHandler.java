@@ -48,7 +48,7 @@ public class RemoteControllerInvocationHandler implements InvocationHandler {
             ManagerComponent managerComponent = component.getRemotes().cluster.getAnyLocalComponent(ManagerComponent.class);
             RuntimeComponentInfo runtimeComponentInfo = managerComponent.getRegisterComponent().get(targetComponentUniqueId);
             if (runtimeComponentInfo == null) {
-                throw component.getRemotes().cluster.getExceptionBuilder().buildRemoteComponentUnavailableException(GlobalUniqueIdUtils.getNode(targetComponentUniqueId), targetComponentUniqueId, null, null, null);
+                throw component.getRemotes().cluster.getExceptionBuilder().buildRemoteComponentUnavailableException(GlobalUniqueIdUtils.getNode(targetComponentUniqueId), targetComponentUniqueId, null, 0, null);
             }
             return runtimeComponentInfo.uuid;
         } else if (METHOD_TO_STRING.equals(method.getName()) && method.getParameters().length == 0) {

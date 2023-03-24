@@ -4,10 +4,12 @@ import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.NetworkTransit;
 import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.core.remote.packer.RemotePackerObject;
+import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.core.service.transport.executor.ComponentExecutorTransport;
 import com.infomaximum.cluster.exception.ExceptionBuilder;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.GlobalUniqueIdUtils;
+import com.infomaximum.cluster.utils.MethodKey;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -65,25 +67,37 @@ public class TransportManager {
         localComponentUniqueIdTransports.remove(transport.getComponent().getUniqueId());
     }
 
-    public Object request(Component sourceComponent, int targetComponentUniqueId, String rControllerClassName, Method method, Object[] args) throws Exception {
+    public Object request(Component sourceComponent, int targetComponentUniqueId, Class<? extends RController> rControllerClass, Method method, Object[] args) throws Throwable {
         byte targetNode = GlobalUniqueIdUtils.getNode(targetComponentUniqueId);
         if (targetNode == networkTransit.getNode()) {
             //локальный запрос
-            return localRequest(targetComponentUniqueId, rControllerClassName, method.getName(), args);
+            ComponentExecutorTransport targetComponentExecutorTransport = getLocalExecutorTransport(targetComponentUniqueId);
+            return targetComponentExecutorTransport.execute(rControllerClass.getName(), method, args);
         } else {
             //сетевой запрос
-            return networkTransit.getRemoteControllerRequest().request(sourceComponent, targetComponentUniqueId, rControllerClassName, method, args);
+            int methodKey = MethodKey.calcMethodKey(method);
+            byte[][] sargs;
+            if (args == null) {
+                sargs = null;
+            } else {
+                sargs = new byte[args.length][];
+                Class[] parameterTypes = method.getParameterTypes();
+                for (int i = 0; i < parameterTypes.length; i++) {
+                    sargs[i] = remotePackerObject.serialize(sourceComponent, parameterTypes[i], args[i]);
+                }
+            }
+            ComponentExecutorTransport.Result result = networkTransit.getRemoteControllerRequest().request(sourceComponent, targetComponentUniqueId, rControllerClass.getName(), methodKey, sargs);
+            if (result.exception() != null) {
+                throw (Throwable) remotePackerObject.deserialize(sourceComponent, Throwable.class, result.exception());
+            } else {
+                return remotePackerObject.deserialize(sourceComponent, method.getReturnType(), result.value());
+            }
         }
     }
 
-    public ComponentExecutorTransport.Result localRequest(int targetComponentUniqueId, String rControllerClassName, String methodName, byte[][] byteArgs) throws Exception {
+    public ComponentExecutorTransport.Result localRequest(int targetComponentUniqueId, String rControllerClassName, int methodKey, byte[][] byteArgs) throws Exception {
         ComponentExecutorTransport targetComponentExecutorTransport = getLocalExecutorTransport(targetComponentUniqueId);
-        return targetComponentExecutorTransport.execute(rControllerClassName, methodName, byteArgs);
-    }
-
-    public Object localRequest(int targetComponentUniqueId, String rControllerClassName, String methodName, Object[] args) throws Exception {
-        ComponentExecutorTransport targetComponentExecutorTransport = getLocalExecutorTransport(targetComponentUniqueId);
-        return targetComponentExecutorTransport.execute(rControllerClassName, methodName, args);
+        return targetComponentExecutorTransport.execute(rControllerClassName, methodKey, byteArgs);
     }
 
     private ComponentExecutorTransport getLocalExecutorTransport(int targetComponentUniqueId) throws Exception {

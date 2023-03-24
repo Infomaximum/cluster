@@ -3,6 +3,7 @@ package com.infomaximum.cluster.core.remote;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.core.remote.utils.RemoteControllerAnalysis;
 import com.infomaximum.cluster.struct.Component;
+import com.infomaximum.cluster.utils.MethodKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,7 @@ public abstract class AbstractRController<TComponent extends Component> implemen
 
     protected final TComponent component;
 
-    private final Map<String, Method> cacheMethods;//Кеш методов
+    private final Map<Integer, Method> cacheMethods;//Кеш методов
 
     public AbstractRController(TComponent component) {
         this.component = component;
@@ -30,7 +31,10 @@ public abstract class AbstractRController<TComponent extends Component> implemen
 
             RemoteControllerAnalysis remoteControllerAnalysis = new RemoteControllerAnalysis(component, interfaceClazz);
             for (Method method : remoteControllerAnalysis.getMethods()) {
-                String methodKey = getMethodKey(interfaceClazz, method.getName(), method.getParameterCount());
+                int methodKey = MethodKey.calcMethodKey(method);
+                if (cacheMethods.containsKey(methodKey)) {
+                    throw new RuntimeException("Collision method keys: " + method.getName() + " and " + cacheMethods.get(methodKey) + " in " + interfaceClazz.getName() + ", you need to change the signature to avoid conflicts");
+                }
                 cacheMethods.put(methodKey, method);
             }
         }
@@ -46,16 +50,11 @@ public abstract class AbstractRController<TComponent extends Component> implemen
         return component.getInfo().getUuid();
     }
 
-    public Method getRemoteMethod(Class<? extends RController> remoteControllerClazz, String methodName, int methodParameterCount) {
-        String methodKey = getMethodKey(remoteControllerClazz, methodName, methodParameterCount);
+    public Method getRemoteMethod(int methodKey) {
         return cacheMethods.get(methodKey);
     }
 
     public Remotes getRemotes() {
         return component.getRemotes();
-    }
-
-    private static String getMethodKey(Class<? extends RController> remoteControllerClazz, String methodName, int methodParameterCount) {
-        return new StringBuilder().append(remoteControllerClazz.getName()).append(methodName).append(methodParameterCount).toString();
     }
 }

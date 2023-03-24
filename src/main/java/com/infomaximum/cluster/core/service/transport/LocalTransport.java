@@ -43,7 +43,7 @@ public class LocalTransport {
         return transportManager.getRemotePackerObject();
     }
 
-    public Object request(int targetComponentUniqueId, Class<? extends RController> rControllerClass, Method method, Object[] args) throws Exception {
-        return transportManager.request(component, targetComponentUniqueId, rControllerClass.getName(), method, args);
+    public Object request(int targetComponentUniqueId, Class<? extends RController> rControllerClass, Method method, Object[] args) throws Throwable {
+        return transportManager.request(component, targetComponentUniqueId, rControllerClass, method, args);
     }
 }

@@ -2,17 +2,17 @@ package com.infomaximum.cluster.exception;
 
 public class ExceptionBuilder {
 
-    public Exception buildTransitRequestException(int node, int componentUniqueId, String rControllerClassName, String methodName, Exception cause) {
+    public Exception buildTransitRequestException(int node, int componentUniqueId, String rControllerClassName, int methodKey, Exception cause) {
         return new ClusterException("TransitRequestException, node: " + node + ", componentUniqueId: "
                 + componentUniqueId + ", rControllerClassName: " + rControllerClassName
-                + ", methodName: " + methodName, cause
+                + ", methodKey: " + methodKey, cause
         );
     }
 
-    public Exception buildRemoteComponentUnavailableException(int node, int componentUniqueId, String rControllerClassName, String methodName, Exception cause) {
+    public Exception buildRemoteComponentUnavailableException(int node, int componentUniqueId, String rControllerClassName, int methodKey, Exception cause) {
         return new ClusterException("RemoteComponentUnavailableException, node: " + node + ", componentUniqueId: "
                 + componentUniqueId + ", rControllerClassName: " + rControllerClassName
-                + ", methodName: " + methodName, cause
+                + ", methodKey: " + methodKey, cause
         );
     }
 
@@ -28,10 +28,10 @@ public class ExceptionBuilder {
         );
     }
 
-    public Exception buildMismatchRemoteApiNotFoundMethodException(int node, int componentUniqueId, String rControllerClassName, String methodName) {
+    public Exception buildMismatchRemoteApiNotFoundMethodException(int node, int componentUniqueId, String rControllerClassName, int methodKey) {
         return new ClusterException("Mismatch api (not found method), node: " + node + ", componentUniqueId: "
                 + componentUniqueId + ", rControllerClassName: " + rControllerClassName
-                + ", methodName: " + methodName
+                + ", methodKey: " + methodKey
         );
     }
 }

@@ -49,16 +49,15 @@ public class ComponentExecutorTransportImpl implements ComponentExecutorTranspor
     }
 
     @Override
-    public Object execute(String rControllerClassName, String methodName, Object[] args) throws Exception {
+    public Object execute(String rControllerClassName, Method method, Object[] args) throws Exception {
         RController remoteController = getRemoteController(rControllerClassName);
-        Method method = getMethod(remoteController, methodName, (args != null) ? args.length : 0);
         return execute(remoteController, method, args);
     }
 
     @Override
-    public Result execute(String rControllerClassName, String methodName, byte[][] byteArgs) throws Exception {
+    public Result execute(String rControllerClassName, int methodKey, byte[][] byteArgs) throws Exception {
         RController remoteController = getRemoteController(rControllerClassName);
-        Method method = getMethod(remoteController, methodName, byteArgs.length);
+        Method method = getMethod(remoteController, methodKey);
 
         Class<?>[] parameterTypes = method.getParameterTypes();
         Object[] args = new Object[byteArgs.length];
@@ -88,12 +87,12 @@ public class ComponentExecutorTransportImpl implements ComponentExecutorTranspor
         }
     }
 
-    private Method getMethod(RController remoteController, String methodName, int methodParameterCount) throws Exception {
-        Method method = ((AbstractRController) remoteController).getRemoteMethod(remoteController.getClass().getInterfaces()[0], methodName, methodParameterCount);
+    private Method getMethod(RController remoteController, int methodKey) throws Exception {
+        Method method = ((AbstractRController) remoteController).getRemoteMethod(methodKey);
         if (method == null) {
             throw component.getRemotes().cluster.getExceptionBuilder().buildMismatchRemoteApiNotFoundMethodException(
                     GlobalUniqueIdUtils.getNode(component.getUniqueId()), component.getUniqueId(),
-                    remoteController.getClass().getName(), methodName
+                    remoteController.getClass().getName(), methodKey
             );
         }
         return method;
