@@ -1,5 +1,6 @@
 package com.infomaximum.cluster.core.service.transport;
 
+import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.NetworkTransit;
 import com.infomaximum.cluster.core.remote.packer.RemotePackerObject;
 import com.infomaximum.cluster.core.remote.struct.RController;
@@ -29,6 +30,10 @@ public class LocalTransport {
 
     public Component getComponent() {
         return component;
+    }
+
+    public Cluster getCluster() {
+        return transportManager.cluster;
     }
 
     public void setExecutor(ComponentExecutorTransport componentExecutorTransport) {

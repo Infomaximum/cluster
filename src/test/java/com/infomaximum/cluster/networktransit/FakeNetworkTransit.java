@@ -8,18 +8,25 @@ import com.infomaximum.cluster.core.service.transport.network.local.LocalManager
 
 public class FakeNetworkTransit implements NetworkTransit {
 
-    private final SpaceNetworkTransit spaceNetworkTransit;
+    public final TransportManager transportManager;
+
+    public final SpaceNetworkTransit spaceNetworkTransit;
 
     private final byte node;
 
     private final ManagerRuntimeComponent managerRuntimeComponent;
 
+    private final FakeRemoteControllerRequest fakeRemoteControllerRequest;
+
     private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
     public FakeNetworkTransit(Builder builder, TransportManager transportManager) {
+        this.transportManager = transportManager;
         this.spaceNetworkTransit = builder.spaceNetworkTransit;
+        this.spaceNetworkTransit.registry(builder.node, transportManager.cluster);
         this.node = builder.node;
         this.managerRuntimeComponent = new LocalManagerRuntimeComponent();
+        this.fakeRemoteControllerRequest = new FakeRemoteControllerRequest(this);
         this.uncaughtExceptionHandler = builder.uncaughtExceptionHandler;
     }
 
@@ -35,7 +42,7 @@ public class FakeNetworkTransit implements NetworkTransit {
 
     @Override
     public RemoteControllerRequest getRemoteControllerRequest() {
-        return null;
+        return fakeRemoteControllerRequest;
     }
 
     @Override

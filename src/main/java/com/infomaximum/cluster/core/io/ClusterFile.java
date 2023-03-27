@@ -4,8 +4,6 @@ import com.infomaximum.cluster.core.io.provider.ClusterFileProvider;
 import com.infomaximum.cluster.core.io.provider.ClusterFileProviderLocalImpl;
 import com.infomaximum.cluster.core.io.provider.ClusterFileProviderRemoteImpl;
 import com.infomaximum.cluster.struct.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,11 +14,9 @@ import java.nio.file.Paths;
 
 /**
  * Формат
- * cfile:com.infomaximum.cluster.component.manager:00000000-0000-0000-0000-00000000000/UUID
+ * cfile:uniqueId/UUID
  */
 public class ClusterFile {
-
-    private final static Logger log = LoggerFactory.getLogger(ClusterFile.class);
 
     private static String SCHEME_FILE = "file";
 

@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class TransportManager {
 
-    private final Cluster cluster;
+    public final Cluster cluster;
 
     private final RemotePackerObject remotePackerObject;
 

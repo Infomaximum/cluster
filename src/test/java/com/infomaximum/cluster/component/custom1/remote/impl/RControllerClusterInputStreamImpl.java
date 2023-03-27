@@ -4,6 +4,7 @@ import com.infomaximum.cluster.component.custom1.Custom1Component;
 import com.infomaximum.cluster.component.custom1.remote.RControllerClusterInputStream;
 import com.infomaximum.cluster.core.remote.AbstractRController;
 import com.infomaximum.cluster.core.remote.struct.ClusterInputStream;
+import com.infomaximum.cluster.utils.ChainBytesUtils;
 
 import java.io.InputStream;
 
@@ -22,9 +23,8 @@ public class RControllerClusterInputStreamImpl extends AbstractRController<Custo
                 if (count[0] >= size) {
                     return -1;
                 }
-                count[0]++;
-
-                return count[0] % 255;
+                byte b = ChainBytesUtils.get(count[0]++);
+                return b & 0xff;//Взято из ByteArrayInputStream
             }
         });
     }

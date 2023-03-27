@@ -1,6 +1,7 @@
-package com.infomaximum.cluster.utils;
+package com.infomaximum.tests.items.utils;
 
 
+import com.infomaximum.cluster.utils.GlobalUniqueIdUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

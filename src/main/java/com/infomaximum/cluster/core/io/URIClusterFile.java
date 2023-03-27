@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 
 /**
  * Формат
- * cfile:com.infomaximum.cluster.component.manager:00000000-0000-0000-0000-00000000000/UUID
+ * cfile:uniqueId/UUID
  */
 public class URIClusterFile {
 
