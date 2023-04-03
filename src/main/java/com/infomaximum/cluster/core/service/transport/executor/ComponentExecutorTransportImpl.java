@@ -59,13 +59,18 @@ public class ComponentExecutorTransportImpl implements ComponentExecutorTranspor
         RController remoteController = getRemoteController(rControllerClassName);
         Method method = getMethod(remoteController, methodKey);
 
-        Class<?>[] parameterTypes = method.getParameterTypes();
-        Object[] args = new Object[byteArgs.length];
-        for (int i = 0; i < byteArgs.length; i++) {
-            Object arg = componentRemotePacker.deserialize(parameterTypes[i], byteArgs[i], uncaughtExceptionHandler);
-            args[i] = arg;
-        }
 
+        Object[] args;
+        if (byteArgs == null) {
+            args = null;
+        } else {
+            args = new Object[byteArgs.length];
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            for (int i = 0; i < byteArgs.length; i++) {
+                Object arg = componentRemotePacker.deserialize(parameterTypes[i], byteArgs[i], uncaughtExceptionHandler);
+                args[i] = arg;
+            }
+        }
 
         try {
             Object result = execute(remoteController, method, args);
@@ -101,7 +106,7 @@ public class ComponentExecutorTransportImpl implements ComponentExecutorTranspor
     private Object execute(RController remoteController, Method method, Object[] args) throws Exception {
         Object result;
         try {
-            result = method.invoke(remoteController, (Object[]) args);
+            result = method.invoke(remoteController, args);
         } catch (InvocationTargetException e) {
             Throwable targetException = e.getTargetException();
             if (targetException instanceof Exception) {

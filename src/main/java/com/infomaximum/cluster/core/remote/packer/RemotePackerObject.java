@@ -15,6 +15,9 @@ public class RemotePackerObject {
     }
 
     public byte[] serialize(Component component, Class classType, Object value) {
+        if (value == null) {
+            return new byte[0];
+        }
         for (RemotePacker remotePacker : remotePackers) {
             if (remotePacker.isSupport(classType)) {
                 byte[] result = remotePacker.serialize(component, value);
@@ -52,8 +55,8 @@ public class RemotePackerObject {
     }
 
     private void assertResultSerialize(byte[] result, Object value) {
-        if (result.length == 0) {
-            throw new IllegalArgumentException("Критическая ошибка! Value: " + value);
-        }
+//        if (result.length == 0) {
+//            throw new IllegalArgumentException("Критическая ошибка! Value: " + value);
+//        }
     }
 }
