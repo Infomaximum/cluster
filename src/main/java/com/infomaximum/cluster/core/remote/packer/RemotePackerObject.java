@@ -29,6 +29,9 @@ public class RemotePackerObject {
     }
 
     public Object deserialize(Component component, Class classType, byte[] value) {
+        if (value.length == 0) {
+            return null;
+        }
         for (RemotePacker remotePackerObject : remotePackers) {
             if (remotePackerObject.isSupport(classType))
                 return remotePackerObject.deserialize(component, classType, value);
