@@ -58,7 +58,7 @@ public class Remotes {
     public <T extends RController> boolean isController(String uuid, Class<T> remoteControllerClazz) {
         RuntimeComponentInfo runtimeComponentInfo = managerComponent.getRegisterComponent().find(uuid, remoteControllerClazz);
         if (runtimeComponentInfo == null) {
-            throw new RuntimeException("Not found remote component: " + uuid);
+            return false;
         }
         return runtimeComponentInfo.getClassNameRControllers().contains(remoteControllerClazz.getName());
     }
