@@ -9,7 +9,7 @@ if (project.hasProperty('ossrhUsername')) {
 }
 
 group 'com.infomaximum'
-version '1.1.7'
+version '1.1.7p1'
 
 ext.moduleName = 'com.infomaximum.cluster'
 

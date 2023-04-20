@@ -46,6 +46,10 @@ public abstract class Component {
         //Регистрируемся у менеджера подсистем
         registerComponent();
         log.info("Register {} ({})", getInfo().getUuid(), getUniqueId());
+        onInitialized();
+    }
+
+    public void onInitialized() {
     }
 
     protected Cluster getCluster() {
