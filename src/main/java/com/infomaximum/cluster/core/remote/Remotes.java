@@ -48,7 +48,7 @@ public class Remotes {
     }
 
     public <T extends RController> T get(String uuid, Class<T> remoteControllerClazz) {
-        RuntimeComponentInfo runtimeComponentInfo = managerComponent.getRegisterComponent().find(uuid, remoteControllerClazz);
+        RuntimeComponentInfo runtimeComponentInfo = managerComponent.getRegisterComponent().find(uuid);
         if (runtimeComponentInfo == null) {
             throw new RuntimeException("Not found: " + remoteControllerClazz.getName() + " in " + uuid);
         }
@@ -56,7 +56,7 @@ public class Remotes {
     }
 
     public <T extends RController> boolean isController(String uuid, Class<T> remoteControllerClazz) {
-        RuntimeComponentInfo runtimeComponentInfo = managerComponent.getRegisterComponent().find(uuid, remoteControllerClazz);
+        RuntimeComponentInfo runtimeComponentInfo = managerComponent.getRegisterComponent().find(uuid);
         if (runtimeComponentInfo == null) {
             return false;
         }

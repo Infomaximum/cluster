@@ -18,9 +18,9 @@ public class ComponentBuilder {
         return componentClass;
     }
 
-    protected Component build(Cluster cluster) throws ClusterException {
+    protected Component build() throws ClusterException {
         try {
-            return componentClass.getConstructor(Cluster.class).newInstance(cluster);
+            return componentClass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException ex) {
             throw new ClusterException(ex);
         }

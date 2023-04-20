@@ -15,7 +15,7 @@ public interface ManagerRuntimeComponent {
 
     RuntimeComponentInfo get(int uniqueId);
 
-    RuntimeComponentInfo find(String uuid, Class<? extends RController> remoteControllerClazz);
+    RuntimeComponentInfo find(String uuid);
 
     Collection<RuntimeComponentInfo> find(Class<? extends RController> remoteControllerClazz);
 

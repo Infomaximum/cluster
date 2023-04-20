@@ -78,8 +78,8 @@ public class ManagerRegisterComponents {
         return managerRuntimeComponent.get(uniqueId);
     }
 
-    public RuntimeComponentInfo find(String uuid, Class<? extends RController> remoteControllerClazz) {
-        return managerRuntimeComponent.find(uuid, remoteControllerClazz);
+    public RuntimeComponentInfo find(String uuid) {
+        return managerRuntimeComponent.find(uuid);
     }
 
     public Collection<RuntimeComponentInfo> find(Class<? extends RController> remoteControllerClazz) {

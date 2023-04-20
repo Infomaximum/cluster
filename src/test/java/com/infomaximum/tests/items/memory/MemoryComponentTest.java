@@ -23,17 +23,23 @@ public class MemoryComponentTest {
     @Test
     public void test1() throws Exception {
         try (Clusters clusters = new Clusters.Builder().build()) {
-            Cluster cluster1 = clusters.getCluster1();
+            for (int i = 0; i < 100; i++) {
+                Cluster cluster1 = clusters.getCluster1();
+                long t1 = System.currentTimeMillis();
+                ManagerComponent managerComponent = cluster1.getAnyLocalComponent(ManagerComponent.class);
+                long t2 = System.currentTimeMillis();
+                RControllerMemory rControllerMemory = managerComponent.getRemotes().get(MemoryComponent.class, RControllerMemory.class);
+                long t3 = System.currentTimeMillis();
+                String key = "ping";
+                String value = "pong";
+                rControllerMemory.set(key, value);
+                long t4 = System.currentTimeMillis();
+                Assertions.assertEquals(value, rControllerMemory.get(key));
+                long t5 = System.currentTimeMillis();
+                System.out.println("t2-t1=" + (t2 - t1) + ", t3-t2=" + (t3 - t2) + ", t4-t3=" + (t4 - t3) + ", t5-t4=" + (t5 - t4) + "all=" + (t5 - t1));
+                log.warn("t2-t1={}, t3-t2={}, t4-t3={}, t5-t4={}", t2 - t1, t3 - t2, t4 - t3, t5 - t4);
+            }
 
-            ManagerComponent managerComponent = cluster1.getAnyLocalComponent(ManagerComponent.class);
-            RControllerMemory rControllerMemory = managerComponent.getRemotes().get(MemoryComponent.class, RControllerMemory.class);
-
-            String key = "ping";
-            String value = "pong";
-
-            rControllerMemory.set(key, value);
-
-            Assertions.assertEquals(value, rControllerMemory.get(key));
         }
     }
 

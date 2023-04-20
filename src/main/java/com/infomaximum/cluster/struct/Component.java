@@ -19,27 +19,19 @@ public abstract class Component {
 
     private final static Logger log = LoggerFactory.getLogger(Component.class);
 
-    protected static final int COMPONENT_UNIQUE_ID_NOT_INIT = -1;
-
     private final Info info;
-    protected final Cluster cluster;
+    private Cluster cluster;
     private TransportManager transportManager;
-    private int uniqueId = COMPONENT_UNIQUE_ID_NOT_INIT;
+    private RegistrationState registrationState;
     private LocalTransport transport;
     private Remotes remote;
 
-    public Component(Cluster cluster) {
+    public Component() {
         this.info = createInfoBuilder().build();
-        this.cluster = cluster;
     }
 
-    protected Component(Cluster cluster, int uniqueId) {
-        this.info = createInfoBuilder().build();
+    public void init(Cluster cluster, TransportManager transportManager) {
         this.cluster = cluster;
-        this.uniqueId = uniqueId;
-    }
-
-    public void init(TransportManager transportManager) {
         this.transportManager = transportManager;
         this.transport = transportManager.createTransport(this);
         this.remote = new Remotes(cluster, this);
@@ -54,6 +46,10 @@ public abstract class Component {
         //Регистрируемся у менеджера подсистем
         registerComponent();
         log.info("Register {} ({})", getInfo().getUuid(), getUniqueId());
+    }
+
+    protected Cluster getCluster() {
+        return cluster;
     }
 
     //Точка переопределения билдера info
@@ -75,20 +71,19 @@ public abstract class Component {
                 ManagerComponent.getComponentUniqueIdManager(cluster.node),
                 RControllerManagerComponent.class
         );
-        RegistrationState registrationState = rControllerManagerComponent.register(
+        this.registrationState = rControllerManagerComponent.register(
                 new RuntimeComponentInfo(
                         cluster.node,
                         getInfo().getUuid(), isSingleton(),
                         getTransport().getExecutor().getClassRControllers()
                 )
         );
-        uniqueId = registrationState.uniqueId;
         transportManager.registerTransport(transport);
     }
 
     //Снимаем регистрацию у менджера подсистем
     protected void unregisterComponent() {
-        remote.getFromCKey(ManagerComponent.getComponentUniqueIdManager(cluster.node), RControllerManagerComponent.class).unregister(uniqueId);
+        remote.getFromCKey(ManagerComponent.getComponentUniqueIdManager(cluster.node), RControllerManagerComponent.class).unregister(getUniqueId());
     }
 
     public LocalTransport getTransport() {
@@ -96,7 +91,7 @@ public abstract class Component {
     }
 
     public int getUniqueId() {
-        return uniqueId;
+        return registrationState.uniqueId;
     }
 
     public boolean isSingleton() {

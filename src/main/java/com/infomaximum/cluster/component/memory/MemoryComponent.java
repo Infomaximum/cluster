@@ -1,6 +1,5 @@
 package com.infomaximum.cluster.component.memory;
 
-import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.anotation.Info;
 import com.infomaximum.cluster.component.memory.core.MemoryEngine;
 import com.infomaximum.cluster.struct.Component;
@@ -13,8 +12,7 @@ public class MemoryComponent extends Component {
 
     private MemoryEngine memoryEngine;
 
-    public MemoryComponent(Cluster cluster) {
-        super(cluster);
+    public MemoryComponent() {
         this.memoryEngine = new MemoryEngine(this);
     }
 

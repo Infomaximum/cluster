@@ -19,17 +19,21 @@ public class ManagerComponent extends Component {
 
     private ManagerRegisterComponents registerComponent;
 
-    public ManagerComponent(Cluster cluster) {
-        super(cluster, getComponentUniqueIdManager(cluster.node));
-    }
+//    public ManagerComponent(Cluster cluster) {
+//        super(cluster, getComponentUniqueIdManager(cluster.node));
+//    }
 
     @Override
-    public void init(TransportManager transportManager) {
-        super.init(transportManager);
+    public void init(Cluster cluster, TransportManager transportManager) {
+        super.init(cluster, transportManager);
         registerComponent = new ManagerRegisterComponents(this);
 
         //Регистрируем себя
         transportManager.registerTransport(getTransport());
+    }
+
+    public int getUniqueId() {
+        return getComponentUniqueIdManager(getCluster().node);
     }
 
     //Переопределяем - логика регистрации у менеджера подсистем не стандартная

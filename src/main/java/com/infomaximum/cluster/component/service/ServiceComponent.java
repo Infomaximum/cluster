@@ -1,6 +1,5 @@
 package com.infomaximum.cluster.component.service;
 
-import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.anotation.Info;
 import com.infomaximum.cluster.component.service.internal.service.ClusterInputStreamService;
 import com.infomaximum.cluster.struct.Component;
@@ -10,8 +9,7 @@ public class ServiceComponent extends Component {
 
     public final ClusterInputStreamService clusterInputStreamService;
 
-    public ServiceComponent(Cluster cluster) {
-        super(cluster);
+    public ServiceComponent() {
 
         this.clusterInputStreamService = new ClusterInputStreamService();
     }

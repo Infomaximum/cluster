@@ -65,7 +65,7 @@ public class Cluster implements AutoCloseable {
     }
 
     private void appendComponent(Component component) throws ClusterException {
-        component.init(transportManager);
+        component.init(this, transportManager);
 
         List<Component> componentInstances = components.get(component.getClass());
         if (componentInstances == null) {
@@ -165,7 +165,7 @@ public class Cluster implements AutoCloseable {
 
         private NetworkTransit.Builder builderNetworkTransit;
 
-        private List<ComponentBuilder> componentBuilders = new ArrayList<>();
+        private final List<Component> components;
 
         private Object context;
 
@@ -184,6 +184,9 @@ public class Cluster implements AutoCloseable {
 
             this.builderNetworkTransit = new LocalNetworkTransit.Builder();
 
+            this.components = new ArrayList<>();
+            this.components.add(new ManagerComponent());
+
             this.exceptionBuilder = new ExceptionBuilder();
         }
 
@@ -197,17 +200,25 @@ public class Cluster implements AutoCloseable {
             return this;
         }
 
+        public Builder withComponent(Component component) {
+            if (containsComponent(component)) {
+                throw new RuntimeException(component.getClass() + " already exists.");
+            }
+            components.add(component);
+            return this;
+        }
+
         public Builder withComponent(ComponentBuilder componentBuilder) {
             if (containsComponent(componentBuilder)) {
                 throw new RuntimeException(componentBuilder.getComponentClass() + " already exists.");
             }
-            componentBuilders.add(componentBuilder);
+            components.add(componentBuilder.build());
             return this;
         }
 
         public Builder withComponentIfNotExist(ComponentBuilder componentBuilder) {
             if (!containsComponent(componentBuilder)) {
-                componentBuilders.add(componentBuilder);
+                withComponent(componentBuilder);
             }
             return this;
         }
@@ -228,14 +239,10 @@ public class Cluster implements AutoCloseable {
             try {
                 cluster = new Cluster(this);
 
-                List<Component> components = new ArrayList<>(componentBuilders.size() + 1);
-
-                //TODO необходима правильная инициализация менеджера, в настоящий момент считаем, что приложение у нас одно поэтому инициализируем его прямо тут
-                components.add(new ManagerComponent(cluster));
-                for (ComponentBuilder builder : componentBuilders) {
-                    components.add(builder.build(cluster));
-                }
-                appendNotExistenceDependencies(cluster, components);
+//                List<Component> clusterComponents = new ArrayList<>(components.size() + 1);
+//                clusterComponents.add(new ManagerComponent());
+//                clusterComponents.addAll(components);
+//                appendNotExistenceDependencies(cluster, components);
 
                 while (!components.isEmpty()) {
                     Component nextComponent = null;
@@ -270,20 +277,24 @@ public class Cluster implements AutoCloseable {
             return cluster;
         }
 
-        private static void appendNotExistenceDependencies(Cluster cluster, List<Component> source) throws ClusterException {
-            Set<Class> componentClasses = source.stream().map(Component::getClass).collect(Collectors.toSet());
-            for (int i = 0; i < source.size(); ++i) {
-                for (Class dependence : source.get(i).getInfo().getDependencies()) {
-                    if (!componentClasses.contains(dependence)) {
-                        source.add(new ComponentBuilder(dependence).build(cluster));
-                        componentClasses.add(dependence);
-                    }
-                }
-            }
-        }
+//        private static void appendNotExistenceDependencies(Cluster cluster, List<Component> source) throws ClusterException {
+//            Set<Class> componentClasses = source.stream().map(Component::getClass).collect(Collectors.toSet());
+//            for (int i = 0; i < source.size(); ++i) {
+//                for (Class dependence : source.get(i).getInfo().getDependencies()) {
+//                    if (!componentClasses.contains(dependence)) {
+//                        source.add(new ComponentBuilder(dependence).build(cluster));
+//                        componentClasses.add(dependence);
+//                    }
+//                }
+//            }
+//        }
 
         private boolean containsComponent(ComponentBuilder builder) {
-            return componentBuilders.stream().anyMatch(cb -> cb.getComponentClass() == builder.getComponentClass());
+            return components.stream().anyMatch(cb -> cb.getClass() == builder.getComponentClass());
+        }
+
+        private boolean containsComponent(Component component) {
+            return components.stream().anyMatch(cb -> cb.getClass() == component.getClass());
         }
     }
 }

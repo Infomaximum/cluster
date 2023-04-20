@@ -34,22 +34,6 @@ public class ClusterTest {
     }
 
     @Test
-    public void implicitCreateComponent() throws Exception {
-        try (Cluster cluster = new Cluster.Builder(uncaughtExceptionHandler)
-                .withComponent(new ComponentBuilder(Component3.class))
-                .build()) {
-
-            List<Component> components = cluster.getDependencyOrderedComponentsOf(Component.class);
-
-            Assertions.assertEquals(ManagerComponent.class, components.remove(0).getClass());
-            Assertions.assertEquals(MemoryComponent.class, components.remove(0).getClass());
-            Assertions.assertEquals(Component3.class, components.remove(0).getClass());
-
-            Assertions.assertEquals(0, components.size());
-        }
-    }
-
-    @Test
     public void componentAlreadyExists() throws Exception {
         try (Cluster cluster = new Cluster.Builder(uncaughtExceptionHandler)
                 .withComponent(new ComponentBuilder(MemoryComponent.class))
@@ -63,7 +47,6 @@ public class ClusterTest {
                 return;
             }
         }
-
         Assertions.fail();
     }
 
@@ -156,11 +139,6 @@ public class ClusterTest {
     }
 
     public static abstract class BaseComponent extends Component {
-
-        public BaseComponent(Cluster cluster) {
-            super(cluster);
-        }
-
     }
 
     @Info(
@@ -168,10 +146,6 @@ public class ClusterTest {
             dependencies = {Component2.class}
     )
     public static class Component1 extends BaseComponent {
-
-        public Component1(Cluster cluster) {
-            super(cluster);
-        }
 
         @Override
         public boolean isSingleton() {
@@ -184,10 +158,6 @@ public class ClusterTest {
             dependencies = {Component3.class}
     )
     public static class Component2 extends BaseComponent {
-
-        public Component2(Cluster cluster) {
-            super(cluster);
-        }
 
         @Override
         public boolean isSingleton() {
@@ -202,10 +172,6 @@ public class ClusterTest {
     )
     public static class Component3 extends BaseComponent {
 
-        public Component3(Cluster cluster) {
-            super(cluster);
-        }
-
         @Override
         public boolean isSingleton() {
             return false;
@@ -218,11 +184,6 @@ public class ClusterTest {
             dependencies = {Custom1Component.class, CyclicComponent1.class}
     )
     public static class CyclicComponent1 extends Component {
-
-        public CyclicComponent1(Cluster cluster) {
-            super(cluster);
-        }
-
     }
 
     @Info(
@@ -230,10 +191,5 @@ public class ClusterTest {
             dependencies = {CyclicComponent2.class, CyclicComponent1.class}
     )
     public static class CyclicComponent2 extends Component {
-
-        public CyclicComponent2(Cluster cluster) {
-            super(cluster);
-        }
-
     }
 }
