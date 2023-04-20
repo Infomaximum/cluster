@@ -34,6 +34,22 @@ public class ClusterTest {
     }
 
     @Test
+    public void implicitCreateComponent() throws Exception {
+        try (Cluster cluster = new Cluster.Builder(uncaughtExceptionHandler)
+                .withComponent(new ComponentBuilder(Component3.class))
+                .build()) {
+
+            List<Component> components = cluster.getDependencyOrderedComponentsOf(Component.class);
+
+            Assertions.assertEquals(ManagerComponent.class, components.remove(0).getClass());
+            Assertions.assertEquals(MemoryComponent.class, components.remove(0).getClass());
+            Assertions.assertEquals(Component3.class, components.remove(0).getClass());
+
+            Assertions.assertEquals(0, components.size());
+        }
+    }
+
+    @Test
     public void componentAlreadyExists() throws Exception {
         try (Cluster cluster = new Cluster.Builder(uncaughtExceptionHandler)
                 .withComponent(new ComponentBuilder(MemoryComponent.class))
