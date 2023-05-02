@@ -6,6 +6,7 @@ import com.infomaximum.cluster.struct.Component;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 
 /**
  * Created by user on 06.09.2017.
@@ -40,7 +41,7 @@ public class RemotePackerSerializable implements RemotePacker<Serializable> {
         try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(value))) {
             return (Serializable) ois.readObject();
         } catch (Exception e) {
-            throw new ClusterRemotePackerException(e);
+            throw new ClusterRemotePackerException("Exception deserialize, classType: " + classType + ", value: " + Arrays.toString(value), e);
         }
     }
 }

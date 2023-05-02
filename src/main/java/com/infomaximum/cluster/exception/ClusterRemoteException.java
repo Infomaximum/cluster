@@ -5,7 +5,12 @@ package com.infomaximum.cluster.exception;
  */
 public class ClusterRemoteException extends ClusterException {
 
-    public ClusterRemoteException() {}
+    public ClusterRemoteException() {
+    }
+
+    public ClusterRemoteException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
     public ClusterRemoteException(Throwable cause) {
         super(cause);
