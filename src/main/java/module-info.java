@@ -11,6 +11,7 @@ module com.infomaximum.cluster {
     exports com.infomaximum.cluster.component.memory;
     exports com.infomaximum.cluster.component.memory.remote;
     exports com.infomaximum.cluster.component.memory.struct;
+    exports com.infomaximum.cluster.component.service;
     exports com.infomaximum.cluster.core.component;
     exports com.infomaximum.cluster.core.io;
     exports com.infomaximum.cluster.core.remote;
