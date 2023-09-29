@@ -136,26 +136,32 @@ public class RemotePackerClusterInputStream implements RemotePacker<ClusterInput
         }
 
         @Override
-        public int read() {
-            int index = cursor + offset;
-            if (index >= data.length) {
-                if (index < batchSize) {
-                    return -1;//Закончились данные
-                }
-                this.data = controllerInputStream.next(id, length);
-                this.offset = 0;
-                this.length = data.length;
-                if (length == 0) {
-                    return -1;//Закончились данные
-                }
+        public int read() throws IOException {
+            try {
+                int index = cursor + offset;
+                if (index >= data.length) {
+                    if (index < batchSize) {
+                        return -1;//Закончились данные
+                    }
+                    this.data = controllerInputStream.next(id, length);
+                    this.offset = 0;
+                    this.length = data.length;
+                    if (length == 0) {
+                        return -1;//Закончились данные
+                    }
 
-                this.cursor = 0;
-                index = cursor + offset;
+                    this.cursor = 0;
+                    index = cursor + offset;
+                }
+                cursor++;
+
+                byte b = data[index];
+                return b & 0xff;//Взято из ByteArrayInputStream;
+            } catch (IOException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new IOException(e);
             }
-            cursor++;
-
-            byte b = data[index];
-            return b & 0xff;//Взято из ByteArrayInputStream;
         }
     }
 }

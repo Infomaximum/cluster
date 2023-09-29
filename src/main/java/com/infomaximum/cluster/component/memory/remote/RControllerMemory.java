@@ -11,16 +11,16 @@ import java.util.HashMap;
  */
 public interface RControllerMemory extends RController {
 
-	Serializable get(String key);
+	Serializable get(String key) throws Exception;
 
-	void set(String key, Serializable value);
+    void set(String key, Serializable value) throws Exception;
 
-	void clear(String key);
+    void clear(String key) throws Exception;
 
 
-    HashMap<String, Serializable> gets(String... keys);
+    HashMap<String, Serializable> gets(String... keys) throws Exception;
 
-    void sets(HashMap<String, Serializable> values);
+    void sets(HashMap<String, Serializable> values) throws Exception;
 
-    void clears(ArrayList<String> keys);
+    void clears(ArrayList<String> keys) throws Exception;
 }

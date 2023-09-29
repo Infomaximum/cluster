@@ -19,10 +19,6 @@ public class ManagerComponent extends Component {
 
     private ManagerRegisterComponents registerComponent;
 
-//    public ManagerComponent(Cluster cluster) {
-//        super(cluster, getComponentUniqueIdManager(cluster.node));
-//    }
-
     @Override
     public void init(Cluster cluster, TransportManager transportManager) {
         super.init(cluster, transportManager);

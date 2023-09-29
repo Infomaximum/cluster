@@ -6,10 +6,7 @@ import com.infomaximum.cluster.core.remote.packer.impl.*;
 import com.infomaximum.cluster.core.service.componentuuid.ComponentUuidManager;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.network.local.LocalNetworkTransit;
-import com.infomaximum.cluster.exception.ClusterDependencyCycleException;
-import com.infomaximum.cluster.exception.ClusterDependencyException;
-import com.infomaximum.cluster.exception.ClusterException;
-import com.infomaximum.cluster.exception.ExceptionBuilder;
+import com.infomaximum.cluster.exception.*;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.RandomUtil;
 import org.slf4j.Logger;
@@ -187,7 +184,7 @@ public class Cluster implements AutoCloseable {
             this.components = new ArrayList<>();
             this.components.add(new ManagerComponent());
 
-            this.exceptionBuilder = new ExceptionBuilder();
+            this.exceptionBuilder = new ExceptionBuilderImpl();
         }
 
         public Builder withNetworkTransport(NetworkTransit.Builder builderNetworkTransit) {

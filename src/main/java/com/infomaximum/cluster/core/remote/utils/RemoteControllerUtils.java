@@ -1,6 +1,7 @@
 package com.infomaximum.cluster.core.remote.utils;
 
 import com.infomaximum.cluster.core.remote.ComponentRemotePacker;
+import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.struct.Component;
 
 import java.lang.reflect.*;
@@ -8,17 +9,20 @@ import java.lang.reflect.*;
 public class RemoteControllerUtils {
 
     public static void validationRemoteMethod(Component component, Class remoteControllerClazz, Method method) {
-        //Валидируем return type
+        //Validation return type
         if (!validationType(component, method.getGenericReturnType())) {
             throw new RuntimeException("Not valid return type: " + method.getGenericReturnType() + " in remote method: " + method.getName() + ", in controller: " + remoteControllerClazz);
         }
 
-        //Валидируем аргументы
+        //Validation arguments
         for (Type genericType : method.getGenericParameterTypes()) {
             if (!validationType(component, genericType)) {
                 throw new RuntimeException("Not valid argument: " + genericType + " remote method: " + method.getName() + ", in controller: " + remoteControllerClazz);
             }
         }
+
+        //Validation support exception
+        validationSupportException(component, method);
     }
 
     public static boolean validationType(Component component, Type type) {
@@ -65,4 +69,18 @@ public class RemoteControllerUtils {
         return true;
     }
 
+    public static void validationSupportException(Component component, Method method) {
+        Class declaringClass = method.getDeclaringClass();
+        if (declaringClass == RController.class) {
+            return;
+        }
+
+        Class checkedTypeException = component.getTransport().getCluster().getExceptionBuilder().getTypeException();
+        for (Class typeException : method.getExceptionTypes()) {
+            if (typeException.isAssignableFrom(checkedTypeException)) {
+                return;
+            }
+        }
+        throw new RuntimeException("The method: " + method.getName() + ", in controller: " + method.getDeclaringClass().getName() + " does not throw an exception: " + checkedTypeException.getName());
+    }
 }

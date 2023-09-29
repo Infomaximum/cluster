@@ -7,6 +7,6 @@ import com.infomaximum.cluster.core.remote.struct.RController;
  */
 public interface RControllerInputStream extends RController {
 
-	byte[] next(int id, int limit);
+	byte[] next(int id, int limit) throws Exception;
 
 }

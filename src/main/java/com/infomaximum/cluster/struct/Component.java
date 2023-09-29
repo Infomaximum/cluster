@@ -2,7 +2,6 @@ package com.infomaximum.cluster.struct;
 
 import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
-import com.infomaximum.cluster.component.manager.remote.managersubsystem.RControllerManagerComponent;
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.Remotes;
 import com.infomaximum.cluster.core.service.transport.LocalTransport;
@@ -75,11 +74,8 @@ public abstract class Component {
 
     //Регистрируемся у менджера подсистем
     protected void registerComponent() {
-        RControllerManagerComponent rControllerManagerComponent = remote.getFromCKey(
-                ManagerComponent.getComponentUniqueIdManager(cluster.node),
-                RControllerManagerComponent.class
-        );
-        this.registrationState = rControllerManagerComponent.register(
+        ManagerComponent managerComponent = cluster.getAnyLocalComponent(ManagerComponent.class);
+        this.registrationState = managerComponent.getRegisterComponent().registerActiveComponent(
                 new RuntimeComponentInfo(
                         cluster.node,
                         getInfo().getUuid(), isSingleton(),
@@ -91,7 +87,8 @@ public abstract class Component {
 
     //Снимаем регистрацию у менджера подсистем
     protected void unregisterComponent() {
-        remote.getFromCKey(ManagerComponent.getComponentUniqueIdManager(cluster.node), RControllerManagerComponent.class).unregister(getUniqueId());
+        ManagerComponent managerComponent = cluster.getAnyLocalComponent(ManagerComponent.class);
+        managerComponent.getRegisterComponent().unRegisterActiveComponent(getUniqueId());
     }
 
     public LocalTransport getTransport() {
