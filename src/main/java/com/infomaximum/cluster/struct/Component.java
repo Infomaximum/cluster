@@ -40,7 +40,10 @@ public abstract class Component {
             transport.setExecutor(getExecutorTransportBuilder().build());
         } catch (ClusterException e) {
             log.error("Error set transport executor", e);
-            transportManager.destroyTransport(transport);
+            try {
+                transportManager.destroyTransport(transport);
+            } catch (Exception ignore) {
+            }
             throw e;
         }
 

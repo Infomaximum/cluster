@@ -2,9 +2,9 @@ package com.infomaximum.cluster.exception;
 
 import java.util.List;
 
-public class clusterDependencyCycleException extends ClusterException {
+public class ClusterDependencyCycleException extends ClusterException {
 
-    public clusterDependencyCycleException(List<String> classNames) {
+    public ClusterDependencyCycleException(List<String> classNames) {
         super("Cyclic dependence in [" + String.join(", ", classNames) + "].");
     }
 }

@@ -6,10 +6,10 @@ import com.infomaximum.cluster.core.remote.packer.impl.*;
 import com.infomaximum.cluster.core.service.componentuuid.ComponentUuidManager;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.network.local.LocalNetworkTransit;
+import com.infomaximum.cluster.exception.ClusterDependencyCycleException;
 import com.infomaximum.cluster.exception.ClusterDependencyException;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.exception.ExceptionBuilder;
-import com.infomaximum.cluster.exception.clusterDependencyCycleException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.RandomUtil;
 import org.slf4j.Logger;
@@ -261,7 +261,7 @@ public class Cluster implements AutoCloseable {
                     }
 
                     if (nextComponent == null) {
-                        throw new clusterDependencyCycleException(components.stream().map(cb -> cb.getClass().getName()).collect(Collectors.toList()));
+                        throw new ClusterDependencyCycleException(components.stream().map(cb -> cb.getClass().getName()).collect(Collectors.toList()));
                     }
 
                     cluster.appendComponent(nextComponent);

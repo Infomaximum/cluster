@@ -6,8 +6,8 @@ import com.infomaximum.cluster.anotation.Info;
 import com.infomaximum.cluster.component.custom1.Custom1Component;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.component.memory.MemoryComponent;
+import com.infomaximum.cluster.exception.ClusterDependencyCycleException;
 import com.infomaximum.cluster.exception.ClusterDependencyException;
-import com.infomaximum.cluster.exception.clusterDependencyCycleException;
 import com.infomaximum.cluster.struct.Component;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -73,7 +73,7 @@ public class ClusterTest {
                 .withComponent(new ComponentBuilder(CyclicComponent2.class))
                 .build()) {
             Assertions.fail();
-        } catch (clusterDependencyCycleException ex) {
+        } catch (ClusterDependencyCycleException ex) {
             Assertions.assertTrue(true);
         }
 
@@ -81,7 +81,7 @@ public class ClusterTest {
                 .withComponent(new ComponentBuilder(CyclicComponent1.class))
                 .build()) {
             Assertions.fail();
-        } catch (clusterDependencyCycleException ex) {
+        } catch (ClusterDependencyCycleException ex) {
             Assertions.assertTrue(true);
         }
     }
