@@ -2,14 +2,15 @@ package com.infomaximum.cluster.core.remote;
 
 import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
-import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.struct.RController;
+import com.infomaximum.cluster.core.service.transport.network.LocationRuntimeComponent;
 import com.infomaximum.cluster.struct.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Proxy;
 import java.util.Collection;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -37,30 +38,30 @@ public class Remotes {
         return componentRemotePacker;
     }
 
-    public <T extends RController> T getFromCKey(int componentUniqueId, Class<T> remoteControllerClazz) {
+    public <T extends RController> T getFromCKey(UUID nodeRuntimeId, int componentId, Class<T> remoteControllerClazz) {
         //Кешировать proxy remoteController нельзя т.к. Proxy.newProxyInstance может вернуться переиспользуемый объект в котором _properties уже заполнен и мы иего перезатрем
         RController remoteController = (RController) Proxy.newProxyInstance(
                 remoteControllerClazz.getClassLoader(), new Class[]{remoteControllerClazz},
-                new RemoteControllerInvocationHandler(component, componentUniqueId, remoteControllerClazz)
+                new RemoteControllerInvocationHandler(component, nodeRuntimeId, componentId, remoteControllerClazz)
         );
 
         return (T) remoteController;
     }
 
     public <T extends RController> T get(String uuid, Class<T> remoteControllerClazz) {
-        RuntimeComponentInfo runtimeComponentInfo = managerComponent.getRegisterComponent().find(uuid);
-        if (runtimeComponentInfo == null) {
+        LocationRuntimeComponent runtimeComponent = managerComponent.getRegisterComponent().find(uuid);
+        if (runtimeComponent == null) {
             throw new RuntimeException("Not found: " + remoteControllerClazz.getName() + " in " + uuid);
         }
-        return getFromCKey(runtimeComponentInfo.uniqueId, remoteControllerClazz);
+        return getFromCKey(runtimeComponent.node(), runtimeComponent.component().id, remoteControllerClazz);
     }
 
     public <T extends RController> boolean isController(String uuid, Class<T> remoteControllerClazz) {
-        RuntimeComponentInfo runtimeComponentInfo = managerComponent.getRegisterComponent().find(uuid);
-        if (runtimeComponentInfo == null) {
+        LocationRuntimeComponent runtimeComponent = managerComponent.getRegisterComponent().find(uuid);
+        if (runtimeComponent == null) {
             return false;
         }
-        return runtimeComponentInfo.getClassNameRControllers().contains(remoteControllerClazz.getName());
+        return runtimeComponent.component().getClassNameRControllers().contains(remoteControllerClazz.getName());
     }
 
 
@@ -79,7 +80,7 @@ public class Remotes {
 
     public <T extends RController> Collection<T> getControllers(Class<T> remoteClassController) {
         return managerComponent.getRegisterComponent().find(remoteClassController).stream()
-                .map(runtimeComponentInfo -> getFromCKey(runtimeComponentInfo.uniqueId, remoteClassController))
+                .map(runtimeComponent -> getFromCKey(runtimeComponent.node(), runtimeComponent.component().id, remoteClassController))
                 .collect(Collectors.toList());
     }
 }

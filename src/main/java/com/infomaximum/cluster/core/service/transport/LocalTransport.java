@@ -8,6 +8,7 @@ import com.infomaximum.cluster.core.service.transport.executor.ComponentExecutor
 import com.infomaximum.cluster.struct.Component;
 
 import java.lang.reflect.Method;
+import java.util.UUID;
 
 /**
  * Created by kris on 14.09.16.
@@ -48,7 +49,7 @@ public class LocalTransport {
         return transportManager.getRemotePackerObject();
     }
 
-    public Object request(int targetComponentUniqueId, Class<? extends RController> rControllerClass, Method method, Object[] args) throws Throwable {
-        return transportManager.request(component, targetComponentUniqueId, rControllerClass, method, args);
+    public Object request(UUID targetNodeRuntimeId, int targetComponentId, Class<? extends RController> rControllerClass, Method method, Object[] args) throws Throwable {
+        return transportManager.request(component, targetNodeRuntimeId, targetComponentId, rControllerClass, method, args);
     }
 }

@@ -5,7 +5,6 @@ import com.infomaximum.cluster.core.remote.ComponentRemotePacker;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
-import com.infomaximum.cluster.utils.GlobalUniqueIdUtils;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +83,7 @@ public class ComponentExecutorTransportImpl implements ComponentExecutorTranspor
         RController remoteController = hashRemoteController.get(rControllerClassName);
         if (remoteController == null) {
             throw component.getRemotes().cluster.getExceptionBuilder().buildMismatchRemoteApiNotFoundControllerException(
-                    GlobalUniqueIdUtils.getNode(component.getUniqueId()), component.getUniqueId(),
+                    component.getTransport().getNetworkTransit().getNode().getRuntimeId(), component.getId(),
                     rControllerClassName
             );
         } else {
@@ -96,7 +95,7 @@ public class ComponentExecutorTransportImpl implements ComponentExecutorTranspor
         Method method = ((AbstractRController) remoteController).getRemoteMethod(methodKey);
         if (method == null) {
             throw component.getRemotes().cluster.getExceptionBuilder().buildMismatchRemoteApiNotFoundMethodException(
-                    GlobalUniqueIdUtils.getNode(component.getUniqueId()), component.getUniqueId(),
+                    component.getTransport().getNetworkTransit().getNode().getRuntimeId(), component.getId(),
                     remoteController.getClass().getName(), methodKey
             );
         }

@@ -162,11 +162,6 @@ public class ClusterTest {
             dependencies = {Component2.class}
     )
     public static class Component1 extends BaseComponent {
-
-        @Override
-        public boolean isSingleton() {
-            return false;
-        }
     }
 
     @Info(
@@ -174,12 +169,6 @@ public class ClusterTest {
             dependencies = {Component3.class}
     )
     public static class Component2 extends BaseComponent {
-
-        @Override
-        public boolean isSingleton() {
-            return false;
-        }
-
     }
 
     @Info(
@@ -187,12 +176,6 @@ public class ClusterTest {
             dependencies = {MemoryComponent.class}
     )
     public static class Component3 extends BaseComponent {
-
-        @Override
-        public boolean isSingleton() {
-            return false;
-        }
-
     }
 
     @Info(

@@ -15,12 +15,12 @@ import java.nio.file.Path;
 
 public class ClusterFileProviderRemoteImpl implements ClusterFileProvider {
 
-    private final URI uri;
+    private final URIClusterFile clusterFile;
     private final RControllerClusterFile controllerClusterFile;
 
     public ClusterFileProviderRemoteImpl(Component component, URI uri) {
-        this.uri = uri;
-        controllerClusterFile = component.getRemotes().getFromCKey(URIClusterFile.getPathToComponentUniqueId(uri), RControllerClusterFile.class);
+        this.clusterFile = URIClusterFile.build(uri);
+        controllerClusterFile = component.getRemotes().getFromCKey(clusterFile.nodeRuntimeId, clusterFile.componentId, RControllerClusterFile.class);
     }
 
     @Override
@@ -30,14 +30,14 @@ public class ClusterFileProviderRemoteImpl implements ClusterFileProvider {
 
     @Override
     public void copyTo(Path file, CopyOption... options) throws IOException {
-        try (InputStream inputStream = controllerClusterFile.getInputStream(URIClusterFile.getPathToFileUUID(uri))) {
+        try (InputStream inputStream = controllerClusterFile.getInputStream(clusterFile.fileUUID)) {
             Files.copy(inputStream, file, options);
         }
     }
 
     @Override
     public void copyTo(OutputStream target) throws IOException {
-        try (InputStream inputStream = controllerClusterFile.getInputStream(URIClusterFile.getPathToFileUUID(uri))) {
+        try (InputStream inputStream = controllerClusterFile.getInputStream(clusterFile.fileUUID)) {
             byte[] buf = new byte[8192];
             int n;
             while ((n = inputStream.read(buf)) > 0) {
@@ -48,12 +48,12 @@ public class ClusterFileProviderRemoteImpl implements ClusterFileProvider {
 
     @Override
     public void delete() throws IOException {
-        controllerClusterFile.delete(URIClusterFile.getPathToFileUUID(uri));
+        controllerClusterFile.delete(clusterFile.fileUUID);
     }
 
     @Override
     public void deleteIfExists() throws IOException {
-        controllerClusterFile.deleteIfExists(URIClusterFile.getPathToFileUUID(uri));
+        controllerClusterFile.deleteIfExists(clusterFile.fileUUID);
     }
 
     @Override
@@ -64,13 +64,13 @@ public class ClusterFileProviderRemoteImpl implements ClusterFileProvider {
 
     @Override
     public long getSize() throws IOException {
-        return controllerClusterFile.getSize(URIClusterFile.getPathToFileUUID(uri));
+        return controllerClusterFile.getSize(clusterFile.fileUUID);
     }
 
     @Override
     public byte[] getContent() throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        try (InputStream inputStream = controllerClusterFile.getInputStream(URIClusterFile.getPathToFileUUID(uri))) {
+        try (InputStream inputStream = controllerClusterFile.getInputStream(clusterFile.fileUUID)) {
             int nRead;
             byte[] data = new byte[2048];
             while ((nRead = inputStream.read(data, 0, data.length)) != -1) {

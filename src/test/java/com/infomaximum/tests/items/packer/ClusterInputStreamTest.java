@@ -27,7 +27,8 @@ public class ClusterInputStreamTest {
             ManagerComponent managerComponent = cluster1.getAnyLocalComponent(ManagerComponent.class);
 
             RControllerClusterInputStream controllerClusterInputStream = managerComponent.getRemotes().getFromCKey(
-                    cluster2.getAnyLocalComponent(Custom1Component.class).getUniqueId(),
+                    cluster2.node.getRuntimeId(),
+                    cluster2.getAnyLocalComponent(Custom1Component.class).getId(),
                     RControllerClusterInputStream.class
             );
 

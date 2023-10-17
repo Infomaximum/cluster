@@ -48,7 +48,7 @@ public abstract class Component {
 
         //Регистрируемся у менеджера подсистем
         registerComponent();
-        log.info("Register {} ({})", getInfo().getUuid(), getUniqueId());
+        log.info("Register {} ({})", getInfo().getUuid(), getId());
         onInitialized();
     }
 
@@ -77,8 +77,7 @@ public abstract class Component {
         ManagerComponent managerComponent = cluster.getAnyLocalComponent(ManagerComponent.class);
         this.registrationState = managerComponent.getRegisterComponent().registerActiveComponent(
                 new RuntimeComponentInfo(
-                        cluster.node,
-                        getInfo().getUuid(), isSingleton(),
+                        getInfo().getUuid(),
                         getTransport().getExecutor().getClassRControllers()
                 )
         );
@@ -88,19 +87,15 @@ public abstract class Component {
     //Снимаем регистрацию у менджера подсистем
     protected void unregisterComponent() {
         ManagerComponent managerComponent = cluster.getAnyLocalComponent(ManagerComponent.class);
-        managerComponent.getRegisterComponent().unRegisterActiveComponent(getUniqueId());
+        managerComponent.getRegisterComponent().unRegisterActiveComponent(getId());
     }
 
     public LocalTransport getTransport() {
         return transport;
     }
 
-    public int getUniqueId() {
-        return registrationState.uniqueId;
-    }
-
-    public boolean isSingleton() {
-        return true;
+    public int getId() {
+        return registrationState.id;
     }
 
     public Remotes getRemotes() {

@@ -10,7 +10,7 @@ public interface RControllerNotification extends RController {
 
 	void notificationRegisterComponent(RuntimeComponentInfo componentInfo);
 
-    void notificationUnRegisterComponent(int uniqueId);
+    void notificationUnRegisterComponent(int id);
 }
 
 

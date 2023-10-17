@@ -1,31 +1,32 @@
 package com.infomaximum.cluster.core.remote;
 
-import com.infomaximum.cluster.component.manager.ManagerComponent;
-import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.struct.RController;
+import com.infomaximum.cluster.core.service.transport.network.LocationRuntimeComponent;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.struct.Component;
-import com.infomaximum.cluster.utils.GlobalUniqueIdUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.UUID;
 
 public class RemoteControllerInvocationHandler implements InvocationHandler {
 
-    private final static String METHOD_GET_NODE = "getNode";
+    private final static String METHOD_GET_NODE_RUNTIME_ID = "getNodeRuntimeId";
     private final static String METHOD_GET_COMPONENT_UUID = "getComponentUuid";
 
     private final static String METHOD_TO_STRING = "toString";
 
     private final Component component;
 
-    private final int targetComponentUniqueId;
+    private final UUID targetNodeRuntimeId;
+    private final int targetComponentId;
     private final Class<? extends RController> rControllerClass;
 
-    public RemoteControllerInvocationHandler(Component component, int targetComponentUniqueId, Class<? extends RController> rControllerClass) {
+    public RemoteControllerInvocationHandler(Component component, UUID targetNodeRuntimeId, int targetComponentId, Class<? extends RController> rControllerClass) {
         this.component = component;
 
-        this.targetComponentUniqueId = targetComponentUniqueId;
+        this.targetNodeRuntimeId = targetNodeRuntimeId;
+        this.targetComponentId = targetComponentId;
         this.rControllerClass = rControllerClass;
     }
 
@@ -42,19 +43,18 @@ public class RemoteControllerInvocationHandler implements InvocationHandler {
             }
         }
 
-        if (METHOD_GET_NODE.equals(method.getName()) && method.getParameters().length == 0) {
-            return GlobalUniqueIdUtils.getNode(targetComponentUniqueId);
+        if (METHOD_GET_NODE_RUNTIME_ID.equals(method.getName()) && method.getParameters().length == 0) {
+            return targetNodeRuntimeId;
         } else if (METHOD_GET_COMPONENT_UUID.equals(method.getName()) && method.getParameters().length == 0) {
-            ManagerComponent managerComponent = component.getRemotes().cluster.getAnyLocalComponent(ManagerComponent.class);
-            RuntimeComponentInfo runtimeComponentInfo = managerComponent.getRegisterComponent().get(targetComponentUniqueId);
+            LocationRuntimeComponent runtimeComponentInfo = component.getTransport().getNetworkTransit().getManagerRuntimeComponent().get(targetNodeRuntimeId, targetComponentId);
             if (runtimeComponentInfo == null) {
-                throw component.getRemotes().cluster.getExceptionBuilder().buildRemoteComponentUnavailableException(GlobalUniqueIdUtils.getNode(targetComponentUniqueId), targetComponentUniqueId, null, 0, null);
+                throw component.getRemotes().cluster.getExceptionBuilder().buildRemoteComponentUnavailableException(targetNodeRuntimeId, targetComponentId, null, 0, null);
             }
-            return runtimeComponentInfo.uuid;
+            return runtimeComponentInfo.component().uuid;
         } else if (METHOD_TO_STRING.equals(method.getName()) && method.getParameters().length == 0) {
             return method.toString();
         } else {
-            return component.getTransport().request(targetComponentUniqueId, rControllerClass, method, args);
+            return component.getTransport().request(targetNodeRuntimeId, targetComponentId, rControllerClass, method, args);
         }
     }
 }

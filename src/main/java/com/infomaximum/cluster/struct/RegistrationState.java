@@ -7,9 +7,9 @@ import com.infomaximum.cluster.core.remote.struct.RemoteObject;
  */
 public class RegistrationState implements RemoteObject {
 
-    public final int uniqueId;
+    public final int id;
 
-    public RegistrationState(int uniqueId) {
-        this.uniqueId = uniqueId;
+    public RegistrationState(int id) {
+        this.id = id;
     }
 }

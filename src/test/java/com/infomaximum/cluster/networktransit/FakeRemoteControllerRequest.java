@@ -4,7 +4,8 @@ import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.core.service.transport.executor.ComponentExecutorTransport;
 import com.infomaximum.cluster.core.service.transport.network.RemoteControllerRequest;
 import com.infomaximum.cluster.struct.Component;
-import com.infomaximum.cluster.utils.GlobalUniqueIdUtils;
+
+import java.util.UUID;
 
 
 public class FakeRemoteControllerRequest implements RemoteControllerRequest {
@@ -16,11 +17,10 @@ public class FakeRemoteControllerRequest implements RemoteControllerRequest {
     }
 
     @Override
-    public ComponentExecutorTransport.Result request(Component sourceComponent, int targetComponentUniqueId, String rControllerClassName, int methodKey, byte[][] args) throws Exception {
-        byte node = GlobalUniqueIdUtils.getNode(targetComponentUniqueId);
-        Cluster cluster = fakeNetworkTransit.spaceNetworkTransit.getCluster(node);
+    public ComponentExecutorTransport.Result request(Component sourceComponent, UUID targetNodeRuntimeId, int targetComponentId, String rControllerClassName, int methodKey, byte[][] args) throws Exception {
+        Cluster cluster = fakeNetworkTransit.spaceNetworkTransit.getCluster(targetNodeRuntimeId);
         return cluster.getTransportManager().localRequest(
-                targetComponentUniqueId,
+                targetComponentId,
                 rControllerClassName,
                 methodKey,
                 args

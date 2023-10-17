@@ -81,9 +81,9 @@ public class Clusters implements AutoCloseable {
             SpaceNetworkTransit spaceNetworkTransit = new SpaceNetworkTransit();
 
 
-            builderNetworkTransit1 = new FakeNetworkTransit.Builder(spaceNetworkTransit, (byte) 1, uncaughtExceptionHandler);
+            builderNetworkTransit1 = new FakeNetworkTransit.Builder(spaceNetworkTransit, uncaughtExceptionHandler);
 
-            builderNetworkTransit2 = new FakeNetworkTransit.Builder(spaceNetworkTransit, (byte) 2, uncaughtExceptionHandler);
+            builderNetworkTransit2 = new FakeNetworkTransit.Builder(spaceNetworkTransit, uncaughtExceptionHandler);
         }
 
         public Clusters build() {

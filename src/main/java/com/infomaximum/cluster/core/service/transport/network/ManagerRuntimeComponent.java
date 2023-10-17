@@ -1,22 +1,19 @@
 package com.infomaximum.cluster.core.service.transport.network;
 
-import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.struct.RController;
+import com.infomaximum.cluster.core.service.transport.network.local.LocalManagerRuntimeComponent;
 
 import java.util.Collection;
+import java.util.UUID;
 
 public interface ManagerRuntimeComponent {
 
-    void registerComponent(RuntimeComponentInfo subSystemInfo);
+    LocationRuntimeComponent find(String uuid);
 
-    boolean unRegisterComponent(int uniqueId);
+    LocationRuntimeComponent get(UUID nodeRuntimeId, int componentId);
 
-    Collection<RuntimeComponentInfo> getComponents();
+    Collection<LocationRuntimeComponent> find(Class<? extends RController> remoteControllerClazz);
 
-    RuntimeComponentInfo get(int uniqueId);
-
-    RuntimeComponentInfo find(String uuid);
-
-    Collection<RuntimeComponentInfo> find(Class<? extends RController> remoteControllerClazz);
+    LocalManagerRuntimeComponent getLocalManagerRuntimeComponent();
 
 }

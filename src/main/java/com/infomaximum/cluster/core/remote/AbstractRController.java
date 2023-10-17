@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by kris on 28.10.16.
@@ -41,8 +42,8 @@ public abstract class AbstractRController<TComponent extends Component> implemen
     }
 
     @Override
-    public final byte getNode() {
-        return component.getRemotes().cluster.node;
+    public final UUID getNodeRuntimeId() {
+        return component.getRemotes().cluster.node.getRuntimeId();
     }
 
     @Override

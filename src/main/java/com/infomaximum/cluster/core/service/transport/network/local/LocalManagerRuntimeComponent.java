@@ -2,7 +2,6 @@ package com.infomaximum.cluster.core.service.transport.network.local;
 
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.struct.RController;
-import com.infomaximum.cluster.core.service.transport.network.ManagerRuntimeComponent;
 import com.infomaximum.cluster.core.service.transport.network.local.event.EventUpdateLocalComponent;
 import com.infomaximum.cluster.utils.RandomUtil;
 
@@ -13,7 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class LocalManagerRuntimeComponent implements ManagerRuntimeComponent {
+public class LocalManagerRuntimeComponent {
 
     private final Map<Integer, RuntimeComponentInfo> components;
 
@@ -24,37 +23,26 @@ public class LocalManagerRuntimeComponent implements ManagerRuntimeComponent {
         this.listeners = new CopyOnWriteArrayList<>();
     }
 
-    @Override
-    public void registerComponent(RuntimeComponentInfo subSystemInfo) {
-        int uniqueId = subSystemInfo.uniqueId;
-        String uuid = subSystemInfo.uuid;
-        boolean isSingleton = subSystemInfo.isSingleton;
-
-        if (components.containsKey(uniqueId)) {
-            throw new RuntimeException();
-        }
+    public void registerComponent(RuntimeComponentInfo componentInfo) {
+        int id = componentInfo.id;
 
         synchronized (components) {
-            //Первым делом проверем на уникальность.
-            if (isSingleton && components.containsKey(uuid)) {
-                throw new RuntimeException("Component: " + uuid + " does not support clustering");
+            if (components.containsKey(id)) {
+                throw new RuntimeException();
             }
-
-            //Регистрируем
-            components.put(uniqueId, subSystemInfo);
+            components.put(id, componentInfo);
         }
 
         //Оповещаем подписчиков
         for (EventUpdateLocalComponent listener : listeners) {
-            listener.registerComponent(subSystemInfo);
+            listener.registerComponent(componentInfo);
         }
     }
 
-    @Override
-    public boolean unRegisterComponent(int uniqueId) {
+    public boolean unRegisterComponent(int id) {
         RuntimeComponentInfo removeItem;
         synchronized (components) {
-            removeItem = components.remove(uniqueId);
+            removeItem = components.remove(id);
         }
 
         //Оповещаем подписчиков
@@ -76,18 +64,15 @@ public class LocalManagerRuntimeComponent implements ManagerRuntimeComponent {
         listeners.remove(listener);
     }
 
-    @Override
     public Collection<RuntimeComponentInfo> getComponents() {
         //TODO - нужна оптимизациия - странно каждый раз формировать этот лист
         return components.values();
     }
 
-    @Override
-    public RuntimeComponentInfo get(int uniqueId) {
-        return components.get(uniqueId);
+    public RuntimeComponentInfo get(int id) {
+        return components.get(id);
     }
 
-    @Override
     public RuntimeComponentInfo find(String uuid) {
         List<RuntimeComponentInfo> items = new ArrayList<>();
         for (Map.Entry<Integer, RuntimeComponentInfo> entry : components.entrySet()) {
@@ -104,7 +89,6 @@ public class LocalManagerRuntimeComponent implements ManagerRuntimeComponent {
         }
     }
 
-    @Override
     public Collection<RuntimeComponentInfo> find(Class<? extends RController> remoteControllerClazz) {
         List<RuntimeComponentInfo> items = new ArrayList<>();
         for (Map.Entry<Integer, RuntimeComponentInfo> entry : components.entrySet()) {

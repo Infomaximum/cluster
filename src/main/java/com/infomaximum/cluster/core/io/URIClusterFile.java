@@ -2,37 +2,45 @@ package com.infomaximum.cluster.core.io;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.UUID;
 
 /**
  * Формат
- * cfile:uniqueId/UUID
+ * cfile:nodeRuntimeId/componentId/UUID
  */
 public class URIClusterFile {
 
     public static String SCHEME_CLUSTER_FILE = "cfile";
 
-    public static String createSURI(int uniqueId, String filePathUUID) {
-        return new StringBuilder().append(SCHEME_CLUSTER_FILE).append(':').append(uniqueId).append('/').append(filePathUUID).toString();
+    public final UUID nodeRuntimeId;
+    public final int componentId;
+    public final String fileUUID;
+
+    public final String uri;
+
+    public URIClusterFile(UUID nodeRuntimeId, int componentId, String fileUUID) {
+        this.nodeRuntimeId = nodeRuntimeId;
+        this.componentId = componentId;
+        this.fileUUID = fileUUID;
+
+        this.uri = new StringBuilder().append(SCHEME_CLUSTER_FILE).append(':').append(nodeRuntimeId).append('/').append(componentId).append('/').append(fileUUID).toString();
     }
 
-    public static URI createURI(int uniqueId, String fileUUID) {
+    public URI getURI() {
         try {
-            return new URI(createSURI(uniqueId, fileUUID));
+            return new URI(uri);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static int getPathToComponentUniqueId(URI uri) {
-        if (!URIClusterFile.SCHEME_CLUSTER_FILE.equals(uri.getScheme()))
+    public static URIClusterFile build(URI uri) {
+        if (!URIClusterFile.SCHEME_CLUSTER_FILE.equals(uri.getScheme())) {
             throw new RuntimeException("Not support scheme");
-        return Integer.parseInt(uri.getSchemeSpecificPart().split("/")[0]);
-    }
+        }
 
-    public static String getPathToFileUUID(URI uri) {
-        if (!URIClusterFile.SCHEME_CLUSTER_FILE.equals(uri.getScheme()))
-            throw new RuntimeException("Not support scheme");
-        return uri.getSchemeSpecificPart().split("/")[1];
+        String[] split = uri.getSchemeSpecificPart().split("/");
+        return new URIClusterFile(UUID.fromString(split[0]), Integer.parseInt(split[1]), split[2]);
     }
 
 }

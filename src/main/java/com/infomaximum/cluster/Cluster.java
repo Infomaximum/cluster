@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -22,7 +23,7 @@ public class Cluster implements AutoCloseable {
 
     private final static Logger log = LoggerFactory.getLogger(Cluster.class);
 
-    public final byte node;
+    public final Node node;
 
     private final TransportManager transportManager;
     private final ComponentUuidManager componentUuidManager;
@@ -36,13 +37,14 @@ public class Cluster implements AutoCloseable {
     private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
     private Cluster(Builder builder) {
-        this.transportManager = new TransportManager(this, builder.builderNetworkTransit, builder.remotePackers, builder.exceptionBuilder);
+        this.components = new HashMap<>();
+
+        this.transportManager = new TransportManager(this, builder.builderNetworkTransit, builder.remotePackers, builder.updateNodeConnectListeners, builder.exceptionBuilder);
 
         this.node = transportManager.networkTransit.getNode();
 
         this.componentUuidManager = new ComponentUuidManager();
 
-        this.components = new HashMap<>();
         this.dependencyOrderedComponents = new ArrayList<>();
 
         this.context = builder.context;
@@ -55,6 +57,10 @@ public class Cluster implements AutoCloseable {
 
     public TransportManager getTransportManager() {
         return transportManager;
+    }
+
+    public List<Node> getRemoteNodes() {
+        return transportManager.networkTransit.getRemoteNodes();
     }
 
     public ExceptionBuilder getExceptionBuilder() {
@@ -166,7 +172,10 @@ public class Cluster implements AutoCloseable {
 
         private Object context;
 
+        private final List<UpdateNodeConnect> updateNodeConnectListeners;
+
         private ExceptionBuilder exceptionBuilder;
+
         private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
         public Builder(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
@@ -183,6 +192,8 @@ public class Cluster implements AutoCloseable {
 
             this.components = new ArrayList<>();
             this.components.add(new ManagerComponent());
+
+            this.updateNodeConnectListeners = new CopyOnWriteArrayList<>();
 
             this.exceptionBuilder = new ExceptionBuilderImpl();
         }
@@ -225,6 +236,10 @@ public class Cluster implements AutoCloseable {
             return this;
         }
 
+        public Builder withListenerUpdateConnect(UpdateNodeConnect updateConnect) {
+            updateNodeConnectListeners.add(updateConnect);
+            return this;
+        }
 
         public Builder withExceptionBuilder(ExceptionBuilder exceptionBuilder) {
             this.exceptionBuilder = exceptionBuilder;
@@ -265,6 +280,8 @@ public class Cluster implements AutoCloseable {
 
                     components.remove(componentIndex);
                 }
+
+                cluster.transportManager.networkTransit.start();
             } catch (ClusterException ex) {
                 if (cluster != null) {
                     cluster.close();

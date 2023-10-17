@@ -25,7 +25,7 @@ public class AboutControllerTest {
             ManagerComponent managerComponent = cluster1.getAnyLocalComponent(ManagerComponent.class);
             RControllerFuture rControllerFuture = managerComponent.getRemotes().get(Custom1Component.class, RControllerFuture.class);
 
-            Assertions.assertEquals(1, rControllerFuture.getNode());
+            Assertions.assertEquals(cluster1.node.getRuntimeId(), rControllerFuture.getNodeRuntimeId());
             Assertions.assertEquals("com.infomaximum.cluster.component.custom1", rControllerFuture.getComponentUuid());
         }
     }

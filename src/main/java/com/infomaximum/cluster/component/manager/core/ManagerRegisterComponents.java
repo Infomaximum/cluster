@@ -4,13 +4,14 @@ import com.infomaximum.cluster.component.manager.ManagerComponent;
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.controller.notification.RControllerNotification;
 import com.infomaximum.cluster.core.remote.struct.RController;
+import com.infomaximum.cluster.core.service.transport.network.LocationRuntimeComponent;
 import com.infomaximum.cluster.core.service.transport.network.ManagerRuntimeComponent;
 import com.infomaximum.cluster.struct.RegistrationState;
-import com.infomaximum.cluster.utils.GlobalUniqueIdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -24,38 +25,33 @@ public class ManagerRegisterComponents {
 
     private final ManagerRuntimeComponent managerRuntimeComponent;
 
-    private final AtomicInteger uniqueIds;
+    private final AtomicInteger ids;
 
     public ManagerRegisterComponents(ManagerComponent managerComponent) {
         this.managerComponent = managerComponent;
         this.managerRuntimeComponent = managerComponent.getTransport().getNetworkTransit().getManagerRuntimeComponent();
-        this.uniqueIds = new AtomicInteger(0);
+        this.ids = new AtomicInteger(0);
 
         //Регистрируем себя
         _registerActiveComponent(
                 new RuntimeComponentInfo(
-                        managerComponent.getRemotes().cluster.node,
-                        managerComponent.getUniqueId(),
+                        managerComponent.getId(),
                         managerComponent.getInfo().getUuid(),
-                        managerComponent.isSingleton(),
                         managerComponent.getTransport().getExecutor().getClassRControllers()
                 ));
     }
 
     public RegistrationState registerActiveComponent(RuntimeComponentInfo value) {
-        int uniqueId = GlobalUniqueIdUtils.getGlobalUniqueId(
-                managerComponent.getRemotes().cluster.node,
-                uniqueIds.incrementAndGet()
-        );
-        RuntimeComponentInfo runtimeComponentInfo = RuntimeComponentInfo.upgrade(uniqueId, value);
+        int nextId = ids.incrementAndGet();
+        RuntimeComponentInfo runtimeComponentInfo = RuntimeComponentInfo.upgrade(nextId, value);
         _registerActiveComponent(runtimeComponentInfo);
-        return new RegistrationState(uniqueId);
+        return new RegistrationState(nextId);
     }
 
     private void _registerActiveComponent(RuntimeComponentInfo subSystemInfo) {
         String uuid = subSystemInfo.uuid;
 
-        managerRuntimeComponent.registerComponent(subSystemInfo);
+        managerRuntimeComponent.getLocalManagerRuntimeComponent().registerComponent(subSystemInfo);
 
         //Оповещаем все подсистемы о новом модуле - кроме ситуации, когда регистрируется менеджер
         if (!uuid.equals(ManagerComponent.UUID)) {
@@ -65,28 +61,40 @@ public class ManagerRegisterComponents {
         }
     }
 
-    public void unRegisterActiveComponent(int uniqueId) {
-        if (managerRuntimeComponent.unRegisterComponent(uniqueId)) {
+    public void unRegisterActiveComponent(int componentId) {
+        if (managerRuntimeComponent.getLocalManagerRuntimeComponent().unRegisterComponent(componentId)) {
             //Oповещаем все подсистемы
             for (RControllerNotification rControllerNotification : managerComponent.getRemotes().getControllers(RControllerNotification.class)) {
-                rControllerNotification.notificationUnRegisterComponent(uniqueId);
+                rControllerNotification.notificationUnRegisterComponent(componentId);
             }
         }
     }
 
-    public RuntimeComponentInfo get(int uniqueId) {
-        return managerRuntimeComponent.get(uniqueId);
+    public LocationRuntimeComponent getLocationRuntimeComponent(UUID nodeRuntimeId, int componentId) {
+        return managerComponent.getTransport().getNetworkTransit().getManagerRuntimeComponent().get(nodeRuntimeId, componentId);
     }
 
-    public RuntimeComponentInfo find(String uuid) {
+    public RuntimeComponentInfo getLocalComponent(int componentId) {
+        return managerRuntimeComponent.getLocalManagerRuntimeComponent().get(componentId);
+    }
+
+    public RuntimeComponentInfo getLocalComponent(String uuid) {
+        return managerRuntimeComponent.getLocalManagerRuntimeComponent().find(uuid);
+    }
+
+    public Collection<RuntimeComponentInfo> findLocalComponent(Class<? extends RController> remoteControllerClazz) {
+        return managerRuntimeComponent.getLocalManagerRuntimeComponent().find(remoteControllerClazz);
+    }
+
+    public LocationRuntimeComponent find(String uuid) {
         return managerRuntimeComponent.find(uuid);
     }
 
-    public Collection<RuntimeComponentInfo> find(Class<? extends RController> remoteControllerClazz) {
+    public Collection<LocationRuntimeComponent> find(Class<? extends RController> remoteControllerClazz) {
         return managerRuntimeComponent.find(remoteControllerClazz);
     }
 
-    public Collection<RuntimeComponentInfo> getComponents() {
-        return managerRuntimeComponent.getComponents();
+    public Collection<RuntimeComponentInfo> getLocalComponents() {
+        return managerRuntimeComponent.getLocalManagerRuntimeComponent().getComponents();
     }
 }

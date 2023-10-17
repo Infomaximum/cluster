@@ -5,7 +5,6 @@ import com.infomaximum.cluster.anotation.Info;
 import com.infomaximum.cluster.component.manager.core.ManagerRegisterComponents;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.struct.Component;
-import com.infomaximum.cluster.utils.GlobalUniqueIdUtils;
 
 /**
  * Created by kris on 23.09.16.
@@ -28,8 +27,9 @@ public class ManagerComponent extends Component {
         transportManager.registerTransport(getTransport());
     }
 
-    public int getUniqueId() {
-        return getComponentUniqueIdManager(getCluster().node);
+    @Override
+    public int getId() {
+        return COMPONENT_UNIQUE_ID_MANAGER;
     }
 
     //Переопределяем - логика регистрации у менеджера подсистем не стандартная
@@ -45,12 +45,5 @@ public class ManagerComponent extends Component {
 
     public ManagerRegisterComponents getRegisterComponent() {
         return registerComponent;
-    }
-
-    public static int getComponentUniqueIdManager(byte node) {
-        return GlobalUniqueIdUtils.getGlobalUniqueId(
-                node,
-                COMPONENT_UNIQUE_ID_MANAGER
-        );
     }
 }

@@ -1,10 +1,14 @@
 package com.infomaximum.cluster.networktransit;
 
+import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.NetworkTransit;
+import com.infomaximum.cluster.Node;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.network.ManagerRuntimeComponent;
 import com.infomaximum.cluster.core.service.transport.network.RemoteControllerRequest;
-import com.infomaximum.cluster.core.service.transport.network.local.LocalManagerRuntimeComponent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FakeNetworkTransit implements NetworkTransit {
 
@@ -12,7 +16,7 @@ public class FakeNetworkTransit implements NetworkTransit {
 
     public final SpaceNetworkTransit spaceNetworkTransit;
 
-    private final byte node;
+    private final Node node;
 
     private final ManagerRuntimeComponent managerRuntimeComponent;
 
@@ -23,15 +27,15 @@ public class FakeNetworkTransit implements NetworkTransit {
     public FakeNetworkTransit(Builder builder, TransportManager transportManager) {
         this.transportManager = transportManager;
         this.spaceNetworkTransit = builder.spaceNetworkTransit;
-        this.spaceNetworkTransit.registry(builder.node, transportManager.cluster);
+        this.spaceNetworkTransit.registry(builder.node.getRuntimeId(), transportManager.cluster);
         this.node = builder.node;
-        this.managerRuntimeComponent = new LocalManagerRuntimeComponent();
+        this.managerRuntimeComponent = new FakeManagerRuntimeComponent(builder.spaceNetworkTransit, builder.node.getRuntimeId());
         this.fakeRemoteControllerRequest = new FakeRemoteControllerRequest(this);
         this.uncaughtExceptionHandler = builder.uncaughtExceptionHandler;
     }
 
     @Override
-    public byte getNode() {
+    public Node getNode() {
         return node;
     }
 
@@ -46,6 +50,23 @@ public class FakeNetworkTransit implements NetworkTransit {
     }
 
     @Override
+    public List<Node> getRemoteNodes() {
+        List<Node> nodes = new ArrayList<>();
+        for (Cluster cluster : spaceNetworkTransit.getClusters()) {
+            if (cluster.node.equals(getNode())) {
+                continue;
+            }
+            nodes.add(cluster.node);
+        }
+        return nodes;
+    }
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
     public void close() {
 
     }
@@ -54,12 +75,12 @@ public class FakeNetworkTransit implements NetworkTransit {
 
         private final SpaceNetworkTransit spaceNetworkTransit;
 
-        private final byte node;
+        private final Node node;
         private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
-        public Builder(SpaceNetworkTransit spaceNetworkTransit, byte node, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+        public Builder(SpaceNetworkTransit spaceNetworkTransit, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
             this.spaceNetworkTransit = spaceNetworkTransit;
-            this.node = node;
+            this.node = new FakeNode();
             this.uncaughtExceptionHandler = uncaughtExceptionHandler;
         }
 

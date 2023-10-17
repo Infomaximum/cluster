@@ -12,22 +12,16 @@ import java.util.HashSet;
  */
 public class RuntimeComponentInfo implements RemoteObject {
 
-    public final byte node;
-    public final int uniqueId;
+    public final int id;
     public final String uuid;
-    public final boolean isSingleton;
     private final HashSet<String> classNameRControllers;
 
     public RuntimeComponentInfo(
-            byte node,
-            int uniqueId, String uuid, boolean isSingleton,
+            int id, String uuid,
             HashSet<Class<? extends RController>> classRControllers
     ) {
-        this.node = node;
-
-        this.uniqueId = uniqueId;
+        this.id = id;
         this.uuid = uuid;
-        this.isSingleton = isSingleton;
 
         this.classNameRControllers = new HashSet<>();
         for (Class<? extends RController> classRController : classRControllers) {
@@ -36,15 +30,11 @@ public class RuntimeComponentInfo implements RemoteObject {
     }
 
     public RuntimeComponentInfo(
-            byte node,
-            String uuid, boolean isSingleton,
+            String uuid,
             HashSet<Class<? extends RController>> classRControllers
     ) {
-        this.node = node;
-
-        this.uniqueId = -1;
+        this.id = -1;
         this.uuid = uuid;
-        this.isSingleton = isSingleton;
 
         this.classNameRControllers = new HashSet<>();
         for (Class<? extends RController> classRController : classRControllers) {
@@ -56,12 +46,10 @@ public class RuntimeComponentInfo implements RemoteObject {
         return Collections.unmodifiableCollection(classNameRControllers);
     }
 
-    public static RuntimeComponentInfo upgrade(int uniqueId, RuntimeComponentInfo source) {
+    public static RuntimeComponentInfo upgrade(int id, RuntimeComponentInfo source) {
         RuntimeComponentInfo result = new RuntimeComponentInfo(
-                source.node,
-                uniqueId,
+                id,
                 source.uuid,
-                source.isSingleton,
                 new HashSet<>()
         );
         result.classNameRControllers.addAll(source.classNameRControllers);
