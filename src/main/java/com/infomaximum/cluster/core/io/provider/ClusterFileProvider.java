@@ -9,17 +9,17 @@ public interface ClusterFileProvider {
 
     boolean isLocalFile();
 
-    void copyTo(Path file, CopyOption... options) throws IOException;
+    void copyTo(Path file, CopyOption... options) throws IOException, Exception;
 
-    void copyTo(OutputStream target) throws IOException;
+    void copyTo(OutputStream target) throws IOException, Exception;
 
-    void delete() throws IOException;
+    void delete() throws IOException, Exception;
 
-    void deleteIfExists() throws IOException;
+    void deleteIfExists() throws IOException, Exception;
 
-    void moveTo(Path target, CopyOption... options) throws IOException;
+    void moveTo(Path target, CopyOption... options) throws IOException, Exception;
 
-    long getSize() throws IOException;
+    long getSize() throws IOException, Exception;
 
-    byte[] getContent() throws IOException;
+    byte[] getContent() throws IOException, Exception;
 }

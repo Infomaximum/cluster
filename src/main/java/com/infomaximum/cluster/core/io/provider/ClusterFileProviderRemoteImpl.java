@@ -5,7 +5,6 @@ import com.infomaximum.cluster.core.remote.controller.clusterfile.RControllerClu
 import com.infomaximum.cluster.struct.Component;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
@@ -29,14 +28,14 @@ public class ClusterFileProviderRemoteImpl implements ClusterFileProvider {
     }
 
     @Override
-    public void copyTo(Path file, CopyOption... options) throws IOException {
+    public void copyTo(Path file, CopyOption... options) throws Exception {
         try (InputStream inputStream = controllerClusterFile.getInputStream(clusterFile.fileUUID)) {
             Files.copy(inputStream, file, options);
         }
     }
 
     @Override
-    public void copyTo(OutputStream target) throws IOException {
+    public void copyTo(OutputStream target) throws Exception {
         try (InputStream inputStream = controllerClusterFile.getInputStream(clusterFile.fileUUID)) {
             byte[] buf = new byte[8192];
             int n;
@@ -47,28 +46,28 @@ public class ClusterFileProviderRemoteImpl implements ClusterFileProvider {
     }
 
     @Override
-    public void delete() throws IOException {
+    public void delete() throws Exception {
         controllerClusterFile.delete(clusterFile.fileUUID);
     }
 
     @Override
-    public void deleteIfExists() throws IOException {
+    public void deleteIfExists() throws Exception {
         controllerClusterFile.deleteIfExists(clusterFile.fileUUID);
     }
 
     @Override
-    public void moveTo(Path target, CopyOption... options) throws IOException {
+    public void moveTo(Path target, CopyOption... options) throws Exception {
         copyTo(target, options);
         delete();
     }
 
     @Override
-    public long getSize() throws IOException {
+    public long getSize() throws Exception {
         return controllerClusterFile.getSize(clusterFile.fileUUID);
     }
 
     @Override
-    public byte[] getContent() throws IOException {
+    public byte[] getContent() throws Exception {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         try (InputStream inputStream = controllerClusterFile.getInputStream(clusterFile.fileUUID)) {
             int nRead;

@@ -5,7 +5,6 @@ import com.infomaximum.cluster.core.io.provider.ClusterFileProviderLocalImpl;
 import com.infomaximum.cluster.core.io.provider.ClusterFileProviderRemoteImpl;
 import com.infomaximum.cluster.struct.Component;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.CopyOption;
@@ -22,7 +21,7 @@ public class ClusterFile {
 
     private final URI uri;
 
-    private final ClusterFileProvider clusterFileProvider;
+    protected final ClusterFileProvider clusterFileProvider;
 
     public ClusterFile(Component component, URI uri) {
         this.uri = uri;
@@ -39,31 +38,31 @@ public class ClusterFile {
         return SCHEME_FILE.equals(uri.getScheme());
     }
 
-    public void copyTo(Path file, CopyOption... options) throws IOException {
+    public void copyTo(Path file, CopyOption... options) throws Exception {
         clusterFileProvider.copyTo(file, options);
     }
 
-    public void copyTo(OutputStream target) throws IOException {
+    public void copyTo(OutputStream target) throws Exception {
         clusterFileProvider.copyTo(target);
     }
 
-    public void delete() throws IOException {
+    public void delete() throws Exception {
         clusterFileProvider.delete();
     }
 
-    public void deleteIfExists() throws IOException {
+    public void deleteIfExists() throws Exception {
         clusterFileProvider.deleteIfExists();
     }
 
-    public void moveTo(Path target, CopyOption... options) throws IOException {
+    public void moveTo(Path target, CopyOption... options) throws Exception {
         clusterFileProvider.moveTo(target, options);
     }
 
-    public long getSize() throws IOException {
+    public long getSize() throws Exception {
         return clusterFileProvider.getSize();
     }
 
-    public byte[] getContent() throws IOException {
+    public byte[] getContent() throws Exception {
         return clusterFileProvider.getContent();
     }
 
