@@ -50,6 +50,7 @@ public class ExceptionBuilderImpl implements ExceptionBuilder<ClusterException> 
     }
 
     private static String toStringCause(Exception e) {
+        if (e == null) return "null";
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
