@@ -1,7 +1,5 @@
 package com.infomaximum.cluster.exception;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.UUID;
 
 public class ExceptionBuilderImpl implements ExceptionBuilder<ClusterException> {
@@ -15,7 +13,7 @@ public class ExceptionBuilderImpl implements ExceptionBuilder<ClusterException> 
     public ClusterException buildTransitRequestException(UUID nodeRuntimeId, int componentId, String rControllerClassName, int methodKey, Exception cause) {
         return new ClusterException("TransitRequestException, nodeRuntimeId: " + nodeRuntimeId + ", componentUniqueId: "
                 + componentId + ", rControllerClassName: " + rControllerClassName
-                + ", methodKey: " + methodKey + ", cause: " + toStringCause(cause)
+                + ", methodKey: " + methodKey, cause
         );
     }
 
@@ -23,7 +21,7 @@ public class ExceptionBuilderImpl implements ExceptionBuilder<ClusterException> 
     public ClusterException buildRemoteComponentUnavailableException(UUID nodeRuntimeId, int componentId, String rControllerClassName, int methodKey, Exception cause) {
         return new ClusterException("RemoteComponentUnavailableException, nodeRuntimeId: " + nodeRuntimeId + ", componentUniqueId: "
                 + componentId + ", rControllerClassName: " + rControllerClassName
-                + ", methodKey: " + methodKey + ", cause: " + toStringCause(cause)
+                + ", methodKey: " + methodKey, cause
         );
     }
 
@@ -47,13 +45,5 @@ public class ExceptionBuilderImpl implements ExceptionBuilder<ClusterException> 
                 + componentId + ", rControllerClassName: " + rControllerClassName
                 + ", methodKey: " + methodKey
         );
-    }
-
-    private static String toStringCause(Exception e) {
-        if (e == null) return "null";
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        return sw.toString();
     }
 }

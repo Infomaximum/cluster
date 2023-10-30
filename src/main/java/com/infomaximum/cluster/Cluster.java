@@ -183,11 +183,10 @@ public class Cluster implements AutoCloseable {
 
             this.remotePackers = new ArrayList<>();
             this.remotePackers.add(new RemotePackerRemoteObject());
-            this.remotePackers.add(new RemotePackerSerializable());
             this.remotePackers.add(new RemotePackerFuture());
             this.remotePackers.add(new RemotePackerOptional());
             this.remotePackers.add(new RemotePackerClusterInputStream());
-
+            this.remotePackers.add(new RemotePackerSerializable());
             this.builderNetworkTransit = new LocalNetworkTransit.Builder();
 
             this.components = new ArrayList<>();
