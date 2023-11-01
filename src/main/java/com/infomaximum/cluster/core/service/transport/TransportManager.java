@@ -4,6 +4,7 @@ import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.NetworkTransit;
 import com.infomaximum.cluster.UpdateNodeConnect;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
+import com.infomaximum.cluster.core.remote.RemoteTarget;
 import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.core.remote.packer.RemotePackerObject;
 import com.infomaximum.cluster.core.remote.struct.RController;
@@ -16,7 +17,6 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -73,10 +73,10 @@ public class TransportManager {
         localComponentIdTransports.remove(transport.getComponent().getId());
     }
 
-    public Object request(Component sourceComponent, UUID targetNodeRuntimeId, int targetComponentId, Class<? extends RController> rControllerClass, Method method, Object[] args) throws Throwable {
-        if (targetNodeRuntimeId.equals(networkTransit.getNode().getRuntimeId())) {
+    public Object request(Component sourceComponent, RemoteTarget target, Class<? extends RController> rControllerClass, Method method, Object[] args) throws Throwable {
+        if (target.nodeRuntimeId().equals(networkTransit.getNode().getRuntimeId())) {
             //локальный запрос
-            ComponentExecutorTransport targetComponentExecutorTransport = getLocalExecutorTransport(targetComponentId);
+            ComponentExecutorTransport targetComponentExecutorTransport = getLocalExecutorTransport(target.componentId());
             return targetComponentExecutorTransport.execute(rControllerClass.getName(), method, args);
         } else {
             //сетевой запрос
@@ -91,7 +91,7 @@ public class TransportManager {
                     sargs[i] = remotePackerObject.serialize(sourceComponent, parameterTypes[i], args[i]);
                 }
             }
-            ComponentExecutorTransport.Result result = networkTransit.getRemoteControllerRequest().request(sourceComponent, targetNodeRuntimeId, targetComponentId, rControllerClass.getName(), methodKey, sargs);
+            ComponentExecutorTransport.Result result = networkTransit.getRemoteControllerRequest().request(sourceComponent, target.nodeRuntimeId(), target.componentId(), rControllerClass.getName(), methodKey, sargs);
             if (result.exception() != null) {
                 throw (Throwable) remotePackerObject.deserialize(sourceComponent, Throwable.class, result.exception());
             } else {

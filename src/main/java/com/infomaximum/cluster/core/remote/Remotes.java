@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Proxy;
 import java.util.Collection;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -38,11 +37,11 @@ public class Remotes {
         return componentRemotePacker;
     }
 
-    public <T extends RController> T getFromCKey(UUID nodeRuntimeId, int componentId, Class<T> remoteControllerClazz) {
+    public <T extends RController> T getFromCKey(RemoteTarget target, Class<T> remoteControllerClazz) {
         //Кешировать proxy remoteController нельзя т.к. Proxy.newProxyInstance может вернуться переиспользуемый объект в котором _properties уже заполнен и мы иего перезатрем
         RController remoteController = (RController) Proxy.newProxyInstance(
                 remoteControllerClazz.getClassLoader(), new Class[]{remoteControllerClazz},
-                new RemoteControllerInvocationHandler(component, nodeRuntimeId, componentId, remoteControllerClazz)
+                new RemoteControllerInvocationHandler(component, target, remoteControllerClazz)
         );
 
         return (T) remoteController;
@@ -53,7 +52,8 @@ public class Remotes {
         if (runtimeComponent == null) {
             throw new RuntimeException("Not found: " + remoteControllerClazz.getName() + " in " + uuid);
         }
-        return getFromCKey(runtimeComponent.node(), runtimeComponent.component().id, remoteControllerClazz);
+        RemoteTarget target = new RemoteTarget(runtimeComponent.node(), runtimeComponent.component().id, uuid);
+        return getFromCKey(target, remoteControllerClazz);
     }
 
     public <T extends RController> boolean isController(String uuid, Class<T> remoteControllerClazz) {
@@ -80,7 +80,7 @@ public class Remotes {
 
     public <T extends RController> Collection<T> getControllers(Class<T> remoteClassController) {
         return managerComponent.getRegisterComponent().find(remoteClassController).stream()
-                .map(runtimeComponent -> getFromCKey(runtimeComponent.node(), runtimeComponent.component().id, remoteClassController))
+                .map(runtimeComponent -> getFromCKey(new RemoteTarget(runtimeComponent.node(), runtimeComponent.component().id, runtimeComponent.component().uuid), remoteClassController))
                 .collect(Collectors.toList());
     }
 }

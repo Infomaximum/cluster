@@ -3,8 +3,11 @@ package com.infomaximum.cluster.core.remote.packer.impl;
 import com.infomaximum.cluster.component.service.ServiceComponent;
 import com.infomaximum.cluster.component.service.internal.service.ClusterInputStreamService;
 import com.infomaximum.cluster.component.service.remote.RControllerInputStream;
+import com.infomaximum.cluster.core.remote.RemoteTarget;
 import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.core.remote.struct.ClusterInputStream;
+import com.infomaximum.cluster.core.service.transport.network.LocationRuntimeComponent;
+import com.infomaximum.cluster.exception.ClusterRemotePackerException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.ByteUtils;
 
@@ -72,7 +75,12 @@ public class RemotePackerClusterInputStream implements RemotePacker<ClusterInput
     public ClusterInputStream deserialize(Component component, Class classType, byte[] value) {
         Packer packer = Packer.deserialize(value);
         if (packer.id != 0) {
-            RControllerInputStream controllerInputStream = component.getRemotes().getFromCKey(packer.sourceNodeRuntimeId, packer.sourceComponentId, RControllerInputStream.class);
+            LocationRuntimeComponent runtimeComponentInfo = component.getTransport().getNetworkTransit().getManagerRuntimeComponent().get(packer.sourceNodeRuntimeId, packer.sourceComponentId);
+            if (runtimeComponentInfo == null) {
+                throw new ClusterRemotePackerException();
+            }
+            RemoteTarget source = new RemoteTarget(packer.sourceNodeRuntimeId, packer.sourceComponentId, runtimeComponentInfo.component().uuid);
+            RControllerInputStream controllerInputStream = component.getRemotes().getFromCKey(source, RControllerInputStream.class);
             return new ClusterInputStream(new ProxyClusterInputStream(controllerInputStream, packer.id, packer.batchSize, packer.data, packer.dataOffset, packer.dataLength));
         } else {
             return new ClusterInputStream(new ByteArrayInputStream(packer.data, packer.dataOffset, packer.dataLength));

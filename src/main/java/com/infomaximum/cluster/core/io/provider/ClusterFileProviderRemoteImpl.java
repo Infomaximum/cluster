@@ -1,7 +1,10 @@
 package com.infomaximum.cluster.core.io.provider;
 
 import com.infomaximum.cluster.core.io.URIClusterFile;
+import com.infomaximum.cluster.core.remote.RemoteTarget;
 import com.infomaximum.cluster.core.remote.controller.clusterfile.RControllerClusterFile;
+import com.infomaximum.cluster.core.service.transport.network.LocationRuntimeComponent;
+import com.infomaximum.cluster.exception.ClusterRemotePackerException;
 import com.infomaximum.cluster.struct.Component;
 
 import java.io.ByteArrayOutputStream;
@@ -19,7 +22,14 @@ public class ClusterFileProviderRemoteImpl implements ClusterFileProvider {
 
     public ClusterFileProviderRemoteImpl(Component component, URI uri) {
         this.clusterFile = URIClusterFile.build(uri);
-        controllerClusterFile = component.getRemotes().getFromCKey(clusterFile.nodeRuntimeId, clusterFile.componentId, RControllerClusterFile.class);
+
+        LocationRuntimeComponent runtimeComponentInfo = component.getTransport().getNetworkTransit().getManagerRuntimeComponent().get(clusterFile.nodeRuntimeId, clusterFile.componentId);
+        if (runtimeComponentInfo == null) {
+            throw new ClusterRemotePackerException();
+        }
+        RemoteTarget target = new RemoteTarget(clusterFile.nodeRuntimeId, clusterFile.componentId, runtimeComponentInfo.component().uuid);
+
+        controllerClusterFile = component.getRemotes().getFromCKey(target, RControllerClusterFile.class);
     }
 
     @Override

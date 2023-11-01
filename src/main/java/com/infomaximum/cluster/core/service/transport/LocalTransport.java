@@ -2,13 +2,13 @@ package com.infomaximum.cluster.core.service.transport;
 
 import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.NetworkTransit;
+import com.infomaximum.cluster.core.remote.RemoteTarget;
 import com.infomaximum.cluster.core.remote.packer.RemotePackerObject;
 import com.infomaximum.cluster.core.remote.struct.RController;
 import com.infomaximum.cluster.core.service.transport.executor.ComponentExecutorTransport;
 import com.infomaximum.cluster.struct.Component;
 
 import java.lang.reflect.Method;
-import java.util.UUID;
 
 /**
  * Created by kris on 14.09.16.
@@ -49,7 +49,7 @@ public class LocalTransport {
         return transportManager.getRemotePackerObject();
     }
 
-    public Object request(UUID targetNodeRuntimeId, int targetComponentId, Class<? extends RController> rControllerClass, Method method, Object[] args) throws Throwable {
-        return transportManager.request(component, targetNodeRuntimeId, targetComponentId, rControllerClass, method, args);
+    public Object request(RemoteTarget target, Class<? extends RController> rControllerClass, Method method, Object[] args) throws Throwable {
+        return transportManager.request(component, target, rControllerClass, method, args);
     }
 }

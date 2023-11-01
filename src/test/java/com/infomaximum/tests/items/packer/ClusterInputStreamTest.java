@@ -5,6 +5,7 @@ import com.infomaximum.cluster.Clusters;
 import com.infomaximum.cluster.component.custom1.Custom1Component;
 import com.infomaximum.cluster.component.custom1.remote.RControllerClusterInputStream;
 import com.infomaximum.cluster.component.manager.ManagerComponent;
+import com.infomaximum.cluster.core.remote.RemoteTarget;
 import com.infomaximum.cluster.core.remote.struct.ClusterInputStream;
 import com.infomaximum.cluster.utils.ChainBytesUtils;
 import org.junit.jupiter.api.Assertions;
@@ -27,8 +28,11 @@ public class ClusterInputStreamTest {
             ManagerComponent managerComponent = cluster1.getAnyLocalComponent(ManagerComponent.class);
 
             RControllerClusterInputStream controllerClusterInputStream = managerComponent.getRemotes().getFromCKey(
-                    cluster2.node.getRuntimeId(),
-                    cluster2.getAnyLocalComponent(Custom1Component.class).getId(),
+                    new RemoteTarget(
+                            cluster2.node.getRuntimeId(),
+                            cluster2.getAnyLocalComponent(Custom1Component.class).getId(),
+                            cluster2.getAnyLocalComponent(Custom1Component.class).getInfo().getUuid()
+                    ),
                     RControllerClusterInputStream.class
             );
 
