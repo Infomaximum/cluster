@@ -7,6 +7,8 @@ public interface ExceptionBuilder<T extends Exception> {
 
     T buildTransitRequestException(UUID nodeRuntimeId, int componentId, String rControllerClassName, int methodKey, Exception cause);
 
+    T buildRemoteComponentUnavailableException(UUID nodeRuntimeId, Exception cause);
+
     T buildRemoteComponentUnavailableException(UUID nodeRuntimeId, int componentId, String rControllerClassName, int methodKey, Exception cause);
 
     T buildRemoteComponentNotFoundException(UUID nodeRuntimeId, int componentId);

@@ -18,6 +18,11 @@ public class ExceptionBuilderImpl implements ExceptionBuilder<ClusterException> 
     }
 
     @Override
+    public ClusterException buildRemoteComponentUnavailableException(UUID nodeRuntimeId, Exception cause) {
+        return new ClusterException("RemoteComponentUnavailableException, nodeRuntimeId: " + nodeRuntimeId, cause);
+    }
+
+    @Override
     public ClusterException buildRemoteComponentUnavailableException(UUID nodeRuntimeId, int componentId, String rControllerClassName, int methodKey, Exception cause) {
         return new ClusterException("RemoteComponentUnavailableException, nodeRuntimeId: " + nodeRuntimeId + ", componentUniqueId: "
                 + componentId + ", rControllerClassName: " + rControllerClassName
