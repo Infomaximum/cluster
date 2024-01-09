@@ -74,6 +74,10 @@ public class ManagerRegisterComponents {
         return managerComponent.getTransport().getNetworkTransit().getManagerRuntimeComponent().get(nodeRuntimeId, componentId);
     }
 
+    public Collection<LocationRuntimeComponent> getLocationRuntimeComponents(UUID nodeRuntimeId) {
+        return managerComponent.getTransport().getNetworkTransit().getManagerRuntimeComponent().gets(nodeRuntimeId);
+    }
+
     public RuntimeComponentInfo getLocalComponent(int componentId) {
         return managerRuntimeComponent.getLocalManagerRuntimeComponent().get(componentId);
     }

@@ -42,6 +42,16 @@ public class SingletonManagerRuntimeComponent implements ManagerRuntimeComponent
     }
 
     @Override
+    public Collection<LocationRuntimeComponent> gets(UUID nodeRuntimeId) {
+        if (!this.nodeRuntimeId.equals(nodeRuntimeId)) {
+            return null;
+        }
+        return localManagerRuntimeComponent.getComponents().stream()
+                .map(componentInfo -> new LocationRuntimeComponent(nodeRuntimeId, componentInfo))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Collection<LocationRuntimeComponent> find(Class<? extends RController> remoteControllerClazz) {
         return localManagerRuntimeComponent.find(remoteControllerClazz).stream()
                 .map(componentInfo -> new LocationRuntimeComponent(nodeRuntimeId, componentInfo))

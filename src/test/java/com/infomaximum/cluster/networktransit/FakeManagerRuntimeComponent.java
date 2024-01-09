@@ -57,6 +57,16 @@ public class FakeManagerRuntimeComponent implements ManagerRuntimeComponent {
     }
 
     @Override
+    public Collection<LocationRuntimeComponent> gets(UUID nodeRuntimeId) {
+        Cluster cluster = spaceNetworkTransit.getCluster(nodeRuntimeId);
+        List<LocationRuntimeComponent> components = new ArrayList<>();
+        for (RuntimeComponentInfo componentInfo : cluster.getTransportManager().networkTransit.getManagerRuntimeComponent().getLocalManagerRuntimeComponent().getComponents()) {
+            components.add(new LocationRuntimeComponent(nodeRuntimeId, componentInfo));
+        }
+        return components;
+    }
+
+    @Override
     public Collection<LocationRuntimeComponent> find(Class<? extends RController> remoteControllerClazz) {
         List<LocationRuntimeComponent> components = new ArrayList<>();
         for (Cluster cluster : spaceNetworkTransit.getClusters()) {

@@ -12,6 +12,8 @@ public interface ManagerRuntimeComponent {
 
     LocationRuntimeComponent get(UUID nodeRuntimeId, int componentId);
 
+    Collection<LocationRuntimeComponent> gets(UUID nodeRuntimeId);
+
     Collection<LocationRuntimeComponent> find(Class<? extends RController> remoteControllerClazz);
 
     LocalManagerRuntimeComponent getLocalManagerRuntimeComponent();
