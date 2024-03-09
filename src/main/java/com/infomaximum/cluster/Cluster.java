@@ -6,6 +6,7 @@ import com.infomaximum.cluster.core.remote.packer.impl.*;
 import com.infomaximum.cluster.core.service.componentuuid.ComponentUuidManager;
 import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.core.service.transport.network.local.LocalNetworkTransit;
+import com.infomaximum.cluster.event.UpdateNodeConnect;
 import com.infomaximum.cluster.exception.*;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.RandomUtil;

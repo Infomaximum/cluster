@@ -5,6 +5,7 @@ module com.infomaximum.cluster {
     requires org.checkerframework.checker.qual;
 
     exports com.infomaximum.cluster;
+    exports com.infomaximum.cluster.event;
     exports com.infomaximum.cluster.anotation;
     exports com.infomaximum.cluster.component.manager;
     exports com.infomaximum.cluster.component.manager.core;
