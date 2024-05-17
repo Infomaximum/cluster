@@ -6,11 +6,11 @@ import java.util.Base64;
 /**
  * Created by kris on 21.09.16.
  */
-public class SerializeException {
+public class ExceptionSerializer {
 
 	public static String serialize(Exception exception) throws IOException {
 		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-			try(ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+			try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
 				oos.writeObject(exception);
 				return Base64.getEncoder().encodeToString(baos.toByteArray());
 			}

@@ -26,11 +26,8 @@ public class LocalManagerRuntimeComponent {
     public void registerComponent(RuntimeComponentInfo componentInfo) {
         int id = componentInfo.id;
 
-        synchronized (components) {
-            if (components.containsKey(id)) {
-                throw new RuntimeException();
-            }
-            components.put(id, componentInfo);
+        if (components.put(id, componentInfo) != null) {
+            throw new RuntimeException();
         }
 
         //Оповещаем подписчиков
@@ -40,10 +37,7 @@ public class LocalManagerRuntimeComponent {
     }
 
     public boolean unRegisterComponent(int id) {
-        RuntimeComponentInfo removeItem;
-        synchronized (components) {
-            removeItem = components.remove(id);
-        }
+        RuntimeComponentInfo removeItem = components.remove(id);
 
         //Оповещаем подписчиков
         if (removeItem != null) {

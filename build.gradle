@@ -3,6 +3,7 @@ plugins {
     id 'maven-publish'
     id 'signing'
     id "org.checkerframework" version "0.6.15" //https://github.com/kelloggm/checkerframework-gradle-plugin
+//    id "com.github.spotbugs" version "6.0.14"
 }
 if (project.hasProperty('ossrhUsername')) {
     apply from: 'publish.gradle'

@@ -10,7 +10,7 @@ import com.infomaximum.cluster.struct.Component;
 @Info(uuid = "com.infomaximum.cluster.component.memory")
 public class MemoryComponent extends Component {
 
-    private MemoryEngine memoryEngine;
+    private final MemoryEngine memoryEngine;
 
     public MemoryComponent() {
         this.memoryEngine = new MemoryEngine(this);
