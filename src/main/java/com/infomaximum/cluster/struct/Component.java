@@ -78,6 +78,7 @@ public abstract class Component {
         this.registrationState = managerComponent.getRegisterComponent().registerActiveComponent(
                 new RuntimeComponentInfo(
                         getInfo().getUuid(),
+                        getInfo().getVersion(),
                         getTransport().getExecutor().getClassRControllers()
                 )
         );

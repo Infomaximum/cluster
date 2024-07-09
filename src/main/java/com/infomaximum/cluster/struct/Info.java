@@ -21,6 +21,8 @@ public class Info implements RemoteObject {
 
     private final Class[] dependencies;
 
+    private final Version version;
+
     protected Info(Builder builder) {
 
         if (builder.uuid == null || builder.uuid.isEmpty()) throw new IllegalArgumentException("Bad uuid component");
@@ -35,10 +37,16 @@ public class Info implements RemoteObject {
         this.dependencies = builder.dependencies == null
                 ? new Class[0]
                 : (Class<Component>[]) builder.dependencies.toArray(new Class[builder.dependencies.size()]);
+
+        this.version = builder.version;
     }
 
     public String getUuid() {
         return uuid;
+    }
+
+    public Version getVersion() {
+        return version;
     }
 
     public Class<? extends Component> getComponent() {
@@ -55,6 +63,8 @@ public class Info implements RemoteObject {
         private Class<? extends Component> componentClass;
 
         private Set<Class<? extends Component>> dependencies = new HashSet<>();
+
+        private Version version;
 
         @Deprecated
         public Builder(String uuid) {
@@ -83,6 +93,11 @@ public class Info implements RemoteObject {
 
         public T withDependence(Class<? extends Component> dependence) {
             dependencies.add(dependence);
+            return (T) this;
+        }
+
+        public T withVersion(Version version) {
+            this.version = version;
             return (T) this;
         }
 
