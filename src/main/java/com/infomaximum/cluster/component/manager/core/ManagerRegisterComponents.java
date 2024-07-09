@@ -37,6 +37,7 @@ public class ManagerRegisterComponents {
                 new RuntimeComponentInfo(
                         managerComponent.getId(),
                         managerComponent.getInfo().getUuid(),
+                        managerComponent.getInfo().getVersion(),
                         managerComponent.getTransport().getExecutor().getClassRControllers()
                 ));
     }
