@@ -3,14 +3,17 @@ package com.infomaximum.cluster.core.remote.packer.impl;
 import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.struct.Component;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-/**
- * Created by user on 06.09.2017.
- * TODO Ulitin V. Когда будем разъезжаться по серверам реализовать
- */
 public class RemotePackerOptional implements RemotePacker<Optional> {
+
+    private final RemotePackerSerializable remotePackerSerializable;
+
+    public RemotePackerOptional() {
+        this.remotePackerSerializable = new RemotePackerSerializable();
+    }
 
     @Override
     public boolean isSupport(Class classType) {
@@ -24,26 +27,17 @@ public class RemotePackerOptional implements RemotePacker<Optional> {
 
     @Override
     public void validation(Type classType) {
-        //TODO не реализовано, реализовать проверку
+        remotePackerSerializable.validation(classType);
     }
 
     @Override
     public byte[] serialize(Component component, Optional value) {
-        //TODO не реализовано, реализовать через
-//        future.whenComplete((s, throwable) -> {
-//            log.debug("futureError: thenAccept");
-//        });
-
-        throw new RuntimeException("Not implemented");
+        return remotePackerSerializable.serialize(component, (Serializable) value.orElse(null));
     }
 
     @Override
     public Optional deserialize(Component component, Class classType, byte[] value) {
-        //TODO не реализовано, реализовать через
-//        future.whenComplete((s, throwable) -> {
-//            log.debug("futureError: thenAccept");
-//        });
-
-        throw new RuntimeException("Not implemented");
+        Object result = remotePackerSerializable.deserialize(component, classType, value);
+        return Optional.ofNullable(result);
     }
 }

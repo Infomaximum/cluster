@@ -1,4 +1,4 @@
-package com.infomaximum.cluster.remoteobject.test;
+package com.infomaximum.tests.items.packer;
 
 import com.infomaximum.cluster.core.remote.packer.impl.RemotePackerRemoteObject;
 import com.infomaximum.cluster.remoteobject.struct.valide.RemoteObject1;
@@ -7,12 +7,12 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RemoteObject1Test {
+public class RemoteObjectTest {
 
-    private final static Logger log = LoggerFactory.getLogger(RemoteObject1Test.class);
+    private final static Logger log = LoggerFactory.getLogger(RemoteObjectTest.class);
 
     @Test
-    public void test1() throws Exception {
+    public void test1() {
         RemotePackerRemoteObject remotePackerRemoteObject = new RemotePackerRemoteObject();
 
         RemoteObject1 remoteObject11 = new RemoteObject1(1, 6L);
