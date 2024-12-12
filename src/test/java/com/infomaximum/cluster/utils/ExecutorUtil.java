@@ -8,5 +8,5 @@ import java.util.concurrent.Executors;
  */
 public class ExecutorUtil {
 
-	public static final ExecutorService executors = Executors.newCachedThreadPool();
+	public static final ExecutorService executors = Executors.newVirtualThreadPerTaskExecutor();
 }
