@@ -47,8 +47,8 @@ public abstract class Component {
         }
 
         //Регистрируемся у менеджера подсистем
+        log.info("Register {}", getInfo().getUuid());
         registerComponent();
-        log.info("Register {} ({})", getInfo().getUuid(), getId());
         onInitialized();
     }
 
