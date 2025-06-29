@@ -8,6 +8,7 @@ import com.infomaximum.cluster.remoteobject.struct.fail.RemoteObjectFail4;
 import com.infomaximum.cluster.remoteobject.struct.valide.RemoteObject1;
 import com.infomaximum.cluster.remoteobject.struct.valide.RemoteObject2;
 import com.infomaximum.cluster.remoteobject.struct.valide.RemoteObject3;
+import com.infomaximum.cluster.remoteobject.struct.valide.RemoteObject4;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -30,6 +31,11 @@ public class RemoteObjectValidationTest {
     @Test
     public void test3() {
         RemoteObjectValidator.validation(RemoteObject3.class).check();
+    }
+
+    @Test
+    public void test4() {
+        RemoteObjectValidator.validation(RemoteObject4.class).check();
     }
 
     @Test

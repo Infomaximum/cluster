@@ -63,7 +63,8 @@ public class RemoteObjectValidator {
                 if (iType instanceof ParameterizedType) {
                     for (Type iiType : ((ParameterizedType) iType).getActualTypeArguments()) {
 
-                        if (type == iiType) continue;//Рекурсия - не стоит проверять самого себя
+                        //Сравнение через type == iiType всегда возвращает false, т.к. ссылки разные
+                        if (type.getTypeName().equals(iiType.getTypeName())) continue;
 
                         ResultValidator gResultValidator = validationWorker(iiType, new ArrayList<String>(trace) {{
                             add(type.getTypeName());
