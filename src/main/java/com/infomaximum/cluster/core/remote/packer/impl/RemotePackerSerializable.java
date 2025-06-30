@@ -1,6 +1,8 @@
 package com.infomaximum.cluster.core.remote.packer.impl;
 
 import com.infomaximum.cluster.core.remote.packer.RemotePacker;
+import com.infomaximum.cluster.core.remote.struct.ComponentObjectInputStream;
+import com.infomaximum.cluster.core.remote.struct.ComponentObjectOutputStream;
 import com.infomaximum.cluster.exception.ClusterRemotePackerException;
 import com.infomaximum.cluster.struct.Component;
 
@@ -27,8 +29,8 @@ public class RemotePackerSerializable implements RemotePacker<Serializable> {
     @Override
     public byte[] serialize(Component component, Serializable value) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            try(ObjectOutputStream oos = new ObjectOutputStream(baos)) {
-                oos.writeObject(value);
+            try (ComponentObjectOutputStream coos = new ComponentObjectOutputStream(baos, component)) {
+                coos.writeObject(value);
                 return baos.toByteArray();
             }
         } catch (Exception e) {
@@ -38,8 +40,8 @@ public class RemotePackerSerializable implements RemotePacker<Serializable> {
 
     @Override
     public Serializable deserialize(Component component, Class classType, byte[] value) {
-        try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(value))) {
-            return (Serializable) ois.readObject();
+        try (ComponentObjectInputStream cois = new ComponentObjectInputStream(new ByteArrayInputStream(value), component)) {
+            return (Serializable) cois.readObject();
         } catch (Exception e) {
             throw new ClusterRemotePackerException("Exception deserialize, classType: " + classType + ", value: " + Arrays.toString(value), e);
         }

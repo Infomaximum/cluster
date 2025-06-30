@@ -74,6 +74,10 @@ public class RemotePackerClusterInputStream implements RemotePacker<ClusterInput
     @Override
     public ClusterInputStream deserialize(Component component, Class classType, byte[] value) {
         Packer packer = Packer.deserialize(value);
+        return new ClusterInputStream(getInputStream(component, packer));
+    }
+
+    public static InputStream getInputStream(Component component, Packer packer) {
         if (packer.id != 0) {
             LocationRuntimeComponent runtimeComponentInfo = component.getTransport().getNetworkTransit().getManagerRuntimeComponent().get(packer.sourceNodeRuntimeId, packer.sourceComponentId);
             if (runtimeComponentInfo == null) {
@@ -81,9 +85,9 @@ public class RemotePackerClusterInputStream implements RemotePacker<ClusterInput
             }
             RemoteTarget source = new RemoteTarget(packer.sourceNodeRuntimeId, packer.sourceComponentId, runtimeComponentInfo.component().uuid);
             RControllerInputStream controllerInputStream = component.getRemotes().getFromCKey(source, RControllerInputStream.class);
-            return new ClusterInputStream(new ProxyClusterInputStream(controllerInputStream, packer.id, packer.batchSize, packer.data, packer.dataOffset, packer.dataLength));
+            return new ProxyClusterInputStream(controllerInputStream, packer.id, packer.batchSize, packer.data, packer.dataOffset, packer.dataLength);
         } else {
-            return new ClusterInputStream(new ByteArrayInputStream(packer.data, packer.dataOffset, packer.dataLength));
+            return new ByteArrayInputStream(packer.data, packer.dataOffset, packer.dataLength);
         }
     }
 
@@ -132,7 +136,7 @@ public class RemotePackerClusterInputStream implements RemotePacker<ClusterInput
         }
     }
 
-    class ProxyClusterInputStream extends InputStream {
+    static class ProxyClusterInputStream extends InputStream {
 
         private final RControllerInputStream controllerInputStream;
         private final int id;
