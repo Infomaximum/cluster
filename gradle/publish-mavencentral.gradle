@@ -1,0 +1,83 @@
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    from sourceSets.main.java.srcDirs
+    archiveClassifier = 'javadoc'
+}
+task sourcesJar(type: Jar) {
+    from sourceSets.main.java.srcDirs
+    archiveClassifier.set('sources')
+}
+
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+
+            from components.java
+            artifact javadocJar
+            artifact sourcesJar
+
+            pom {
+                packaging = 'jar'
+                name = project.name
+                description = 'Library for creating a light cluster'
+                url = 'https://github.com/Infomaximum/cluster'
+                inceptionYear = '2019'
+                licenses {
+                    license {
+                        name = "The Apache Software License, version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "infomaximum"
+                        name = "Infomaximum LLC"
+                        email = "develop@infomaximum.com"
+                    }
+                }
+                scm {
+                    url = "https://github.com/Infomaximum/cluster"
+                    connection = 'scm:git:https://github.com/Infomaximum/cluster.git'
+                    developerConnection = 'scm:git:git@github.com:Infomaximum/cluster.git'
+                }
+            }
+
+        }
+    }
+    repositories {
+        maven {
+            url = rootProject.layout.buildDirectory.dir('staging-deploy')
+        }
+    }
+}
+
+jreleaser {
+    signing {
+        active = 'RELEASE'
+        armored = true
+    }
+    environment {
+        variables 'jreleaser.toml'
+    }
+    deploy {
+        maven {
+            mavenCentral {
+                sonatype {
+                    active = 'ALWAYS'
+                    url = 'https://central.sonatype.com/api/v1/publisher'
+                    stagingRepository('build/staging-deploy')
+                }
+            }
+        }
+    }
+}
+
+publish.dependsOn clean
+tasks.named('publish') {
+    finalizedBy 'jreleaserDeploy'
+}

@@ -1,16 +1,17 @@
 plugins {
     id 'java'
+    id 'java-library'
     id 'maven-publish'
-    id 'signing'
+    id 'org.jreleaser' version '1.19.0'
     id "org.checkerframework" version "0.6.46" //https://github.com/kelloggm/checkerframework-gradle-plugin
-//    id "com.github.spotbugs" version "6.0.14"
 }
-if (project.hasProperty('ossrhUsername')) {
-    apply from: 'publish.gradle'
+
+if (file("${rootProject.projectDir}/gradle/publish-mavencentral.gradle").exists()) {
+    apply from: "${rootProject.projectDir}/gradle/publish-mavencentral.gradle"
 }
 
 group 'com.infomaximum'
-version '1.1.12'
+version '1.1.13'
 
 ext.moduleName = 'com.infomaximum.cluster'
 
@@ -48,13 +49,13 @@ dependencies {
     }
     implementation 'org.javassist:javassist:3.30.2-GA'//Более новая зависимость с поддержкой java модулей
 
-    implementation 'org.slf4j:slf4j-api:2.0.16'
+    implementation 'org.slf4j:slf4j-api:2.0.17'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.3'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.3'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.11.3'
-    testImplementation 'org.assertj:assertj-core:3.26.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.12.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.12.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.12.2'
+    testImplementation 'org.assertj:assertj-core:3.27.3'
 
-    testImplementation 'ch.qos.logback:logback-core:1.5.12'
-    testImplementation 'ch.qos.logback:logback-classic:1.5.12'
+    testImplementation 'ch.qos.logback:logback-core:1.5.18'
+    testImplementation 'ch.qos.logback:logback-classic:1.5.18'
 }

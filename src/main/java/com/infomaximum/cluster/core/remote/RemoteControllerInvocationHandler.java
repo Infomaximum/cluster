@@ -11,6 +11,7 @@ public class RemoteControllerInvocationHandler implements InvocationHandler {
 
     private final static String METHOD_GET_NODE_RUNTIME_ID = "getNodeRuntimeId";
     private final static String METHOD_GET_COMPONENT_UUID = "getComponentUuid";
+    private final static String METHOD_GET_REMOTE_TARGET = "getRemoteTarget";
 
     private final static String METHOD_TO_STRING = "toString";
 
@@ -45,6 +46,8 @@ public class RemoteControllerInvocationHandler implements InvocationHandler {
             return target.componentUuid();
         } else if (METHOD_TO_STRING.equals(method.getName()) && method.getParameters().length == 0) {
             return method.toString();
+        } else if (METHOD_GET_REMOTE_TARGET.equals(method.getName()) && method.getParameters().length == 0) {
+            return target;
         } else {
             return sourceComponent.getTransport().request(target, rControllerClass, method, args);
         }

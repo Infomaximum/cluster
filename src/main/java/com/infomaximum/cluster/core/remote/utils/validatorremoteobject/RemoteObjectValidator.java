@@ -78,7 +78,7 @@ public class RemoteObjectValidator {
 
             //Проверяем родителя
             Class superClass = clazz.getSuperclass();
-            if (superClass != null && superClass != Object.class) {
+            if (superClass != null && superClass != Object.class && superClass != Record.class) {
                 ResultValidator pResultValidator = validationWorker(superClass, new ArrayList<String>(trace) {{
                     add(type.getTypeName());
                     add(superClass.getTypeName());

@@ -51,6 +51,11 @@ public abstract class AbstractRController<TComponent extends Component> implemen
         return component.getInfo().getUuid();
     }
 
+    @Override
+    public final RemoteTarget getRemoteTarget() {
+        return new RemoteTarget(getNodeRuntimeId(), component.getId(), getComponentUuid());
+    }
+
     public Method getRemoteMethod(int methodKey) {
         return cacheMethods.get(methodKey);
     }
