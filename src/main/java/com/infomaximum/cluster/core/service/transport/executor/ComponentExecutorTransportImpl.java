@@ -111,7 +111,8 @@ public class ComponentExecutorTransportImpl implements ComponentExecutorTranspor
             if (targetException instanceof Exception) {
                 throw (Exception) targetException;
             } else {
-                throw new RuntimeException("Not support target exception", targetException);
+                throw new RuntimeException("Not support target exception, component: " + component.getInfo().getUuid() + ", controller: " + remoteController.getClass()
+                        + ", method: " + method.getName(), targetException);
             }
         }
 
