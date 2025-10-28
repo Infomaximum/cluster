@@ -56,6 +56,11 @@ public class Cluster implements AutoCloseable {
         log.info("Cluster created.");
     }
 
+    public void start() {
+        transportManager.networkTransit.start();
+        log.info("Cluster started.");
+    }
+
     public TransportManager getTransportManager() {
         return transportManager;
     }
@@ -280,8 +285,6 @@ public class Cluster implements AutoCloseable {
 
                     components.remove(componentIndex);
                 }
-
-                cluster.transportManager.networkTransit.start();
             } catch (ClusterException ex) {
                 if (cluster != null) {
                     cluster.close();
