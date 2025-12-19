@@ -46,13 +46,17 @@ public abstract class Component {
             throw e;
         }
 
-        //Регистрируемся у менеджера подсистем
-        log.info("Register {}", getInfo().getUuid());
-        registerComponent();
         onInitialized();
     }
 
     public void onInitialized() {
+    }
+
+    public void start() {
+        //Регистрируемся у менеджера подсистем
+        log.info("Register {}", getInfo().getUuid());
+        registerComponent();
+        registerTransport();
     }
 
     protected Cluster getCluster() {
@@ -75,20 +79,29 @@ public abstract class Component {
     //Регистрируемся у менджера подсистем
     protected void registerComponent() {
         ManagerComponent managerComponent = cluster.getAnyLocalComponent(ManagerComponent.class);
-        this.registrationState = managerComponent.getRegisterComponent().registerActiveComponent(
+        this.registrationState = managerComponent.getRegisterComponent().registerLocalComponent(
                 new RuntimeComponentInfo(
                         getInfo().getUuid(),
                         getInfo().getVersion(),
                         getTransport().getExecutor().getClassRControllers()
                 )
         );
+    }
+
+    protected void registerTransport() {
         transportManager.registerTransport(transport);
     }
 
     //Снимаем регистрацию у менджера подсистем
     protected void unregisterComponent() {
         ManagerComponent managerComponent = cluster.getAnyLocalComponent(ManagerComponent.class);
-        managerComponent.getRegisterComponent().unRegisterActiveComponent(getId());
+        managerComponent.getRegisterComponent().unRegisterLocalComponent(
+                new RuntimeComponentInfo(
+                        getInfo().getUuid(),
+                        getInfo().getVersion(),
+                        getTransport().getExecutor().getClassRControllers()
+                )
+        );
     }
 
     public LocalTransport getTransport() {
