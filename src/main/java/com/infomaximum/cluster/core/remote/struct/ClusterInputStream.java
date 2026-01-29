@@ -31,6 +31,46 @@ public final class ClusterInputStream extends InputStream implements Externaliza
     }
 
     @Override
+    public byte[] readAllBytes() throws IOException {
+        if (inputStream == null) {
+            throw new RuntimeException("InputStream is null");
+        }
+        return inputStream.readAllBytes();
+    }
+
+    @Override
+    public int read(byte[] b) throws IOException {
+        if (inputStream == null) {
+            throw new RuntimeException("InputStream is null");
+        }
+        return inputStream.read(b);
+    }
+
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        if (inputStream == null) {
+            throw new RuntimeException("InputStream is null");
+        }
+        return inputStream.read(b, off, len);
+    }
+
+    @Override
+    public byte[] readNBytes(int len) throws IOException {
+        if (inputStream == null) {
+            throw new RuntimeException("InputStream is null");
+        }
+        return inputStream.readNBytes(len);
+    }
+
+    @Override
+    public int readNBytes(byte[] b, int off, int len) throws IOException {
+        if (inputStream == null) {
+            throw new RuntimeException("InputStream is null");
+        }
+        return inputStream.readNBytes(b, off, len);
+    }
+
+    @Override
     public void close() throws IOException {
         super.close();
         if (inputStream != null) {
