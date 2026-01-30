@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Proxy;
 import java.util.Collection;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -64,7 +65,6 @@ public class Remotes {
         return runtimeComponent.component().getClassNameRControllers().contains(remoteControllerClazz.getName());
     }
 
-
     public <T extends RController> T get(Class<? extends Component> classComponent, Class<T> remoteControllerClazz) {
         String uuid = cluster.getUuid(classComponent);
         return get(uuid, remoteControllerClazz);
@@ -80,6 +80,13 @@ public class Remotes {
 
     public <T extends RController> Collection<T> getControllers(Class<T> remoteClassController) {
         return managerComponent.getRegisterComponent().find(remoteClassController).stream()
+                .map(runtimeComponent -> getFromCKey(new RemoteTarget(runtimeComponent.node(), runtimeComponent.component().id, runtimeComponent.component().uuid), remoteClassController))
+                .collect(Collectors.toList());
+    }
+
+    public <T extends RController> Collection<T> getControllers(UUID nodeUuid, Class<T> remoteClassController) {
+        return managerComponent.getRegisterComponent().find(remoteClassController).stream()
+                .filter(locationRuntimeComponent -> nodeUuid.equals(locationRuntimeComponent.node()))
                 .map(runtimeComponent -> getFromCKey(new RemoteTarget(runtimeComponent.node(), runtimeComponent.component().id, runtimeComponent.component().uuid), remoteClassController))
                 .collect(Collectors.toList());
     }

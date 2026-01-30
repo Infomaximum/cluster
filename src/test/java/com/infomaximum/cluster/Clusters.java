@@ -5,6 +5,7 @@ import com.infomaximum.cluster.component.memory.MemoryComponent;
 import com.infomaximum.cluster.component.service.ServiceComponent;
 import com.infomaximum.cluster.networktransit.FakeNetworkTransit;
 import com.infomaximum.cluster.networktransit.SpaceNetworkTransit;
+import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.ExecutorUtil;
 
 public class Clusters implements AutoCloseable {
@@ -20,6 +21,9 @@ public class Clusters implements AutoCloseable {
                     .withComponentIfNotExist(new ComponentBuilder(MemoryComponent.class))
                     .withComponentIfNotExist(new ComponentBuilder(Custom1Component.class))
                     .build();
+            cluster1.start();
+            cluster1.getLocalComponents()
+                    .forEach(Component::start);
         });
 
         ExecutorUtil.executors.execute(() -> {
@@ -28,6 +32,9 @@ public class Clusters implements AutoCloseable {
                     .withComponentIfNotExist(new ComponentBuilder(ServiceComponent.class))
                     .withComponentIfNotExist(new ComponentBuilder(Custom1Component.class))
                     .build();
+            cluster2.start();
+            cluster2.getLocalComponents()
+                    .forEach(Component::start);
         });
 
         //Ожидаем старта

@@ -13,6 +13,11 @@ public class SingletonNode implements Node {
     }
 
     @Override
+    public boolean isLocal() {
+        return true;
+    }
+
+    @Override
     public String getName() {
         return "singleton";
     }

@@ -34,6 +34,12 @@ public class ManagerComponent extends Component {
 
     //Переопределяем - логика регистрации у менеджера подсистем не стандартная
     @Override
+    public void start() {
+
+    }
+
+    //Переопределяем - логика регистрации у менеджера подсистем не стандартная
+    @Override
     protected void registerComponent() {
 
     }
