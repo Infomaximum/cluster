@@ -1,6 +1,8 @@
 package com.infomaximum.cluster.component.custom1;
 
+import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.anotation.Info;
+import com.infomaximum.cluster.core.service.transport.TransportManager;
 import com.infomaximum.cluster.struct.Component;
 
 /**
@@ -14,4 +16,9 @@ public class Custom1Component extends Component {
     public Custom1Component() {
     }
 
+    @Override
+    public void init(Cluster cluster, TransportManager transportManager) {
+        super.init(cluster, transportManager);
+        start();
+    }
 }
