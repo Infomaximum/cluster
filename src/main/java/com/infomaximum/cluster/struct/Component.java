@@ -98,6 +98,10 @@ public abstract class Component {
     }
 
     public int getId() {
+        if (registrationState == null) {
+            throw new IllegalStateException(
+                    "Component (" + getInfo().getUuid() + ") is not registered yet.");
+        }
         return registrationState.id;
     }
 
