@@ -53,11 +53,22 @@ public abstract class Component {
     public void onInitialized() {
     }
 
+    /**
+     * Запускает компонент в три шага:
+     * <ol>
+     *     <li>{@link #registerComponent()} — выделяет {@code id} и помещает компонент в локальный реестр
+     *         без уведомления слушателей;</li>
+     *     <li>{@link #registerTransport()} — регистрирует {@code LocalTransport} в {@code TransportManager},
+     *         после чего компонент физически готов обслуживать входящие RPC;</li>
+     *     <li>{@link #notifyRegistered()} — уведомляет слушателей о появлении компонента.</li>
+     * </ol>
+     */
     public void start() {
         //Регистрируемся у менеджера подсистем
         log.info("Register {}", getInfo().getUuid());
         registerComponent();
         registerTransport();
+        notifyRegistered();
     }
 
     protected Cluster getCluster() {
@@ -85,6 +96,14 @@ public abstract class Component {
 
     protected void registerTransport() {
         transportManager.registerTransport(transport);
+    }
+
+    /**
+     * Завершающий шаг {@link #start()}: уведомляет подписчиков о зарегистрированном компоненте.
+     */
+    protected void notifyRegistered() {
+        ManagerComponent managerComponent = cluster.getAnyLocalComponent(ManagerComponent.class);
+        managerComponent.getRegisterComponent().startLocalComponent(getId());
     }
 
     //Снимаем регистрацию у менджера подсистем

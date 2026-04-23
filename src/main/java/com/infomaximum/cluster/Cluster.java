@@ -149,11 +149,10 @@ public class Cluster implements AutoCloseable {
 
     @Override
     public void close() {
+        transportManager.destroy();
         for (int i = dependencyOrderedComponents.size() - 1; i > -1; --i) {
             closeComponent(dependencyOrderedComponents.remove(i));
         }
-
-        transportManager.destroy();
     }
 
     private void closeComponent(Component component) {

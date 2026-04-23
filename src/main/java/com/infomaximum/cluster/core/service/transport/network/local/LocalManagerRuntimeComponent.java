@@ -23,14 +23,26 @@ public class LocalManagerRuntimeComponent {
         this.listeners = new CopyOnWriteArrayList<>();
     }
 
+    /**
+     * Кладёт компонент в локальный реестр без уведомления подписчиков.
+     *
+     * @param componentInfo описание регистрируемого компонента
+     */
     public void registerComponent(RuntimeComponentInfo componentInfo) {
         int id = componentInfo.id;
 
         if (components.put(id, componentInfo) != null) {
             throw new RuntimeException();
         }
+    }
 
-        //Оповещаем подписчиков
+    /**
+     * Уведомляет подписчиков {@link EventUpdateLocalComponent} о появлении компонента.
+     * Вызывать строго после {@link #registerComponent(RuntimeComponentInfo)} и регистрации transport'а.
+     *
+     * @param componentInfo описание зарегистрированного компонента
+     */
+    public void notifyRegistered(RuntimeComponentInfo componentInfo) {
         for (EventUpdateLocalComponent listener : listeners) {
             listener.registerComponent(componentInfo);
         }

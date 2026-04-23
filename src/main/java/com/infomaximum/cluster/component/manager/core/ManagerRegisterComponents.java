@@ -36,8 +36,8 @@ public class ManagerRegisterComponents {
         this.notificationsComponentService = new NotificationsComponentService();
         this.ids = new AtomicInteger(0);
 
-        //Регистрируем себя
-        _registerActiveComponent(
+        //Регистрируем себя — без уведомления.
+        managerRuntimeComponent.getLocalManagerRuntimeComponent().registerComponent(
                 new RuntimeComponentInfo(
                         managerComponent.getId(),
                         managerComponent.getInfo().getUuid(),
@@ -46,11 +46,35 @@ public class ManagerRegisterComponents {
                 ));
     }
 
+    /**
+     * Выделяет id и помещает компонент в локальный реестр без оповещения подписчиков.
+     * Уведомление слушателей производится отдельным шагом в {@link #startLocalComponent(int)}.
+     *
+     * @param value данные регистрируемого компонента (поле {@code id} будет перезаписано выделенным значением)
+     * @return состояние регистрации с выделенным {@code id}
+     */
     public RegistrationState registerLocalComponent(RuntimeComponentInfo value) {
         int nextId = ids.incrementAndGet();
         RuntimeComponentInfo runtimeComponentInfo = RuntimeComponentInfo.upgrade(nextId, value);
-        _registerActiveComponent(runtimeComponentInfo);
+        managerRuntimeComponent.getLocalManagerRuntimeComponent().registerComponent(runtimeComponentInfo);
         return new RegistrationState(nextId);
+    }
+
+    /**
+     * Завершает регистрацию компонента: уведомляет слушателей.
+     *
+     * @param componentId идентификатор компонента, выделенный в {@link #registerLocalComponent(RuntimeComponentInfo)}
+     * @throws IllegalStateException если компонент с таким id отсутствует в локальном реестре
+     */
+    public void startLocalComponent(int componentId) {
+        RuntimeComponentInfo info = managerRuntimeComponent.getLocalManagerRuntimeComponent().get(componentId);
+        if (info == null) {
+            throw new IllegalStateException("Component is not registered: " + componentId);
+        }
+        managerRuntimeComponent.getLocalManagerRuntimeComponent().notifyRegistered(info);
+        if (!info.uuid.equals(ManagerComponent.UUID)) {
+            notificationsComponentService.registerLocalComponent(info);
+        }
     }
 
     public void registerRemoteComponent(Node node, RuntimeComponentInfo value) {
@@ -69,17 +93,6 @@ public class ManagerRegisterComponents {
 
     public void unRegisterRemoteComponent(Node node, RuntimeComponentInfo value) {
         notificationsComponentService.unRegisterRemoteComponent(node, value);
-    }
-
-    private void _registerActiveComponent(RuntimeComponentInfo subSystemInfo) {
-        String uuid = subSystemInfo.uuid;
-
-        managerRuntimeComponent.getLocalManagerRuntimeComponent().registerComponent(subSystemInfo);
-
-        //Оповещаем все подсистемы о новом модуле - кроме ситуации, когда регистрируется менеджер
-        if (!uuid.equals(ManagerComponent.UUID)) {
-            notificationsComponentService.registerLocalComponent(subSystemInfo);
-        }
     }
 
     public void addListener(EventUpdateComponent eventUpdateComponent) {
