@@ -47,17 +47,25 @@ public class ManagerRegisterComponents {
     }
 
     /**
-     * Выделяет id и помещает компонент в локальный реестр без оповещения подписчиков.
-     * Уведомление слушателей производится отдельным шагом в {@link #startLocalComponent(int)}.
+     * Выделяет уникальный {@code id} для компонента, не публикуя его в локальном реестре.
      *
-     * @param value данные регистрируемого компонента (поле {@code id} будет перезаписано выделенным значением)
      * @return состояние регистрации с выделенным {@code id}
      */
-    public RegistrationState registerLocalComponent(RuntimeComponentInfo value) {
+    public RegistrationState allocateId() {
         int nextId = ids.incrementAndGet();
-        RuntimeComponentInfo runtimeComponentInfo = RuntimeComponentInfo.upgrade(nextId, value);
-        managerRuntimeComponent.getLocalManagerRuntimeComponent().registerComponent(runtimeComponentInfo);
         return new RegistrationState(nextId);
+    }
+
+    /**
+     * Помещает уже подготовленный компонент в локальный реестр без оповещения подписчиков.
+     * Уведомление слушателей производится отдельным шагом в {@link #startLocalComponent(int)}.
+     *
+     * <p>Поле {@code info.id} должно быть выделено через {@link #allocateId()}.
+     *
+     * @param info полностью заполненные данные компонента (включая выделенный {@code id})
+     */
+    public void registerLocalComponent(RuntimeComponentInfo info) {
+        managerRuntimeComponent.getLocalManagerRuntimeComponent().registerComponent(info);
     }
 
     /**

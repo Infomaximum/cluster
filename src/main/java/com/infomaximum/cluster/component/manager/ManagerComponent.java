@@ -38,6 +38,12 @@ public class ManagerComponent extends Component {
 
     }
 
+    //Переопределяем - id менеджера фиксирован {@link #COMPONENT_UNIQUE_ID_MANAGER}, выделение не нужно
+    @Override
+    protected void allocateId() {
+
+    }
+
     //Переопределяем - логика регистрации у менеджера подсистем не стандартная
     @Override
     protected void registerComponent() {

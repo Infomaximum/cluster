@@ -54,20 +54,26 @@ public abstract class Component {
     }
 
     /**
-     * Запускает компонент в три шага:
+     * Запускает компонент в четыре шага:
      * <ol>
-     *     <li>{@link #registerComponent()} — выделяет {@code id} и помещает компонент в локальный реестр
-     *         без уведомления слушателей;</li>
+     *     <li>{@link #allocateId()} — выделяет уникальный {@code id} компонента,
+     *         не публикуя его в локальном реестре;</li>
      *     <li>{@link #registerTransport()} — регистрирует {@code LocalTransport} в {@code TransportManager},
      *         после чего компонент физически готов обслуживать входящие RPC;</li>
-     *     <li>{@link #notifyRegistered()} — уведомляет слушателей о появлении компонента.</li>
+     *     <li>{@link #registerComponent()} — публикует компонент в локальном реестре
+     *         (с этого момента он попадает в snapshot, рассылаемый другим нодам);</li>
+     *     <li>{@link #notifyRegistered()} — уведомляет локальных слушателей о появлении компонента.</li>
      * </ol>
+     *
+     * <p>Порядок 1→2→3 гарантирует, что любая нода, получившая компонент в snapshot, найдёт у него
+     * зарегистрированный {@code LocalTransport} при входящем RPC.
      */
     public void start() {
         //Регистрируемся у менеджера подсистем
         log.info("Register {}", getInfo().getUuid());
-        registerComponent();
+        allocateId();
         registerTransport();
+        registerComponent();
         notifyRegistered();
     }
 
@@ -88,10 +94,30 @@ public abstract class Component {
         return new ComponentExecutorTransportImpl.Builder(this, cluster.getUncaughtExceptionHandler());
     }
 
-    //Регистрируемся у менджера подсистем
+    /**
+     * Шаг 1 в {@link #start()}: выделяет уникальный {@code id} и инициализирует
+     * {@link RuntimeComponentInfo} компонента. После этого {@link #getId()} возвращает валидный
+     * {@code id}, но компонент ещё не виден через {@code LocalManagerRuntimeComponent}.
+     */
+    protected void allocateId() {
+        ManagerComponent managerComponent = cluster.getAnyLocalComponent(ManagerComponent.class);
+        this.registrationState = managerComponent.getRegisterComponent().allocateId();
+        this.runtimeComponentInfo = new RuntimeComponentInfo(
+                registrationState.id,
+                getInfo().getUuid(),
+                getInfo().getVersion(),
+                getTransport().getExecutor().getClassRControllers()
+        );
+    }
+
+    /**
+     * Шаг 3 в {@link #start()}: публикует компонент в локальном реестре.
+     * Вызывается строго после {@link #registerTransport()}, чтобы snapshot
+     * не содержал компонент без зарегистрированного {@code LocalTransport}.
+     */
     protected void registerComponent() {
         ManagerComponent managerComponent = cluster.getAnyLocalComponent(ManagerComponent.class);
-        this.registrationState = managerComponent.getRegisterComponent().registerLocalComponent(getRuntimeComponentInfo());
+        managerComponent.getRegisterComponent().registerLocalComponent(getRuntimeComponentInfo());
     }
 
     protected void registerTransport() {
