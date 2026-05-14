@@ -14,7 +14,7 @@ public class PackerOptionalTest {
     private final static Logger log = LoggerFactory.getLogger(PackerOptionalTest.class);
 
     @Test
-    public void testOptionalRemoteObject() {
+    public void testOptionalRemoteObject() throws Exception {
         RemotePackerOptional remotePackerOptional = new RemotePackerOptional();
 
         RemoteObject1 remoteObject11Value = new RemoteObject1(1, 6L);
@@ -31,7 +31,7 @@ public class PackerOptionalTest {
     }
 
     @Test
-    public void testOptionalNull() {
+    public void testOptionalNull() throws Exception {
         RemotePackerOptional remotePackerOptional = new RemotePackerOptional();
 
         Optional<RemoteObject1> remoteObject11 = Optional.ofNullable(null);

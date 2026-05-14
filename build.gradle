@@ -41,6 +41,10 @@ repositories {
     mavenCentral()
 }
 
+test {
+    useJUnitPlatform()
+}
+
 dependencies {
     implementation('org.reflections:reflections:0.10.2') {
         exclude group: 'com.google.code.findbugs', module: 'jsr305'
@@ -54,6 +58,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.12.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.12.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.12.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.12.2'
     testImplementation 'org.assertj:assertj-core:3.27.3'
 
     testImplementation 'ch.qos.logback:logback-core:1.5.18'

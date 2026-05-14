@@ -7,7 +7,6 @@ import com.infomaximum.cluster.core.remote.RemoteTarget;
 import com.infomaximum.cluster.core.remote.packer.RemotePacker;
 import com.infomaximum.cluster.core.remote.struct.ClusterInputStream;
 import com.infomaximum.cluster.core.service.transport.network.LocationRuntimeComponent;
-import com.infomaximum.cluster.exception.ClusterRemotePackerException;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.ByteUtils;
 
@@ -72,16 +71,17 @@ public class RemotePackerClusterInputStream implements RemotePacker<ClusterInput
     }
 
     @Override
-    public ClusterInputStream deserialize(Component component, Class classType, byte[] value) {
+    public ClusterInputStream deserialize(Component component, Class classType, byte[] value) throws Exception {
         Packer packer = Packer.deserialize(value);
         return new ClusterInputStream(getInputStream(component, packer));
     }
 
-    public static InputStream getInputStream(Component component, Packer packer) {
+    public static InputStream getInputStream(Component component, Packer packer) throws Exception {
         if (packer.id != 0) {
             LocationRuntimeComponent runtimeComponentInfo = component.getTransport().getNetworkTransit().getManagerRuntimeComponent().get(packer.sourceNodeRuntimeId, packer.sourceComponentId);
             if (runtimeComponentInfo == null) {
-                throw new ClusterRemotePackerException();
+                throw component.getTransport().getCluster().getExceptionBuilder()
+                        .buildRemoteComponentNotFoundException(packer.sourceNodeRuntimeId, packer.sourceComponentId);
             }
             RemoteTarget source = new RemoteTarget(packer.sourceNodeRuntimeId, packer.sourceComponentId, runtimeComponentInfo.component().uuid);
             RControllerInputStream controllerInputStream = component.getRemotes().getFromCKey(source, RControllerInputStream.class);

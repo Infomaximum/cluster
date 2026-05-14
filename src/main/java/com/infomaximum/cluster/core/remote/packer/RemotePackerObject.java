@@ -25,10 +25,10 @@ public class RemotePackerObject {
                 return result;
             }
         }
-        throw new ClusterRemotePackerException();
+        throw new ClusterRemotePackerException("No RemotePacker found for class: " + classType, null);
     }
 
-    public Object deserialize(Component component, Class classType, byte[] value) {
+    public Object deserialize(Component component, Class classType, byte[] value) throws Exception {
         if (value.length == 0) {
             return null;
         }
@@ -36,14 +36,14 @@ public class RemotePackerObject {
             if (remotePackerObject.isSupport(classType))
                 return remotePackerObject.deserialize(component, classType, value);
         }
-        throw new ClusterRemotePackerException();
+        throw new ClusterRemotePackerException("No RemotePacker found for class: " + classType, null);
     }
 
     public String getClassName(Class classType) {
         for (RemotePacker remotePackerObject : remotePackers) {
             if (remotePackerObject.isSupport(classType)) return remotePackerObject.getClassName(classType);
         }
-        throw new ClusterRemotePackerException();
+        throw new ClusterRemotePackerException("No RemotePacker found for class: " + classType, null);
     }
 
     public boolean isSupportAndValidationType(Type classType) {

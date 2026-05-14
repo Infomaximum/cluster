@@ -11,33 +11,41 @@ import java.lang.reflect.Type;
 public class ComponentRemotePacker {
     private final Component component;
     private final RemotePackerObject remotePackers;
+    private final Class<?> expectedExceptionType;
 
     public ComponentRemotePacker(Remotes remotes) {
         this.component = remotes.component;
         this.remotePackers = component.getTransport().getRemotePackerObject();
+        this.expectedExceptionType = remotes.cluster.getExceptionBuilder().getTypeException();
     }
 
     public byte[] serialize(Class classType, Object value) {
         return remotePackers.serialize(component, classType, value);
     }
 
-    public byte[] serialize(Class classType, Object value, Thread.UncaughtExceptionHandler caughtExceptionHandler) {
+    public byte[] serialize(Class classType, Object value, Thread.UncaughtExceptionHandler caughtExceptionHandler) throws Exception {
         try {
             return serialize(classType, value);
         } catch (Throwable e) {
+            if (expectedExceptionType.isInstance(e)) {
+                throw e;
+            }
             caughtExceptionHandler.uncaughtException(Thread.currentThread(), e);
             return null;
         }
     }
 
-    public Object deserialize(Class classType, byte[] value) {
+    public Object deserialize(Class classType, byte[] value) throws Exception {
         return remotePackers.deserialize(component, classType, value);
     }
 
-    public Object deserialize(Class classType, byte[] value, Thread.UncaughtExceptionHandler caughtExceptionHandler) {
+    public Object deserialize(Class classType, byte[] value, Thread.UncaughtExceptionHandler caughtExceptionHandler) throws Exception {
         try {
             return deserialize(classType, value);
         } catch (Throwable e) {
+            if (expectedExceptionType.isInstance(e)) {
+                throw e;
+            }
             caughtExceptionHandler.uncaughtException(Thread.currentThread(), e);
             return null;
         }

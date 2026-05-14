@@ -19,5 +19,5 @@ public interface RemotePacker<T> {
 
     byte[] serialize(Component component, T value);
 
-    T deserialize(Component component, Class<T> classType, byte[] value);
+    T deserialize(Component component, Class<T> classType, byte[] value) throws Exception;
 }
