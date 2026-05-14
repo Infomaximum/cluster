@@ -34,7 +34,7 @@ public class RemotePackerRemoteObject implements RemotePacker<RemoteObject> {
     }
 
     @Override
-    public RemoteObject deserialize(Component component, Class classType, byte[] value) {
+    public RemoteObject deserialize(Component component, Class classType, byte[] value) throws Exception {
         return (RemoteObject) remotePackerSerializable.deserialize(component, classType, value);
     }
 }

@@ -36,7 +36,7 @@ public class RemotePackerOptional implements RemotePacker<Optional> {
     }
 
     @Override
-    public Optional deserialize(Component component, Class classType, byte[] value) {
+    public Optional deserialize(Component component, Class classType, byte[] value) throws Exception {
         Object result = remotePackerSerializable.deserialize(component, classType, value);
         return Optional.ofNullable(result);
     }

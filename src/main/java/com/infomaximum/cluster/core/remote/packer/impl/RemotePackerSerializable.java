@@ -39,7 +39,7 @@ public class RemotePackerSerializable implements RemotePacker<Serializable> {
     }
 
     @Override
-    public Serializable deserialize(Component component, Class classType, byte[] value) {
+    public Serializable deserialize(Component component, Class classType, byte[] value) throws Exception {
         try (ComponentObjectInputStream cois = new ComponentObjectInputStream(new ByteArrayInputStream(value), component)) {
             return (Serializable) cois.readObject();
         } catch (Exception e) {

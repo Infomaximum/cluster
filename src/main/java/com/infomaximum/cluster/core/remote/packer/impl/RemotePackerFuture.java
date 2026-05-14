@@ -37,7 +37,7 @@ public class RemotePackerFuture implements RemotePacker<CompletableFuture> {
     }
 
     @Override
-    public CompletableFuture deserialize(Component component, Class classType, byte[] value) {
+    public CompletableFuture deserialize(Component component, Class classType, byte[] value) throws Exception {
         //TODO не реализовано, реализовать через
 //        future.whenComplete((s, throwable) -> {
 //            log.debug("futureError: thenAccept");

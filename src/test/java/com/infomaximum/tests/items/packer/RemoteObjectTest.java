@@ -24,7 +24,7 @@ public class RemoteObjectTest {
     private final static Logger log = LoggerFactory.getLogger(RemoteObjectTest.class);
 
     @Test
-    public void test1() {
+    public void test1() throws Exception {
         RemotePackerRemoteObject remotePackerRemoteObject = new RemotePackerRemoteObject();
 
         RemoteObject1 remoteObject11 = new RemoteObject1(1, 6L);
@@ -39,7 +39,7 @@ public class RemoteObjectTest {
 
     @ParameterizedTest
     @MethodSource("getByteArrays")
-    public void test2(byte[] array) throws IOException {
+    public void test2(byte[] array) throws Exception {
         try (Clusters clusters = new Clusters.Builder().build()) {
             Custom1Component component = clusters.getCluster1().getAnyLocalComponent(Custom1Component.class);
             RemotePackerRemoteObject remotePackerRemoteObject = new RemotePackerRemoteObject();

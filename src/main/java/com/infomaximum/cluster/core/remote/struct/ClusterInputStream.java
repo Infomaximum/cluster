@@ -62,6 +62,12 @@ public final class ClusterInputStream extends InputStream implements Externaliza
         }
         byte[] value = componentObjectInputStream.readAllBytes();
         RemotePackerClusterInputStream.Packer packer = RemotePackerClusterInputStream.Packer.deserialize(value);
-        this.inputStream = RemotePackerClusterInputStream.getInputStream(component, packer);
+        try {
+            this.inputStream = RemotePackerClusterInputStream.getInputStream(component, packer);
+        } catch (IOException | ClassNotFoundException | RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
     }
 }
