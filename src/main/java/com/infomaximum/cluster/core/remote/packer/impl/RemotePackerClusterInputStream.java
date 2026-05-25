@@ -45,6 +45,13 @@ public class RemotePackerClusterInputStream implements RemotePacker<ClusterInput
                 size = 0;
             }
         } catch (IOException e) {
+            // Если IOException несёт «ожидаемый» cause — поднимаем его прямым cause RuntimeException;
+            // ComponentRemotePacker распознаёт expected только на один уровень getCause().
+            Throwable cause = e.getCause();
+            Class<?> expected = component.getTransport().getCluster().getExceptionBuilder().getTypeException();
+            if (cause != null && expected.isInstance(cause)) {
+                throw new RuntimeException(cause);
+            }
             throw new RuntimeException(e);
         }
 

@@ -27,8 +27,9 @@ public class ComponentRemotePacker {
         try {
             return serialize(classType, value);
         } catch (Throwable e) {
-            if (expectedExceptionType.isInstance(e)) {
-                throw e;
+            Throwable expected = matchExpected(e);
+            if (expected != null) {
+                throw (Exception) expected;
             }
             caughtExceptionHandler.uncaughtException(Thread.currentThread(), e);
             return null;
@@ -43,12 +44,24 @@ public class ComponentRemotePacker {
         try {
             return deserialize(classType, value);
         } catch (Throwable e) {
-            if (expectedExceptionType.isInstance(e)) {
-                throw e;
+            Throwable expected = matchExpected(e);
+            if (expected != null) {
+                throw (Exception) expected;
             }
             caughtExceptionHandler.uncaughtException(Thread.currentThread(), e);
             return null;
         }
+    }
+
+    private Throwable matchExpected(Throwable e) {
+        if (expectedExceptionType.isInstance(e)) {
+            return e;
+        }
+        Throwable cause = e.getCause();
+        if (cause != null && expectedExceptionType.isInstance(cause)) {
+            return cause;
+        }
+        return null;
     }
 
     public String getClassName(Class classType) {
